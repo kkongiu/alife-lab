@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import pytest
 
+from alife.config import load_config
 from alife.particles import InvariantError, ParticleStore
 from alife.world import World
-from support import make_config
+from support import M2_QUICK, make_config
 
 
 def test_particle_count_conserved() -> None:
@@ -81,11 +82,19 @@ def test_validate_detects_grid_desynchronisation() -> None:
 
 def test_validate_detects_missing_particle() -> None:
     world = World.create(make_config())
-    world.store.xs.pop()
-    world.store.ys.pop()
-    world.store.species.pop()
+    arrays = (
+        world.store.ids,
+        world.store.xs,
+        world.store.ys,
+        world.store.species,
+        world.store.energy,
+        world.store.degree,
+    )
+    for array in arrays:
+        array.pop()
     problems = world.validate()
     assert any("conteggi" in problem for problem in problems)
+    assert any("griglia" in problem for problem in problems)
 
 
 def test_validate_detects_invalid_species_index() -> None:
@@ -96,9 +105,78 @@ def test_validate_detects_invalid_species_index() -> None:
 
 def test_store_rejects_double_placement() -> None:
     with pytest.raises(InvariantError, match="doppia occupazione"):
-        ParticleStore(4, 4, [1, 1], [1, 1], [0, 0])
+        ParticleStore(4, 4, [0, 1], [1, 1], [1, 1], [0, 0], [5, 5])
 
 
 def test_store_rejects_out_of_grid_particle() -> None:
     with pytest.raises(InvariantError, match="fuori griglia"):
-        ParticleStore(4, 4, [4], [0], [0])
+        ParticleStore(4, 4, [0], [4], [0], [0], [5])
+
+
+# --- M2: legami, energia, identità -----------------------------------------
+
+
+def test_energy_with_bonds_is_conserved() -> None:
+    world = World.create(load_config(M2_QUICK))
+    world.advance(300)
+    assert world.energy_bonds() > 0
+    assert world.energy_particles() + world.energy_bonds() == world.configured_energy()
+    assert world.energy() == world.configured_energy()
+    assert world.validate() == []
+
+
+def test_validate_detects_non_adjacent_bond() -> None:
+    world = World.create(load_config(M2_QUICK))
+    pair = next(
+        (i, j)
+        for i in range(len(world.store))
+        for j in range(i + 1, len(world.store))
+        if not world._adjacent(i, j)
+    )
+    world.store.add_bond(pair[0], pair[1], 0)
+    assert any("non adiacenti" in problem for problem in world.validate())
+
+
+def test_validate_detects_bond_beyond_max_bonds() -> None:
+    world = World.create(load_config(M2_QUICK))
+    pair = next(
+        (index_a, index_b)
+        for index_a in range(len(world.store))
+        for index_b in range(index_a + 1, len(world.store))
+        if world._adjacent(index_a, index_b)
+        and (
+            world.max_bonds[world.store.species[index_a]] == 0
+            or world.max_bonds[world.store.species[index_b]] == 0
+        )
+    )
+    world.store.add_bond(pair[0], pair[1], 0)
+    assert any("oltre il massimo" in problem for problem in world.validate())
+
+
+def test_validate_detects_degree_mismatch() -> None:
+    world = World.create(load_config(M2_QUICK))
+    world.store.degree[0] = 1
+    assert any("grado" in problem for problem in world.validate())
+
+
+def test_validate_detects_bonds_without_chemistry() -> None:
+    world = World.create(make_config())
+    pair = next(
+        (index_a, index_b)
+        for index_a in range(len(world.store))
+        for index_b in range(index_a + 1, len(world.store))
+        if world._adjacent(index_a, index_b)
+    )
+    world.store.add_bond(pair[0], pair[1], 0)
+    assert any("chimica disabilitata" in problem for problem in world.validate())
+
+
+def test_validate_detects_identity_above_next_id() -> None:
+    world = World.create(load_config(M2_QUICK))
+    world.next_id = 0
+    assert any("next_id" in problem for problem in world.validate())
+
+
+def test_store_rejects_duplicate_identifiers() -> None:
+    with pytest.raises(InvariantError, match="identificativo duplicato"):
+        ParticleStore(4, 4, [0, 0], [1, 2], [1, 1], [0, 0], [5, 5])

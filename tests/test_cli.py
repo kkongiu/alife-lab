@@ -12,7 +12,7 @@ import pytest
 from alife.config import load_config
 from alife.persistence import load_checkpoint
 from alife.world import World
-from support import QUICK, ROOT
+from support import M2_QUICK, QUICK, ROOT
 
 
 def _cli(args: list[str], cwd) -> subprocess.CompletedProcess:
@@ -117,3 +117,49 @@ def test_version(command) -> None:
     result = _cli(command, ROOT)
     assert result.returncode == 0
     assert "alife" in result.stdout
+
+
+# --- M2: chimica, eventi, ripresa ------------------------------------------
+
+
+def test_run_m2_writes_events_and_checkpoint(tmp_path) -> None:
+    out = tmp_path / "m2"
+    result = _cli(
+        ["run", "--config", str(M2_QUICK), "--steps", "20", "--out", str(out), "--events"],
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+
+    events = [json.loads(line) for line in (out / "events.jsonl").read_text().splitlines()]
+    assert events
+    assert {event["kind"] for event in events} <= {"form", "break"}
+    assert all({"step", "id_a", "id_b", "energy", "catalyzed"} <= set(event) for event in events)
+
+    summary = json.loads((out / "summary.json").read_text())
+    assert summary["chemistry"]["enabled"] is True
+    assert summary["chemistry"]["bonds"] > 0
+    assert summary["energy"]["delta"] == 0
+    assert summary["state_hash_full"] != summary["state_hash"]
+
+    restored = load_checkpoint(out / "checkpoint.json")
+    assert restored.state_hash_full() == summary["state_hash_full"]
+
+
+def test_m2_resume_matches_continuous_run(tmp_path) -> None:
+    first = tmp_path / "m2a"
+    result = _cli(["run", "--config", str(M2_QUICK), "--steps", "15", "--out", str(first)], tmp_path)
+    assert result.returncode == 0, result.stderr
+
+    result = _cli(
+        ["resume", "--checkpoint", str(first / "checkpoint.json"), "--steps", "15"],
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+
+    resumed = load_checkpoint(first / "resume" / "checkpoint.json")
+    assert resumed.step == 30
+
+    reference = World.create(load_config(M2_QUICK))
+    reference.advance(30)
+    assert resumed.state_hash_full() == reference.state_hash_full()
+    assert resumed.store.bond_records() == reference.store.bond_records()

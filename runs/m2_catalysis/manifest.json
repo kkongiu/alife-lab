@@ -1,0 +1,29 @@
+{
+  "tool": "alife",
+  "tool_version": "0.1.0",
+  "command": "run",
+  "argv": [
+    "run",
+    "--config",
+    "configs/m2_catalysis.json",
+    "--steps",
+    "5000",
+    "--out",
+    "runs/m2_catalysis"
+  ],
+  "cwd": "/home/kongiu/Documenti/Alife",
+  "python_executable": "/home/kongiu/Documenti/Alife/.venv/bin/python",
+  "created_utc": "2026-11-14T21:48:39+00:00",
+  "seed": 20261115,
+  "config_hash": "cb0b4612e2d4e639bad30ee9205130cb01f333243fa61eb3cfe38a3b11942656",
+  "config_schema_version": 2,
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "git_commit": "9dbee7bacef8031615cf7595a646301f9e8421a7",
+  "config_source": "/home/kongiu/Documenti/Alife/configs/m2_catalysis.json"
+}

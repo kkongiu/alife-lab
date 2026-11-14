@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 6
 - Esito: **PASS**
-- Eseguito: 2026-11-14T21:33:04+00:00
+- Eseguito: 2026-11-14T21:52:15+00:00
 - Test pytest associati: 4 (4 superati)
 
 ## Scenario
@@ -13,7 +13,7 @@ Universo 16×16, seed 106, 17 passi: salvataggio, ricaricamento e corruzione int
 
 | Voce | Valore |
 |---|---|
-| dimensione checkpoint | 1109 byte |
+| dimensione checkpoint | 1447 byte |
 | passo ricaricato | 17 |
 | hash originale = hash ricaricato | True |
 | RNG originale = RNG ricaricato | True |
@@ -29,7 +29,7 @@ Universo 16×16, seed 106, 17 passi: salvataggio, ricaricamento e corruzione int
 
 ## Test pytest associati
 
-- `tests/test_checkpoint.py::test_roundtrip_preserves_state` → **PASSED** (0.0260 s)
-- `tests/test_checkpoint.py::test_repeated_save_load_cycles_are_stable` → **PASSED** (0.0050 s)
-- `tests/test_checkpoint.py::test_checkpoint_does_not_mutate_world` → **PASSED** (0.0020 s)
+- `tests/test_checkpoint.py::test_roundtrip_preserves_state` → **PASSED** (0.0210 s)
+- `tests/test_checkpoint.py::test_repeated_save_load_cycles_are_stable` → **PASSED** (0.0070 s)
+- `tests/test_checkpoint.py::test_checkpoint_does_not_mutate_world` → **PASSED** (0.0030 s)
 - `tests/test_checkpoint.py::test_no_temporary_file_left_behind` → **PASSED** (0.0010 s)

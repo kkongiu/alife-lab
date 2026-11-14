@@ -108,6 +108,7 @@ class MetricsRecorder:
     def _record(self, world: "World", now: float) -> dict[str, Any]:
         elapsed = now - self.started
         steps_per_second = world.step / elapsed if elapsed > 0 and world.step else 0.0
+        aggregates = world.aggregates()
         return {
             "step": world.step,
             "wall_time_s": round(elapsed, 6),
@@ -117,16 +118,27 @@ class MetricsRecorder:
             "particles_total": len(world.store),
             "occupancy": round(world.occupancy(), 6),
             "energy_total": world.energy(),
+            "energy_particles": world.energy_particles(),
+            "energy_bonds": world.energy_bonds(),
             "energy_in": 0,
             "energy_out": 0,
+            "bonds": aggregates["bonds"],
+            "bonded_particles": aggregates["bonded_particles"],
+            "free_particles": aggregates["free_particles"],
+            "aggregates": aggregates["aggregates"],
+            "largest_aggregate": aggregates["largest_aggregate"],
+            "bonds_formed_total": world.bonds_formed_total,
+            "bonds_broken_total": world.bonds_broken_total,
             "state_hash": world.state_hash(),
+            "state_hash_full": world.state_hash_full(),
         }
 
     def summary(self, world: "World") -> dict[str, Any]:
-        """Riepilogo finale conforme ai campi obbligatori di M1."""
+        """Riepilogo finale conforme ai campi obbligatori di M1 e M2."""
         elapsed = time.perf_counter() - self.started
         self.peak_memory = max(self.peak_memory, peak_memory_bytes())
         cells = world.config.grid.cells
+        aggregates = world.aggregates()
         return {
             "steps": world.step,
             "moves_total": world.moves_total,
@@ -143,9 +155,25 @@ class MetricsRecorder:
             "energy": {
                 "total": world.energy(),
                 "initial": world.configured_energy(),
+                "particles": world.energy_particles(),
+                "bonds": world.energy_bonds(),
                 "in": 0,
                 "out": 0,
                 "delta": world.energy() - world.configured_energy(),
+            },
+            "chemistry": {
+                "enabled": world.chemistry_enabled,
+                "bond_cost": world.bond_cost,
+                "bonds": aggregates["bonds"],
+                "bond_energy": aggregates["bond_energy"],
+                "bonded_particles": aggregates["bonded_particles"],
+                "free_particles": aggregates["free_particles"],
+                "aggregates": aggregates["aggregates"],
+                "largest_aggregate": aggregates["largest_aggregate"],
+                "mean_aggregate_size": aggregates["mean_aggregate_size"],
+                "size_distribution": aggregates["size_distribution"],
+                "formed_total": world.bonds_formed_total,
+                "broken_total": world.bonds_broken_total,
             },
             "duration_s": round(elapsed, 6),
             "steps_per_second": round(world.step / elapsed, 3) if elapsed > 0 else 0.0,
@@ -153,6 +181,7 @@ class MetricsRecorder:
             "baseline_memory_bytes": self.baseline_memory,
             "simulation_memory_bytes": max(0, self.peak_memory - self.baseline_memory),
             "state_hash": world.state_hash(),
+            "state_hash_full": world.state_hash_full(),
             "seed": world.config.seed,
             "config_hash": world.config.hash(),
             "config_schema_version": world.config.schema_version,

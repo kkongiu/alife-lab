@@ -7,7 +7,7 @@ import json
 import pytest
 
 from alife.config import Config, ConfigError, load_config
-from support import BASELINE, make_config
+from support import BASELINE, M2_BASELINE, M2_QUICK, make_config
 
 
 def test_baseline_config_is_valid() -> None:
@@ -94,3 +94,88 @@ def test_invalid_json(tmp_path) -> None:
     path.write_text("{ non json", encoding="utf-8")
     with pytest.raises(ConfigError, match="JSON non valida"):
         load_config(path)
+
+
+# --- schema 2: chimica ------------------------------------------------------
+
+
+def test_v1_hash_is_unchanged() -> None:
+    # valore pubblicato nella milestone M1: la compatibilità del formato è un
+    # requisito, non un dettaglio
+    assert load_config(BASELINE).hash() == (
+        "f697f983214246b4b7a96560a8e7de5d33c57e354e14899d6929e6a5226391c8"
+    )
+
+
+def test_v2_roundtrip_preserves_hash() -> None:
+    config = load_config(M2_QUICK)
+    assert config.schema_version == 2
+    again = Config.from_dict(config.to_dict()).validate()
+    assert again == config
+    assert again.hash() == config.hash()
+
+
+def test_v2_hash_ignores_pair_order_and_duplicates() -> None:
+    base = json.loads(M2_QUICK.read_text())
+    reordered = json.loads(M2_QUICK.read_text())
+    reordered["chemistry"]["allowed_pairs"] = [
+        ["S1", "S0"],
+        ["S0", "S0"],
+        ["S1", "S2"],
+        ["S1", "S1"],
+        ["S0", "S0"],
+    ]
+    assert Config.from_dict(base).hash() == Config.from_dict(reordered).hash()
+
+
+def test_v1_rejects_chemistry_block() -> None:
+    raw = json.loads(BASELINE.read_text())
+    raw["chemistry"] = {"enabled": False}
+    with pytest.raises(ConfigError, match="schema 1"):
+        Config.from_dict(raw)
+
+
+def test_chemistry_requires_usable_pair() -> None:
+    raw = json.loads(M2_QUICK.read_text())
+    raw["species"] = [
+        {"name": name, "count": 1, "move_probability": 0.5, "energy": 5, "max_bonds": 0}
+        for name in ("S0", "S1", "S2", "S3")
+    ]
+    with pytest.raises(ConfigError, match="max_bonds"):
+        Config.from_dict(raw).validate()
+
+
+def test_unknown_species_in_pairs_rejected() -> None:
+    raw = json.loads(M2_QUICK.read_text())
+    raw["chemistry"]["allowed_pairs"] = [["S0", "S9"]]
+    with pytest.raises(ConfigError, match="coppia non valida"):
+        Config.from_dict(raw).validate()
+
+
+def test_catalysis_on_non_allowed_pair_rejected() -> None:
+    raw = json.loads(M2_QUICK.read_text())
+    raw["chemistry"]["catalysis"] = [
+        {"catalyst": "S3", "pair": ["S0", "S2"], "factor": 2.0}
+    ]
+    with pytest.raises(ConfigError, match="non è fra quelle ammesse"):
+        Config.from_dict(raw).validate()
+
+
+def test_catalysis_factor_below_one_rejected() -> None:
+    raw = json.loads(M2_QUICK.read_text())
+    raw["chemistry"]["catalysis"] = [
+        {"catalyst": "S3", "pair": ["S0", "S1"], "factor": 0.5}
+    ]
+    with pytest.raises(ConfigError, match="factor"):
+        Config.from_dict(raw).validate()
+
+
+def test_max_bonds_is_validated() -> None:
+    raw = json.loads(M2_QUICK.read_text())
+    raw["species"][0]["max_bonds"] = 99
+    with pytest.raises(ConfigError, match="max_bonds"):
+        Config.from_dict(raw).validate()
+
+
+def test_m1_and_m2_configs_differ_in_hash() -> None:
+    assert load_config(BASELINE).hash() != load_config(M2_BASELINE).hash()

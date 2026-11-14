@@ -91,8 +91,8 @@ def measure(name: str, config: Config, steps: int, repeats: int) -> dict[str, An
     }
 
 
-def equivalence(steps: int) -> dict[str, Any]:
-    config = load_config(ROOT / "configs" / "baseline.json")
+def equivalence(config_path: Path, steps: int, full: bool = False) -> dict[str, Any]:
+    config = load_config(config_path)
 
     continuous = World.create(config)
     continuous.advance(steps)
@@ -106,15 +106,23 @@ def equivalence(steps: int) -> dict[str, Any]:
         resumed = load_checkpoint(path)
         resumed.advance(steps - steps // 2)
 
-    return {
+    result: dict[str, Any] = {
+        "config": config_path.name,
         "steps": steps,
         "checkpoint_bytes": size,
-        "continuous_hash": continuous.state_hash(),
-        "resumed_hash": resumed.state_hash(),
-        "hashes_equal": continuous.state_hash() == resumed.state_hash(),
+        "continuous_hash": continuous.state_hash_full() if full else continuous.state_hash(),
+        "resumed_hash": resumed.state_hash_full() if full else resumed.state_hash(),
+        "hashes_equal": (
+            continuous.state_hash_full() == resumed.state_hash_full()
+            if full
+            else continuous.state_hash() == resumed.state_hash()
+        ),
         "rng_equal": continuous.rng.fingerprint() == resumed.rng.fingerprint(),
         "moves_equal": continuous.moves_total == resumed.moves_total,
     }
+    if full:
+        result["bonds_equal"] = continuous.store.bond_records() == resumed.store.bond_records()
+    return result
 
 
 def main() -> int:
@@ -127,13 +135,15 @@ def main() -> int:
     cases = [
         ("quick (32x32)", load_config(ROOT / "configs" / "quick.json"), 1000),
         ("baseline (128x128, 6 specie)", load_config(ROOT / "configs" / "baseline.json"), 500),
+        ("m2 chimica (128x128)", load_config(ROOT / "configs" / "m2_baseline.json"), 300),
         ("densita 2.5%", _density_config(0.025), 500),
         ("densita 25%", _density_config(0.25), 200),
         ("densita 50%", _density_config(0.50), 100),
     ]
 
     results = [measure(name, config, steps, args.repeats) for name, config, steps in cases]
-    equivalence_result = equivalence(2000)
+    equivalence_result = equivalence(ROOT / "configs" / "baseline.json", 2000)
+    equivalence_m2 = equivalence(ROOT / "configs" / "m2_quick.json", 400, full=True)
 
     payload = {
         "repeats": args.repeats,
@@ -141,7 +151,7 @@ def main() -> int:
         "versions": runtime_versions(),
         "baseline_memory_bytes": process_baseline_memory(),
         "cases": results,
-        "equivalence": equivalence_result,
+        "equivalence": {"m1": equivalence_result, "m2": equivalence_m2},
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

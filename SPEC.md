@@ -1,6 +1,6 @@
-# SPEC — Modello computazionale (milestone M0/M1)
+# SPEC — Modello computazionale (milestone M0, M1, M2)
 
-Versione: 1.0 (M1) · Data: 2026-11-14 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
+Versione: 2.0 (M2) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
 
 Questa specifica descrive un universo chiuso, deterministico e osservabile. Deve
 essere sufficiente a reimplementare il motore senza decisioni implicite. Ogni
@@ -11,17 +11,19 @@ motivata.
 
 ## 1. Scopo e perimetro
 
-Il sistema realizzato è il motore fisico locale della milestone M1: particelle che
-si spostano su una griglia discreta, senza reazioni, catalisi, legami,
-replicazione, ereditarietà o ricompense.
+Il sistema realizzato copre:
 
-Non esistono nel modello: organismi, genomi, DNA, replicatori, reti neurali,
-funzioni di fitness, sorgenti o pozzi di energia, meccanismi di copia.
+- **M1 — motore fisico locale**: particelle su griglia, movimento, conflitti,
+  riproducibilità, checkpoint.
+- **M2 — chimica artificiale**: legami reversibili fra particelle adiacenti, con
+  costo energetico esplicito, soglie, decadimento e catalisi locale.
 
-L'universo è **chiuso**: materia ed energia sono costanti. Non ci sono fenomeni
-biologici da osservare in M1, e il motore non è progettato per produrne. Il valore
-di M1 è ingegneristico: rendere possibili, e verificabili, le milestone
-successive.
+Non esistono: organismi, genomi, DNA, replicatori, reti neurali, funzioni di
+fitness, sorgenti o pozzi di energia, meccanismi di copia.
+
+L'universo è **chiuso**: materia ed energia sono costanti. Le strutture che
+possono comparire sono aggregati tenuti insieme da legami, non organismi. Non
+c'è ancora ereditarietà, e nessun risultato di M2 autorizza a parlarne.
 
 ---
 
@@ -29,17 +31,18 @@ successive.
 
 | Elemento | Definizione |
 |---|---|
-| Spazio | Griglia rettangolare `Lx × Ly` di celle discrete; baseline `128 × 128 = 16 384` celle |
+| Spazio | Griglia rettangolare `Lx × Ly`; baseline M1 e M2: `128 × 128 = 16 384` celle |
 | Confini | `periodic` (toro, default) oppure `closed` (nessun attraversamento) |
 | Occupazione | Al massimo **una** particella per cella |
-| Tempo | Passi discreti; un passo = una proposta di movimento per particella + una risoluzione |
-| Particella | Tupla `(x, y, specie)`; nessun altro attributo in M1 |
-| Specie | Etichetta con due proprietà locali: `move_probability ∈ [0,1]`, `energy ∈ ℕ` |
-| Vicinato | von Neumann (4 celle ortogonali), configurabile nella forma ma una sola opzione in M1 |
+| Tempo | Passi discreti |
+| Particella | `(id, x, y, specie, energia)`; `id` persistente, mai riutilizzato |
+| Specie | `move_probability ∈ [0,1]`, `energy ∈ ℕ`, `max_bonds ∈ [0,4]` |
+| Legame | coppia non ordinata di particelle **adiacenti** con energia immagazzinata |
+| Vicinato | von Neumann (4 celle ortogonali) |
 
-Non esistono campi, forze a distanza, ordine globale o memoria delle particelle:
-l'unica informazione disponibile a una particella è la propria specie e
-l'occupazione locale al momento della risoluzione.
+Non esistono campi, forze a distanza o memoria delle particelle: l'unica
+informazione disponibile è la propria specie e lo stato locale (occupazione,
+specie ed energia dei vicini).
 
 ---
 
@@ -47,457 +50,437 @@ l'occupazione locale al momento della risoluzione.
 
 **Decisione.** Lo stato è composto da:
 
-1. tre array paralleli di lunghezza `N`: `xs[i]`, `ys[i]`, `species[i]`;
-2. una griglia piatta `grid` di `Lx·Ly` interi: `grid[y·Lx + x] = i` se la cella è
-   occupata dalla particella `i`, `-1` se è vuota;
-3. il contatore `step`;
-4. il contatore cumulativo `moves_total`;
-5. lo stato completo del generatore casuale.
+1. array paralleli `ids`, `xs`, `ys`, `species`, `energy`;
+2. `degree[i]`: numero di legami della particella `i`;
+3. `bonds`: dizionario `{(indice_a, indice_b): energia}` con `indice_a < indice_b`;
+4. griglia piatta `grid`: cella → indice di particella, `-1` se vuota;
+5. `step`, `moves_total`, contatori `bonds_formed_total`/`bonds_broken_total`,
+   `next_id`;
+6. stato completo del generatore casuale.
 
-**Decisione: l'indice `i` è l'identificatore stabile della particella.** In M1 non
-esistono nascita, morte né riordinamento degli array, quindi l'ordine è canonico e
-`i` identifica una particella per tutta la vita del run. Conseguenze:
+**Decisione: identificativi persistenti.** Gli ID sono assegnati in ordine
+crescente alla creazione, salvati nel checkpoint, inclusi nell'hash completo e
+**mai riutilizzati**. In M2 non esistono nascita né morte, quindi ID e indice
+coincidono; il formato è però già quello necessario a M3, quando gli array
+verranno compattati e gli indici non saranno più stabili. `next_id` è il primo
+identificativo libero e un invariante verifica che ogni ID sia strettamente
+minore.
 
-- nessun array di ID separato (meno stato da serializzare e da corrompere);
-- il checkpoint conserva l'ordine, quindi l'identità è preservata fra run;
-- **in M2**, quando nasceranno e moriranno particelle, questa semplificazione
-  dovrà essere sostituita da ID espliciti e persistenti (vedi §14).
+**Decisione: due hash di stato.**
 
-La griglia è ridondante rispetto agli array di posizione: è una cache per
-l'occupazione O(1). La coerenza fra le due rappresentazioni è un invariante
-verificato (§8, I5).
+| Hash | Contenuto | Uso |
+|---|---|---|
+| `state_hash` | schema 1: posizioni e specie | confronto materiale, compatibilità con i risultati M1 |
+| `state_hash_full` | schema 2: id, posizioni, specie, energia, legami | identità completa dello stato, verifica dei checkpoint |
 
-**Decisione.** Gli array sono liste Python, non array NumPy: il passo è dominato
-da accessi scalari e da un ordinamento, dove NumPy non porta vantaggio e
-introdurrebbe conversioni. NumPy è usato solo per PCG64. La scelta è rivalutabile
-solo dopo profilazione (M9).
+Il mantenimento della definizione M1 permette di rieseguire una configurazione
+M1 con il codice M2 e ottenere lo stesso hash pubblicato: la compatibilità è
+verificata da un test (`test_v1_hash_is_unchanged`).
 
 ---
 
 ## 4. Modello temporale e movimento
 
-Un passo `t → t+1` ha quattro fasi, tutte sullo stesso stato di partenza.
+Un passo `t → t+1` ha quattro fasi, tutte sullo stesso stato di partenza tranne
+dove indicato.
 
-### 4.1 Proposta
+### 4.1 Rottura dei legami (decadimento)
+
+Per ogni legame, in ordine canonico `(id_a, id_b)`, si consuma un uint64. Se
+`raw < ⌊break_probability · 2⁶⁴⌋` il legame si rompe: l'energia immagazzinata
+torna alle due particelle (§5.3).
+
+### 4.2 Proposta di movimento
 
 Per ogni particella in ordine crescente di indice si consumano **esattamente due**
-uint64 dal generatore:
+uint64 (decisione e direzione), indipendentemente dal fatto che la particella sia
+libera o legata:
 
 ```
-roll      = raw()          # prima estrazione
-direction = raw() & 3      # seconda estrazione, sempre effettuata
-if roll >= threshold[specie]: la particella resta ferma
-else: propone la cella vicina in direzione `direction`
+roll      = raw()
+direction = raw() & 3
+se degree > 0:                       # particella legata: immobile
+    resta ferma
+altrimenti se roll >= ⌊p·2⁶⁴⌋:
+    resta ferma
+altrimenti propone la cella vicina in direzione `direction`
 ```
 
-`threshold = ⌊p · 2⁶⁴⌋` è calcolata come intero, così il confronto è esatto e non
-dipende da aritmetica in virgola mobile.
+`⌊p·2⁶⁴⌋` è intero: nessun confronto in virgola mobile nel percorso caldo.
+`raw & 3` è uniforme perché `2⁶⁴` è divisibile per 4.
 
-**Decisione.** La direzione viene estratta anche quando la particella non si
-muove. Il flusso RNG consumato per passo è quindi esattamente `2N`, indipendente
-dalle scelte: questa proprietà è verificata da un test e rende banale il controllo
-di allineamento del generatore.
+**Decisione: le particelle legate non si muovono.** Un aggregato è quindi
+immobile finché i legami non si rompono; il moto rigido di un aggregato
+richiederebbe la proposta coordinata di tutte le sue particelle e una risoluzione
+di collisione a livello di componente. È un limite dichiarato (§15), non una
+svista: mantiene il passo semplice e verificabile.
 
-**Decisione.** Le direzioni sono indicizzate nell'ordine
-`(0,-1), (1,0), (0,1), (-1,0)` = nord, est, sud, ovest; `raw & 3` è uniforme
-perché `2⁶⁴` è divisibile per 4, quindi **nessun bias direzionale**.
+**Confini:** `periodic` usa il modulo; `closed` annulla la mossa che uscirebbe
+dalla griglia (nessun rimbalzo, nessuna direzione privilegiata).
 
-**Confini:**
+### 4.3 Risoluzione dei conflitti
 
-- `periodic`: la destinazione è `((x+dx) mod Lx, (y+dy) mod Ly)`;
-- `closed`: se la destinazione esce dalla griglia la mossa viene annullata (la
-  particella resta ferma). Non c'è rimbalzo né riflessione: la scelta è la più
-  semplice e non introduce una direzione privilegiata.
-
-**Decisione.** Il campionamento con rifiuto sui bordi non altera il flusso RNG
-(le estrazioni avvengono comunque), quindi non introduce dipendenze nascoste.
-
-### 4.2 Risoluzione dei conflitti
-
-Le proposte sono simultanee; la risoluzione è esplicita e indipendente
-dall'ordine di scansione della griglia.
-
-**Priorità.** Ogni particella che propone una mossa riceve una priorità intera
+Proposte simultanee, priorità
 
 ```
-h = (i+1) · 0x9E3779B97F4A7C15  XOR  (t+1) · 0xD6E8FEB86659FD93   (mod 2⁶⁴)
-priority(i, t) = splitmix64(h)
+priority(i, t) = splitmix64( (i+1)·0x9E3779B97F4A7C15  XOR  (t+1)·0xD6E8FEB86659FD93 )
 ```
 
-dove `splitmix64` è il finalizzatore a 64 bit standard. La priorità:
+calcolata senza RNG. Le mosse sono accettate in ordine di priorità decrescente;
+una mossa è accettata se la cella bersaglio è vuota o sarà liberata da una mossa
+già accettata, e se nessun'altra mossa accettata punta alla stessa cella. Le
+rotazioni chiuse (scambi e cicli) sono rilevate e accettate come gruppo.
+L'applicazione è simultanea: prima si svuotano tutte le celle di partenza, poi si
+scrivono tutte le destinazioni.
 
-- non consuma RNG;
-- dipende solo da `(indice, passo)`, quindi è riproducibile e non dipende
-  dall'ordine di scansione;
-- non è correlata con la posizione né con la specie (l'indice iniziale è assegnato
-  in ordine di collocazione casuale, e comunque l'hash elimina ogni struttura
-  residua);
-- è ricalcolata a ogni passo: una particella non ha una "forza" persistente.
+Proprietà: destinazioni distinte, indipendenza dall'ordine di inserimento,
+nessuna particella fuori griglia. L'algoritmo è invariato rispetto a M1: pseudo-
+codice completo nella versione M1 di questo documento (cronologia git).
 
-**Algoritmo.**
+### 4.4 Formazione dei legami
 
-```
-accettate := {}
-riservate := {}                       # celle già assegnate
-pendenti  := tutte le proposte, ordinate per priorità decrescente (pareggio: indice)
+Dopo il movimento, per ogni coppia di particelle adiacenti in ordine canonico
+`(id_a, id_b)` si valuta un candidato se:
 
-ripeti:
-    progresso := falso
-    per ogni mossa m in pendenti (in ordine di priorità):
-        se destinazione(m) ∈ riservate: continua
-        occupante := grid[destinazione(m)]
-        se occupante = -1 oppure occupante ∈ accettate:
-            accetta m; progresso := vero
-    se progresso: aggiorna pendenti e ripeti
+- la coppia di specie è in `allowed_pairs`;
+- entrambe hanno `degree < max_bonds` della propria specie;
+- entrambe hanno `energia ≥ bond_cost`;
+- non esiste già un legame fra loro.
 
-    ciclo := cerca_ciclo(pendenti)     # rotazione chiusa A→B→…→A
-    se ciclo esiste: accetta tutte le mosse del ciclo
-    altrimenti: esci
-```
-
-`cerca_ciclo` segue la catena "occupante della cella bersaglio" fra le mosse
-pendenti; se torna su un nodo già visitato, il tratto ripetuto è una rotazione
-chiusa e viene accettato come gruppo (scambio a due, ciclo a tre, ecc.).
-
-**Proprietà garantite** (verificate dai test in `tests/test_dynamics.py` e
-`tests/test_invariants.py`):
-
-- **P1** le destinazioni accettate sono tutte distinte (nessuna collisione);
-- **P2** una mossa verso una cella vuota è sempre accettata;
-- **P3** una catena che termina in una cella vuota viene accettata per intero;
-- **P4** uno scambio o un ciclo chiuso viene accettato per intero;
-- **P5** una catena bloccata da una particella ferma non muove nessuno dei suoi
-  elementi;
-- **P6** il risultato non dipende dall'ordine di inserimento delle proposte;
-- **P7** nessuna particella può finire fuori griglia o su una cella occupata.
-
-**Complessità.** `O(N log N)` per l'ordinamento delle priorità, `O(N)` per ogni
-giro di risoluzione; il numero di giri è piccolo (nella pratica 1–3) e comunque
-limitato da `N`.
-
-### 4.3 Applicazione
-
-L'applicazione è simultanea. Prima si svuotano **tutte** le celle di partenza,
-poi si scrivono tutte le destinazioni. Senza questo ordine uno scambio
-sovrascriverebbe una particella. Prima della scrittura si verifica che la cella
-destinazione sia vuota: una collisione è un errore di programmazione, non una
-condizione tollerata.
-
-### 4.4 Perché non un aggiornamento sequenziale
-
-Un aggiornamento "particella per particella" introdurrebbe una dipendenza
-dall'ordine di scansione (chi si muove prima vede un mondo diverso) e un bias
-sistematico nella direzione del flusso. Lo schema a proposta + risoluzione rende
-la simultaneità esplicita e la verifica possibile.
+Ogni candidato consuma un uint64, anche se poi viene scartato per una formazione
+precedente nello stesso passo. La soglia è `⌊p_formazione · fattore_catalitico · 2⁶⁴⌋`,
+limitata a `2⁶⁴`. Se il candidato supera l'estrazione e le condizioni sono ancora
+valide, il legame si forma.
 
 ---
 
-## 5. Energia nel prototipo chiuso
+## 5. Chimica artificiale
 
-**Decisione: l'energia è una quantità intera, in "quanti", non un float.**
+### 5.1 Cosa è un legame
 
-- Ogni specie ha `energy ∈ ℕ` quanti per particella.
-- L'energia totale è `E(t) = Σ_particles energy(specie(i))`.
-- In M1 **il movimento non ha costo**: non esistono sorgenti, pozzi,
-  dissipazione, soglie o decadimento.
-- Conseguenza: `E(t) = E(0)` **per costruzione**, non per aggiustamento
-  numerico. Non c'è drift in virgola mobile da mascherare.
+Un legame è una relazione **locale e reversibile** fra due particelle adiacenti.
+Non rappresenta un composto chimico specifico, non ha orientamento, non ha
+proprietà oltre all'energia immagazzinata. Non esiste alcuna nozione di
+"molecola" o "organismo" nel motore: gli aggregati sono solo componenti connesse
+dei legami, misurate a posteriori (§5.5).
 
-Il campo `energy` esiste già in configurazione perché è il punto di innesto di
-M3: costi di movimento, dissipazione e flussi entranti si aggiungeranno come
-termini espliciti, mantenendo il bilancio verificabile come
-`E(t+1) = E(t) + in − out − dissipato`.
+### 5.2 Formazione
 
-Il bilancio registrato nelle metriche è quindi `in = out = 0`, `delta = 0`.
-Un valore `delta ≠ 0` è un errore, non un fenomeno.
+Condizioni e soglia come in §4.4. Alla formazione ogni particella paga
+`bond_cost` quanti; il legame immagazzina `2 · bond_cost`. Non si crea né si
+distrugge energia: si sposta.
+
+### 5.3 Rottura e restituzione dell'energia
+
+Alla rottura il legame restituisce `bond_energy` alle due particelle:
+
+```
+quota_minore = bond_energy // 2
+quota_maggiore = bond_energy - quota_minore
+la particella con ID minore riceve quota_maggiore
+```
+
+La regola del resto è deterministica e documentata perché `bond_energy` può
+essere dispari in M3. In M2 è sempre pari.
+
+### 5.4 Catalisi
+
+Una regola di catalisi è una terna `(specie_catalizzatrice, coppia, fattore)`.
+Se una particella della specie catalizzatrice è **adiacente** a una delle due
+particelle della coppia (e non è uno dei due estremi), la probabilità di
+formazione è moltiplicata per `fattore`, con saturazione a 1. Con più
+catalizzatori adiacenti si usa il fattore massimo.
+
+La catalisi:
+
+- non riconosce sequenze, strutture o organismi: dipende solo da specie locali;
+- non crea energia: `fattore` moltiplicativo a probabilità base 0 resta 0;
+- è disattivata nella configurazione baseline (`catalysis: []`) e attiva in
+  `configs/m2_catalysis.json`, così l'effetto è misurabile per differenza.
+
+### 5.5 Aggregati
+
+Un aggregato è una componente connessa di particelle unite da legami, di
+dimensione ≥ 2. Le metriche riportano: numero di legami, energia nei legami,
+particelle legate, particelle libere, numero di aggregati, dimensione massima,
+dimensione media e distribuzione delle dimensioni.
+
+Nessuna di queste misure è un obiettivo del modello: sono descrizioni.
 
 ---
 
-## 6. Generatore casuale
+## 6. Energia
+
+**Decisione: energia intera, per particella, più un deposito nei legami.**
+
+- Ogni specie ha `energy ∈ ℕ` quanti come dotazione iniziale di ogni particella.
+- L'energia totale è `E(t) = Σ energia_particelle + Σ energia_legami`.
+- La formazione sposta `2·bond_cost` dalle particelle al legame; la rottura lo
+  restituisce. Il movimento è gratuito.
+- Non esistono sorgenti, pozzi, dissipazione o decadimento delle particelle:
+  `E(t) = E(0)` per costruzione.
+
+M3 introdurrà costi di movimento, dissipazione e flussi: il bilancio diventerà
+`E(t+1) = E(t) + in − out − dissipato`, con gli stessi campi interi.
+
+---
+
+## 7. Generatore casuale
 
 | Aspetto | Scelta |
 |---|---|
-| Algoritmo | PCG64 (NumPy `Generator`/`BitGenerator`) |
-| Interfaccia usata | **solo** `random_raw()` → uint64 |
-| Motivo | il flusso di bit di PCG64 è stabile fra versioni; i metodi di distribuzione (`random`, `integers`) possono cambiare implementazione |
-| Semina | `seed` intero non negativo, obbligatorio in configurazione |
-| Consumo iniziale | esattamente 1 estrazione per particella collocata |
-| Consumo per passo | esattamente 2 estrazioni per particella |
-| Serializzazione | `bit_generator`, `state.state`, `state.inc`, `has_uint32`, `uinteger` in JSON |
+| Algoritmo | PCG64 (NumPy) |
+| Interfaccia | **solo** `random_raw()` → uint64 |
+| Semina | `seed` intero non negativo, obbligatorio |
+| Collocazione | 1 estrazione per particella |
+| Movimento | 2 estrazioni per particella per passo, sempre |
+| Chimica | 1 estrazione per legame esistente + 1 per coppia candidata, per passo |
 
-**Collocazione iniziale.** Le celle libere sono tenute in una lista; per ogni
-particella si estrae `k = raw() mod |free|`, si assegna la cella `free[k]` e si
-rimuove con swap-pop. È un campionamento uniforme senza sostituzione, con
-**una sola estrazione per particella** e senza rifiuti.
+Il flusso consumato dipende quindi dallo stato (numero di legami e di candidati),
+ma è deterministico e riproducibile. Non ci sono estrazioni "nascoste": ogni
+decisione casuale corrisponde a un'unità del flusso.
 
-**Uso dell'aritmetica intera.** Tutte le decisioni sono confronti o maschere su
-uint64: non c'è alcun calcolo in virgola mobile nel percorso caldo. I soli float
-della configurazione (`move_probability`) sono convertiti una volta in soglie
-intere all'avvio.
+Tutte le soglie sono intere, calcolate una volta all'avvio: nel percorso caldo
+non c'è aritmetica in virgola mobile.
 
 ---
 
-## 7. Determinismo e riproducibilità
+## 8. Determinismo e riproducibilità
 
-Si distinguono tre livelli, con garanzie diverse:
-
-| Livello | Garanzia | Come si verifica |
+| Livello | Garanzia | Verifica |
 |---|---|---|
-| A. Ripetizione | stesso codice, stessa config, stesso seed ⇒ stesso risultato | `test_reproducibility.py` |
-| B. Ripresa | run continuo ≡ run interrotto e ripreso dal checkpoint | `test_checkpoint.py`, `test_cli.py` |
-| C. Portabilità | identità **non** garantita fra versioni di Python/NumPy o architetture diverse | mitigata da: solo aritmetica intera nel percorso caldo, `random_raw`, versioni registrate nel manifest |
+| A. Ripetizione | stesso codice, config e seed ⇒ stesso risultato | test di riproducibilità, incluso `state_hash_full` |
+| B. Ripresa | run continuo ≡ run interrotto e ripreso | test su checkpoint M1 e M2 |
+| C. Portabilità | **non** garantita fra versioni o macchine | mitigata da interi, `random_raw`, versioni registrate |
 
-Il livello C è dichiarato esplicitamente: `alife.md` richiede la ripetibilità
-"nello stesso ambiente software", non l'identità bit-a-bit fra macchine. Ogni run
-registra versione di Python, versione di NumPy, piattaforma, hash della
-configurazione e commit git (se disponibile).
+Un risultato è citabile solo con: `state_hash_full`, hash della configurazione,
+seed, versione del codice. Per i confronti fra configurazioni si usa l'hash della
+configurazione.
 
 ---
 
-## 8. Invarianti
+## 9. Invarianti
 
 | ID | Invariante | Verifica |
 |---|---|---|
-| I1 | Il numero di particelle è costante | conteggio su array e griglia |
-| I2 | Il numero di particelle per specie è costante | confronto con la configurazione |
-| I3 | Nessuna cella contiene più di una particella | `grid` e celle rivendicate |
-| I4 | Ogni particella è dentro `[0,Lx) × [0,Ly)` | controllo sui limiti |
-| I5 | `grid` è coerente con gli array di posizione in entrambe le direzioni | controllo incrociato |
-| I6 | `E(t) = E(0)` | confronto intero |
-| I7 | Il flusso RNG consumato è `N + 2·N·t` | confronto con un generatore di riferimento |
+| I1 | Numero di particelle costante | conteggio |
+| I2 | Quantità per specie costante | confronto con configurazione |
+| I3 | Nessuna cella con più di una particella | griglia e posizioni |
+| I4 | Ogni particella dentro la griglia | limiti |
+| I5 | `grid` coerente con le posizioni | controllo incrociato |
+| I6 | `E(t) = E(0)` (particelle + legami) | confronto intero |
+| I7 | Flusso RNG tracciabile | test sul caso senza chimica: `N + 2·N·t` |
+| I8 | ID unici, non negativi, `< next_id` | controllo |
+| I9 | Energia di ogni particella ≥ 0 | controllo |
+| I10 | Ogni legame unisce particelle adiacenti | distanza di Manhattan (toroidale se periodico) |
+| I11 | Grado di ogni particella = legami registrati e ≤ `max_bonds` | conteggio incrociato |
+| I12 | Nessun legame se la chimica è disabilitata | controllo |
 
-`World.validate()` restituisce l'elenco dei problemi (vuoto = stato integro);
-`World.check()` solleva `InvariantError` con il dettaglio. Il controllo viene
-eseguito alla creazione, al termine di ogni run, dopo il caricamento di un
-checkpoint e nei test; **non** a ogni passo (costo `O(N·celle)`), ma può essere
-attivato in debug.
+`World.validate()` restituisce l'elenco dei problemi; `World.check()` solleva
+`InvariantError`. Esecuzione: alla creazione, a fine run, al caricamento di un
+checkpoint e nei test.
 
 ---
 
-## 9. Configurazione
+## 10. Configurazione
 
-Formato: JSON, un oggetto per esperimento. Tutte le chiavi sono obbligatorie
-tranne quelle con default. Chiavi sconosciute sono **rifiutate** (un refuso non
-deve passare silenziosamente).
+Formato JSON. Schema 1 = M1, schema 2 = M2. Le chiavi sconosciute sono rifiutate.
 
 ```json
 {
-  "schema_version": 1,
-  "seed": 20261114,
+  "schema_version": 2,
+  "seed": 20261115,
   "grid": { "width": 128, "height": 128, "boundary": "periodic" },
   "neighborhood": "von_neumann",
   "placement": "random_uniform",
   "species": [
-    { "name": "S0", "count": 400, "move_probability": 0.60, "energy": 10 }
+    { "name": "S0", "count": 500, "move_probability": 0.5, "energy": 12, "max_bonds": 2 },
+    { "name": "S1", "count": 400, "move_probability": 0.4, "energy": 10, "max_bonds": 2 },
+    { "name": "S2", "count": 300, "move_probability": 0.3, "energy": 15, "max_bonds": 1 },
+    { "name": "S3", "count": 200, "move_probability": 0.6, "energy": 8,  "max_bonds": 0 }
   ],
+  "chemistry": {
+    "enabled": true,
+    "bond_cost": 2,
+    "formation_probability": 0.05,
+    "break_probability": 0.002,
+    "allowed_pairs": [["S0","S0"], ["S0","S1"], ["S1","S1"], ["S1","S2"]],
+    "catalysis": []
+  },
   "metrics": { "every": 100 }
 }
 ```
 
-Vincoli di validazione:
+Vincoli aggiuntivi di schema 2:
 
-- `seed ≥ 0` intero;
-- `width, height ≥ 2`;
-- `boundary ∈ {periodic, closed}`;
-- `1 ≤ numero di specie ≤ 6`, nomi univoci e non vuoti;
-- `count ≥ 0`, `Σ count ≤ Lx·Ly`;
-- `0 ≤ move_probability ≤ 1`, finito;
-- `energy ≥ 0` intero;
-- `metrics.every ≥ 1`;
-- i booleani non sono accettati come interi.
+- `1 ≤ specie ≤ 6` (limite del contratto M1), nomi univoci;
+- `max_bonds ∈ [0,4]`;
+- `allowed_pairs` normalizzate (coppia ordinata, lista ordinata, senza duplicati):
+  l'hash non dipende dall'ordine o da ripetizioni;
+- con `enabled: true` serve almeno una coppia fra specie con `max_bonds > 0`;
+- ogni coppia e ogni catalizzatore devono riferirsi a specie esistenti;
+- `factor ≥ 1`;
+- lo schema 1 rifiuta `chemistry` e `max_bonds`.
 
 **Hash canonico.** `sha256(JSON compatto con chiavi ordinate)` dell'oggetto
-risolto. Identifica l'esperimento in manifest, metriche e checkpoint. Lo stesso
-insieme di parametri produce lo stesso hash indipendentemente dall'ordine delle
-chiavi o dalla formattazione del file.
+risolto. Il valore per `configs/baseline.json` (schema 1) è invariato rispetto a
+M1: `f697f983…91c8`.
 
-Baseline (`configs/baseline.json`): 128×128, 6 specie, 1638 particelle (10.0% di
-occupazione), energia iniziale 17 668 quanti.
+Baseline M2 (`configs/m2_baseline.json`): 4 specie, 1400 particelle (8.5%),
+energia iniziale `500·12 + 400·10 + 300·15 + 200·8 = 16 100` quanti.
 
 ---
 
-## 10. Checkpoint
+## 11. Checkpoint
 
-Formato: JSON singolo, scrittura **atomica** (file temporaneo + `os.replace`,
-`fsync` prima della sostituzione). Un'interruzione non lascia checkpoint parziali.
+Formato JSON, scrittura atomica. Schema 2:
 
 ```json
 {
   "format": "alife-checkpoint",
-  "schema_version": 1,
-  "created_utc": "...",
+  "schema_version": 2,
   "config": { ... },
   "config_hash": "...",
   "step": 10000,
-  "moves_total": 7231450,
-  "rng": { "bit_generator": "PCG64", "state": { ... }, "has_uint32": 0, "uinteger": 0 },
-  "particles": [[x, y, specie_index], ...],
-  "counts": { "S0": 400, ... },
-  "energy_total": 17668,
-  "state_hash": "..."
+  "moves_total": 0,
+  "next_id": 1400,
+  "rng": { ... },
+  "particles": [[id, x, y, specie, energia], ...],
+  "bonds": [[id_a, id_b, energia], ...],
+  "counts": { ... },
+  "energy_total": 16100,
+  "energy_particles": 0,
+  "energy_bonds": 0,
+  "bonds_formed_total": 0,
+  "bonds_broken_total": 0,
+  "state_hash": "...",
+  "state_hash_full": "..."
 }
 ```
 
-**Verifiche in lettura** (ognuna produce `CheckpointError` con messaggio distinto):
+**Verifiche in lettura:** formato e schema (1 o 2); configurazione valida e hash
+coerente; stato RNG; particelle e legami ben formati; `state_hash`; per lo schema
+2 anche `state_hash_full`; bilancio energetico; invarianti I1–I12.
 
-1. formato e `schema_version`;
-2. configurazione ricostruibile e valida;
-3. `config_hash` ricalcolato = quello salvato;
-4. stato RNG completo e caricabile;
-5. particelle ben formate, dentro griglia, senza doppie occupazioni;
-6. `state_hash` ricalcolato = quello salvato (rileva ogni alterazione delle
-   particelle);
-7. `energy_total` coerente con le particelle;
-8. invarianti I1–I6 sul mondo ricostruito.
-
-**Definizione di `state_hash`.** `sha256` della serializzazione canonica di
-`{schema, width, height, boundary, specie (nomi), particelle (x,y,specie) in
-ordine di indice}`. Non include `step` né lo stato RNG: due stati con le stesse
-particelle hanno lo stesso hash anche a passi diversi, il che rende confrontabile
-"run continuo" e "run ripreso". Configurazione e RNG hanno hash/fingerprint
-separati.
-
-Il comando di ripresa è `alife resume --checkpoint <file> --steps <n>`.
+**Migrazione dallo schema 1.** Un checkpoint M1 viene letto assegnando
+`id = indice`, `energia = energia iniziale della specie`, nessun legame,
+`next_id = N`. Lo `state_hash` viene verificato con la definizione M1. Il mondo
+migrato è subito salvabile come schema 2.
 
 ---
 
-## 11. Metriche e artefatti
-
-Ogni run produce una directory con:
+## 12. Metriche e artefatti
 
 | File | Contenuto |
 |---|---|
-| `manifest.json` | comando, argv, seed, hash config, versioni, piattaforma, commit git, timestamp |
-| `config.resolved.json` | configurazione effettivamente usata (dopo eventuale override del seed) |
-| `metrics.jsonl` | un record ogni `metrics.every` passi |
-| `summary.json` | riepilogo finale conforme ai campi obbligatori di M1 |
-| `checkpoint.json` | stato finale completo, riprendibile |
+| `manifest.json` | comando, seed, hash config, versioni, piattaforma, commit |
+| `config.resolved.json` | configurazione usata |
+| `metrics.jsonl` | serie temporale (ogni `metrics.every` passi) |
+| `summary.json` | riepilogo finale |
+| `checkpoint.json` | stato completo riprendibile |
+| `events.jsonl` | **solo con `--events`**: ogni formazione e rottura, con passo, ID, energia, catalisi |
 
-Campi registrati: passo, tempo, passi/s, spostamenti (totali e per intervallo),
-particelle per specie, occupazione, energia totale/in/out/delta, hash dello stato,
-seed, hash e versione della configurazione, picco di memoria RSS, versione di
-Python e NumPy.
+Serie temporale e riepilogo includono: passi, tempo, passi/s, spostamenti,
+particelle per specie, occupazione, energia totale/particelle/legami/in/out/delta,
+legami, particelle legate, aggregati, dimensione massima, formazioni e rotture
+cumulate, `state_hash`, `state_hash_full`, seed, hash della configurazione, picco
+di memoria e versioni.
 
-**Memoria.** Picco RSS del processo: su Linux `VmHWM` da `/proc/self/status`, cioè
-il picco dell'address space corrente, azzerato all'`exec`; su macOS `ru_maxrss`,
-espresso in byte. `ru_maxrss` non è usato su Linux perché può ereditare il picco
-del processo genitore: in questo ambiente sono state osservate letture di 590 MiB
-con RSS reale di 44 MiB.
-
-Il picco assoluto dipende dall'ambiente (interprete, NumPy) e non è una misura
-stabile della simulazione. Per questo `summary.json` registra tre valori:
-
-| Campo | Significato |
-|---|---|
-| `peak_memory_bytes` | picco RSS dell'intero processo |
-| `baseline_memory_bytes` | picco al caricamento del modulo, con interprete e NumPy già importati |
-| `simulation_memory_bytes` | `peak − baseline`: memoria aggiuntiva della simulazione |
-
-Il valore da citare nei report è `simulation_memory_bytes`. Un `peak` anomalo con
-`simulation_memory_bytes` vicino a zero indica un artefatto dell'ambiente, non un
-consumo del motore.
+Memoria: `VmHWM` su Linux (picco dell'address space, azzerato all'exec),
+`ru_maxrss` su macOS; il riepilogo registra anche il delta rispetto al
+caricamento del modulo. Motivo: `ru_maxrss` può ereditare il picco del processo
+genitore e produrre valori non riproducibili.
 
 ---
 
-## 12. Come si riconosce un artefatto numerico
+## 13. Come si riconosce un artefatto
 
-Regole applicate già in M1, per non doverle improvvisare in M4–M7:
+Regole già attive:
 
-- un risultato vale solo se accompagnato da hash dello stato, seed e hash della
-  configurazione;
+- un risultato vale solo con hash completo, seed e hash della configurazione;
 - i run sono confrontabili solo a parità di hash di configurazione;
-- un pattern osservato una volta è un candidato, non un risultato;
-- i controlli negativi (§15) sono definiti prima dei run esplorativi;
-- nessun parametro viene modificato *dopo* aver visto un risultato senza
-  registrare la modifica come nuova configurazione (nuovo hash).
+- una struttura osservata una volta è un candidato, non una scoperta;
+- la catalisi si valuta *per differenza* rispetto alla stessa configurazione
+  senza catalisi, a parità di seed;
+- la distribuzione delle dimensioni degli aggregati va confrontata con quella
+  attesa per aggregazione casuale: un aggregato grande non è una scoperta.
 
 ---
 
-## 13. Test obbligatori: mappatura
+## 14. Test
 
-| Richiesta `alife.md` §7 | Test |
+Obbligatori M1 (invariati): conservazione di particelle e specie, occupazione
+unica, confini, riproducibilità, integrità dei checkpoint, equivalenza
+continuo/ripreso, rilevamento di violazioni intenzionali. Mappatura e file di
+risultato: `reports/tests/index.md`.
+
+Test M2 aggiunti:
+
+| Regola | Test |
 |---|---|
-| 1. Conservazione del numero di particelle | `test_invariants.py::test_particle_count_conserved` |
-| 2. Conservazione per specie | `test_invariants.py::test_species_quantities_conserved` |
-| 3. Nessuna occupazione multipla | `test_invariants.py::test_no_multiple_occupancy` |
-| 4. Rispetto dei confini | `test_invariants.py::test_periodic_boundaries`, `test_dynamics.py::test_closed_boundary_keeps_particles_inside` |
-| 5. Riproducibilità con lo stesso seed | `test_reproducibility.py` (5 test) |
-| 6. Integrità salvataggio/caricamento | `test_checkpoint.py::test_roundtrip_preserves_state` e i test di corruzione |
-| 7. Equivalenza continuo ↔ ripreso | `test_checkpoint.py::test_resume_is_equivalent_to_continuous_run`, `test_cli.py::test_resume_matches_continuous_run` |
-| 8. Rilevamento di violazioni intenzionali | `test_invariants.py::test_validate_detects_*` (5 casi), `test_checkpoint.py::test_detects_*` (5 casi) |
-
-Test aggiuntivi rispetto al minimo: risoluzione dei conflitti (7 casi), flusso
-RNG, validazione della configurazione, CLI end-to-end.
-
----
-
-## 14. Limiti dichiarati e decisioni aperte
-
-Limiti del modello M1:
-
-1. **Nessuna struttura emergente possibile.** Senza interazioni attrattive o
-   reazioni, il sistema è una nuvola diffusa: qualunque struttura osservata
-   sarebbe un artefatto statistico di densità. Questo è voluto.
-2. **Energia passiva.** Non può produrre non-equilibrio: è un contatore
-   conservato, non un vincolo dinamico.
-3. **Una particella per cella.** Esclude collisioni e densità locali; sarà
-   rivisto se M2 richiederà più occupanti.
-4. **Identità = indice dell'array.** Non regge nascita/morte: in M2 servono ID
-   persistenti, e il checkpoint dovrà migrare allo schema successivo.
-5. **Dimensione fissa della griglia.** Nessun dominio che cresce o si adatta.
-6. **Nessun legame.** I legami sono materia di M2 e non esistono nel modello.
-7. **Prestazioni da Python puro.** Misurate, non ottimizzate: vedi
-   `reports/M1_baseline.md`. La profilazione indica che ~27% del tempo è
-   overhead di chiamata per estrazione RNG e ~30% ordinamento delle priorità:
-   entrambi sono candidati per M9, non per M1.
-8. **Riproducibilità cross-version non garantita** (§7, livello C).
-
-Decisioni rinviate, da prendere **prima** di M2 (sono prerequisiti bloccanti):
-
-- ID persistenti delle particelle: assegnazione, politica di riuso, inclusione
-  nello `state_hash`, migrazione dello schema di checkpoint;
-- schema di checkpoint v2 (retrocompatibilità o migrazione);
-- energia come campo per particella (necessario per costi e dissipazione
-  differenziati), sempre in quanti interi;
-- **costo di formazione e rottura dei legami**: quanti per legame, chi li paga,
-  come si contabilizza la dissipazione e come resta verificabile
-  `E(t+1) = E(t) + in − out − dissipato`;
-- rappresentazione dei legami e loro ordine canonico per la serializzazione.
-
-Senza i primi due punti M2 non può introdurre nascita, morte o trasformazioni
-senza perdere la tracciabilità delle discendenze, che è il presupposto di M4–M7.
-Senza il quarto, l'energia resta un'etichetta e i test di bilancio non misurano
-nulla.
+| Formazione fra vicini ammessi | `test_bond_forms_between_adjacent_allowed_particles` |
+| Coppia di specie non ammessa | `test_no_bond_for_non_allowed_species` |
+| Specie con `max_bonds = 0` | `test_no_bond_when_species_cannot_bond` |
+| Limite `max_bonds` | `test_max_bonds_is_respected`, `test_chains_grow_to_max_bonds` |
+| Energia insufficiente | `test_no_bond_without_enough_energy` |
+| Restituzione dell'energia | `test_breaking_returns_energy` |
+| Immobilità delle particelle legate | `test_bonded_particles_do_not_move` |
+| Catalisi locale | `test_catalysis_multiplies_only_when_adjacent` |
+| Statistiche degli aggregati | `test_aggregate_statistics` |
+| Conservazione dell'energia con legami | `test_energy_with_bonds_is_conserved` |
+| Determinismo con chimica | `test_m2_quick_is_deterministic` |
+| Golden hash M1 riprodotto dal codice M2 | `test_m1_run_reproduces_the_published_hash` |
+| Roundtrip, ripresa e corruzione | `test_v2_*`, `test_detects_tampered_*` |
+| Migrazione schema 1 → 2 | `test_v1_checkpoint_is_migrated` |
+| Legami non adiacenti, gradi, limiti | `test_validate_detects_*` |
 
 ---
 
-## 15. Reazioni consentite e controlli negativi (definiti, non implementati)
+## 15. Limiti dichiarati e decisioni aperte
 
-In M1 la tabella delle reazioni consentite è **vuota**. Nessuna trasformazione di
-specie, nessun legame, nessuna catalisi. Questa sezione esiste perché M0 richiede
-che i controlli negativi siano definiti *prima* di cercare fenomeni.
+1. **Particelle legate immobili.** Nessun moto rigido degli aggregati; un
+   aggregato è statico finché non si rompe un legame. Conseguenza voluta:
+   strutture persistenti e misurabili, senza dinamica di corpo rigido.
+2. **Nessuna catalisi di rottura.** La catalisi agisce solo sulla formazione.
+3. **Un legame per coppia, senza orientamento.** Non esistono valenze, ordini di
+   legame o angoli.
+4. **Nessun decadimento delle particelle.** La materia è costante; la morte di
+   particelle richiede M3+ e una politica di rilascio degli ID.
+5. **Nessuna sorgente o pozzo.** Il sistema resta chiuso: le strutture non sono
+   mantenute da un flusso energetico. È l'oggetto di M3.
+6. **Nessuna nozione di "molecola".** Gli aggregati sono componenti connesse,
+   misurate; il motore non le riconosce.
+7. **Costo superlineare in densità** per la risoluzione dei conflitti (§4.3).
+8. **Riproducibilità cross-version non garantita** (§8, livello C).
 
-Controlli negativi previsti per M2–M5 (non ancora implementati):
+Decisioni rinviate a M3: costi di movimento, dissipazione, sorgenti e pozzi,
+politica di creazione/morte delle particelle, migrazione degli ID su array
+compattati, catalisi della rottura.
 
-| ID | Controllo | Cosa deve succedere | Cosa dimostra |
+---
+
+## 16. Reazioni consentite e controlli negativi
+
+In M2 la "tabella delle reazioni" è la coppia di regole:
+
+| Regola | Condizione | Effetto | Costo |
 |---|---|---|---|
-| N1 | Particelle immobili senza reazioni | Nessuna struttura, nessuna persistenza | Il rilevatore non inventa aggregati |
-| N2 | Aggregazione casuale a densità controllata | Il rilevatore misura la distribuzione attesa per caso | Le soglie di persistenza sono calibrate |
-| N3 | Reazioni reversibili senza ereditarietà | Copie apparenti ma nessuna linea di discendenza stabile | Distingue copia da ereditarietà |
+| Formazione | coppia ammessa, adiacenza, slot liberi, energia sufficiente, estrazione | nasce un legame | `bond_cost` per particella, immagazzinato |
+| Rottura | estrazione | il legame scompare | restituzione dell'energia |
 
-Controllo positivo previsto per M5: fixture **isolata** con un replicatore noto,
-in un modulo separato con configurazione separata, mai raggiungibile
-dall'universo di scoperta. In M1 non esiste alcun codice di replicazione.
+Nessuna trasformazione di specie. Controlli negativi definiti in M0 e ancora da
+eseguire (richiedono M3 per i flussi): N1 particelle immobili senza reazioni, N2
+aggregazione casuale a densità controllata, N3 reazioni reversibili senza
+ereditarietà. Il controllo positivo resta previsto per M5, isolato.
 
 ---
 
-## 16. Glossario minimo
+## 17. Glossario
 
-- **Passo**: una proposta di movimento per particella più una risoluzione.
-- **Mossa accettata**: particella che cambia cella in un passo.
-- **Occupazione**: particelle / celle.
-- **Quanto di energia**: unità intera di energia; nessuna unità fisica è
-  attribuita.
-- **Hash dello stato**: identificatore delle sole particelle; **hash della
-  configurazione**: identificatore dei parametri; **fingerprint RNG**:
-  identificatore della posizione nel flusso casuale.
+- **Passo**: rottura, movimento, risoluzione, formazione.
+- **Legame**: relazione locale reversibile con energia immagazzinata.
+- **Aggregato**: componente connessa di particelle legate, dimensione ≥ 2.
+- **Particella libera**: particella con grado 0.
+- **`state_hash`**: hash materiale (posizioni e specie).
+- **`state_hash_full`**: hash completo (identità, energia, legami).
+- **Quanto**: unità intera di energia; nessuna unità fisica è attribuita.

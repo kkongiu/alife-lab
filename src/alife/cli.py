@@ -15,6 +15,7 @@ from typing import Any, Sequence
 
 from . import __version__
 from .config import Config, ConfigError, load_config
+from .events import EventLog
 from .metrics import MetricsRecorder, git_commit, runtime_versions
 from .particles import InvariantError
 from .persistence import CheckpointError, load_checkpoint, save_checkpoint
@@ -55,18 +56,27 @@ def _execute(
     metrics_every: int,
     command_line: str,
     extra_manifest: dict[str, Any] | None = None,
+    events: bool = False,
 ) -> dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
     _write_json(out_dir / "config.resolved.json", world.config.to_dict())
     _write_json(out_dir / "manifest.json", _manifest(world.config, command_line, extra_manifest))
 
-    recorder = MetricsRecorder(out_dir, metrics_every)
+    sink = EventLog(out_dir / "events.jsonl") if events else None
+    if sink is not None:
+        world.event_sink = sink
     try:
-        recorder.observe(world)
-        world.advance(steps, observer=recorder.observe)
-        summary = recorder.summary(world)
+        recorder = MetricsRecorder(out_dir, metrics_every)
+        try:
+            recorder.observe(world)
+            world.advance(steps, observer=recorder.observe)
+            summary = recorder.summary(world)
+        finally:
+            recorder.close()
     finally:
-        recorder.close()
+        if sink is not None:
+            sink.close()
+            world.event_sink = None
 
     world.check()
     save_checkpoint(out_dir / "checkpoint.json", world)
@@ -75,13 +85,19 @@ def _execute(
 
 
 def _report(summary: dict[str, Any], out_dir: Path, label: str) -> None:
+    chemistry = summary["chemistry"]
+    bonds = (
+        f", {chemistry['bonds']} legami ({chemistry['aggregates']} aggregati)"
+        if chemistry["enabled"]
+        else ""
+    )
     print(
         f"{label}: {summary['steps']} passi in {summary['duration_s']:.2f} s "
         f"({summary['steps_per_second']:.1f} passi/s), "
         f"{summary['particles_total']} particelle, "
-        f"{summary['moves_total']} spostamenti, "
+        f"{summary['moves_total']} spostamenti{bonds}, "
         f"energia {summary['energy']['total']}, "
-        f"hash {summary['state_hash'][:16]}"
+        f"hash {summary['state_hash_full'][:16]}"
     )
     print(f"Artefatti in: {out_dir}")
 
@@ -101,6 +117,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         every,
         "run",
         {"config_source": str(Path(args.config).resolve())},
+        events=args.events,
     )
     _report(summary, out_dir, "run")
     return 0
@@ -122,6 +139,7 @@ def _cmd_resume(args: argparse.Namespace) -> int:
             "resumed_from": str(checkpoint_path.resolve()),
             "initial_step": initial_step,
         },
+        events=args.events,
     )
     _report(summary, out_dir, f"resume (da passo {initial_step})")
     return 0
@@ -137,7 +155,14 @@ def _cmd_inspect(args: argparse.Namespace) -> int:
         "particles_total": len(world.store),
         "occupancy": round(world.occupancy(), 6),
         "energy_total": world.energy(),
+        "energy_particles": world.energy_particles(),
+        "energy_bonds": world.energy_bonds(),
+        "bonds": len(world.store.bonds),
+        "aggregates": world.aggregates()["aggregates"],
+        "largest_aggregate": world.aggregates()["largest_aggregate"],
         "state_hash": world.state_hash(),
+        "state_hash_full": world.state_hash_full(),
+        "next_id": world.next_id,
         "rng_fingerprint": world.rng.fingerprint(),
         "config_hash": world.config.hash(),
         "invariants": world.validate() or "ok",
@@ -160,6 +185,11 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--out", required=True, help="directory di output")
     run.add_argument("--metrics-every", type=int, default=None, help="un record ogni N passi")
     run.add_argument("--seed", type=int, default=None, help="sovrascrive il seed della config")
+    run.add_argument(
+        "--events",
+        action="store_true",
+        help="scrive events.jsonl con ogni formazione e rottura di legame",
+    )
     run.set_defaults(handler=_cmd_run)
 
     resume = subparsers.add_parser("resume", help="riprende da un checkpoint")
@@ -167,6 +197,7 @@ def build_parser() -> argparse.ArgumentParser:
     resume.add_argument("--steps", type=int, required=True, help="passi aggiuntivi")
     resume.add_argument("--out", default=None, help="directory di output (default: <ckpt>/resume)")
     resume.add_argument("--metrics-every", type=int, default=None)
+    resume.add_argument("--events", action="store_true", help="scrive events.jsonl")
     resume.set_defaults(handler=_cmd_resume)
 
     inspect = subparsers.add_parser("inspect", help="ispeziona un checkpoint senza evolvere")

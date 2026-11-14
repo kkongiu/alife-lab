@@ -3,12 +3,19 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Sequence
 
 from alife.config import Config
+from alife.particles import ParticleStore
+from alife.rng import RNG
+from alife.world import World
 
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT / "configs" / "baseline.json"
 QUICK = ROOT / "configs" / "quick.json"
+M2_QUICK = ROOT / "configs" / "m2_quick.json"
+M2_BASELINE = ROOT / "configs" / "m2_baseline.json"
+M2_CATALYSIS = ROOT / "configs" / "m2_catalysis.json"
 
 
 def make_config(
@@ -35,3 +42,66 @@ def make_config(
             "metrics": {"every": every},
         }
     ).validate()
+
+
+def make_chemistry_config(
+    seed: int = 3,
+    width: int = 8,
+    height: int = 8,
+    species: list[dict] | None = None,
+    chemistry: dict | None = None,
+) -> Config:
+    """Configurazione M2 minima, con chimica attiva e parametri deterministici."""
+    if species is None:
+        species = [
+            {"name": "S0", "count": 4, "move_probability": 1.0, "energy": 10, "max_bonds": 2},
+            {"name": "S1", "count": 4, "move_probability": 1.0, "energy": 10, "max_bonds": 2},
+            {"name": "S2", "count": 2, "move_probability": 1.0, "energy": 10, "max_bonds": 0},
+        ]
+    if chemistry is None:
+        chemistry = {
+            "enabled": True,
+            "bond_cost": 2,
+            "formation_probability": 1.0,
+            "break_probability": 0.0,
+            "allowed_pairs": [["S0", "S0"], ["S0", "S1"]],
+            "catalysis": [],
+        }
+    return Config.from_dict(
+        {
+            "schema_version": 2,
+            "seed": seed,
+            "grid": {"width": width, "height": height, "boundary": "periodic"},
+            "neighborhood": "von_neumann",
+            "placement": "random_uniform",
+            "species": species,
+            "chemistry": chemistry,
+            "metrics": {"every": 5},
+        }
+    ).validate()
+
+
+def world_with(
+    config: Config,
+    positions: Sequence[tuple[int, int]],
+    species: Sequence[int],
+    energy: Sequence[int] | None = None,
+    bonds: Sequence[tuple[int, int, int]] = (),
+) -> World:
+    """Mondo costruito a mano per test deterministici sulla chimica."""
+    ids = list(range(len(positions)))
+    xs = [position[0] for position in positions]
+    ys = [position[1] for position in positions]
+    if energy is None:
+        energy = [config.species[index].energy for index in species]
+    store = ParticleStore(
+        config.grid.width,
+        config.grid.height,
+        ids,
+        xs,
+        ys,
+        list(species),
+        list(energy),
+        bonds,
+    )
+    return World(config, RNG(config.seed), store)

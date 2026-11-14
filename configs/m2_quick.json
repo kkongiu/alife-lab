@@ -1,0 +1,28 @@
+{
+  "schema_version": 2,
+  "seed": 2026,
+  "grid": {
+    "width": 32,
+    "height": 32,
+    "boundary": "periodic"
+  },
+  "neighborhood": "von_neumann",
+  "placement": "random_uniform",
+  "species": [
+    { "name": "S0", "count": 40, "move_probability": 0.50, "energy": 12, "max_bonds": 2 },
+    { "name": "S1", "count": 30, "move_probability": 0.40, "energy": 10, "max_bonds": 2 },
+    { "name": "S2", "count": 20, "move_probability": 0.30, "energy": 15, "max_bonds": 1 },
+    { "name": "S3", "count": 10, "move_probability": 0.60, "energy": 8, "max_bonds": 0 }
+  ],
+  "chemistry": {
+    "enabled": true,
+    "bond_cost": 2,
+    "formation_probability": 0.30,
+    "break_probability": 0.01,
+    "allowed_pairs": [["S0", "S0"], ["S0", "S1"], ["S1", "S1"], ["S1", "S2"]],
+    "catalysis": []
+  },
+  "metrics": {
+    "every": 10
+  }
+}

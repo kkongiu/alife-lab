@@ -1,31 +1,38 @@
-"""Dinamica locale: proposta di movimento e risoluzione esplicita dei conflitti.
+"""Dinamica locale: decadimento, proposta di movimento, conflitti, formazione.
 
-Schema (dettagli in SPEC.md §4):
+Schema di un passo (dettagli in SPEC.md §4–§5):
 
-1. PROPOSTA — ogni particella, in ordine canonico di indice, consuma esattamente
-   due uint64 dal generatore: il primo decide se si muove, il secondo sceglie una
-   delle quattro direzioni. Se la specia non si muove, la direzione viene comunque
-   estratta: il flusso RNG e' cosi' esattamente 2*N per passo.
-2. RISOLUZIONE — le proposte sono accettate in ordine di priorita' decrescente
-   (hash deterministico di indice e passo, nessun consumo RNG). Una mossa e'
-   accettata se la cella bersaglio e' vuota o sara' liberata da una mossa gia'
-   accettata, e se nessun'altra mossa accettata punta alla stessa cella.
-3. CICLI — le rotazioni chiuse (scambi e cicli piu' lunghi) non hanno una cella
-   vuota da cui partire: vengono rilevate e accettate come gruppo.
-4. APPLICAZIONE — simultanea su una copia della griglia: prima si svuotano tutte
-   le celle di partenza, poi si scrivono tutte le destinazioni.
+1. ROTTURA — ogni legame esistente consuma un'unità RNG e può rompersi; l'energia
+   torna alle due particelle.
+2. PROPOSTA — ogni particella consuma esattamente due uint64 (decisione e
+   direzione). Le particelle legate non si muovono: la loro proposta è nulla, ma
+   le estrazioni vengono comunque consumate, così il flusso RNG resta
+   esattamente 2·N più le estrazioni della chimica.
+3. RISOLUZIONE — priorità deterministica da (indice, passo), accettazione greedy,
+   rotazioni chiuse, applicazione simultanea.
+4. FORMAZIONE — le coppie adiacenti ammesse consumano un'unità RNG ciascuna e
+   possono legarsi pagando il costo energetico.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
+
+from . import chemistry
 
 if TYPE_CHECKING:
     from .world import World
 
 MASK64 = (1 << 64) - 1
-TWO64 = 1 << 64
 VON_NEUMANN = ((0, -1), (1, 0), (0, 1), (-1, 0))
+
+
+@dataclass(slots=True)
+class StepReport:
+    moves: int
+    bonds_formed: int
+    bonds_broken: int
 
 
 def _mix64(value: int) -> int:
@@ -39,7 +46,7 @@ def _mix64(value: int) -> int:
 
 
 def particle_priority(index: int, step: int) -> int:
-    """Priorita' deterministica per la risoluzione dei conflitti.
+    """Priorità deterministica per la risoluzione dei conflitti.
 
     Dipende solo da (indice, passo): nessuna estrazione RNG, nessuna dipendenza
     dall'ordine di scansione della griglia.
@@ -50,7 +57,7 @@ def particle_priority(index: int, step: int) -> int:
 
 
 def _propose_moves(world: "World") -> dict[int, int]:
-    """Ritorna {indice_particella: cella_bersaglio} per le particelle che si muovono."""
+    """Ritorna {indice_particella: cella_bersaglio} per le particelle libere."""
     store = world.store
     width = store.width
     height = store.height
@@ -60,11 +67,14 @@ def _propose_moves(world: "World") -> dict[int, int]:
     xs = store.xs
     ys = store.ys
     sp = store.species
+    degree = store.degree
     proposals: dict[int, int] = {}
 
     for index in range(len(xs)):
         roll = raw()
         direction = raw() & 3
+        if degree[index] > 0:
+            continue
         if roll >= thresholds[sp[index]]:
             continue
         dx, dy = VON_NEUMANN[direction]
@@ -109,7 +119,7 @@ def resolve_moves(
 ) -> dict[int, int]:
     """Risolve le contese di movimento e ritorna {particella: cella} accettate.
 
-    Proprieta' garantite:
+    Proprietà garantite:
     - le destinazioni accettate sono tutte distinte (nessuna collisione);
     - il risultato dipende solo da (proposte, griglia, passo), non dall'ordine
       con cui le proposte sono state inserite;
@@ -176,9 +186,15 @@ def apply_moves(store, accepted: dict[int, int]) -> None:
         ys[index], xs[index] = divmod(cell, width)
 
 
-def step(world: "World") -> int:
-    """Avanza l'universo di un passo. Ritorna il numero di spostamenti."""
+def step(world: "World") -> StepReport:
+    """Avanza l'universo di un passo."""
+    broken = chemistry.break_bonds(world)
     proposals = _propose_moves(world)
     accepted = resolve_moves(proposals, world.store.grid, world.step)
     apply_moves(world.store, accepted)
-    return len(accepted)
+    formed = chemistry.form_bonds(world)
+    return StepReport(
+        moves=len(accepted),
+        bonds_formed=len(formed),
+        bonds_broken=len(broken),
+    )

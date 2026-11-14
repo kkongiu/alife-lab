@@ -22,10 +22,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
+from alife import chemistry
 from alife.config import Config, load_config
 from alife.metrics import runtime_versions
 from alife.particles import InvariantError
 from alife.persistence import (
+    CHECKPOINT_FORMAT,
     CheckpointError,
     load_checkpoint,
     save_checkpoint,
@@ -40,7 +42,12 @@ CASES_DIR = OUT / "cases"
 EVIDENCE_DIR = OUT / "evidence"
 
 sys.path.insert(0, str(ROOT / "tests"))
-from support import make_config  # noqa: E402  (helper condiviso con la suite)
+from support import (  # noqa: E402  (helper condivisi con la suite)
+    M2_QUICK,
+    make_chemistry_config,
+    make_config,
+    world_with,
+)
 
 REQUIRED = [
     {
@@ -120,6 +127,82 @@ REQUIRED = [
             "tests/test_checkpoint.py::test_detects_invalid_json",
             "tests/test_checkpoint.py::test_detects_wrong_format",
             "tests/test_checkpoint.py::test_detects_missing_rng_state",
+        ],
+    },
+    {
+        "id": "M2-01",
+        "title": "Legami reversibili con costo energetico",
+        "contract": "docx S2 — legami reversibili, soglie energetiche",
+        "slug": "legami_reversibili",
+        "tests": [
+            "tests/test_chemistry.py::test_bond_forms_between_adjacent_allowed_particles",
+            "tests/test_chemistry.py::test_breaking_returns_energy",
+            "tests/test_chemistry.py::test_no_bond_without_enough_energy",
+        ],
+    },
+    {
+        "id": "M2-02",
+        "title": "Conservazione dell'energia con i legami",
+        "contract": "docx S2 / vincolo di bilancio energetico",
+        "slug": "energia_legami",
+        "tests": [
+            "tests/test_invariants.py::test_energy_with_bonds_is_conserved",
+            "tests/test_chemistry.py::test_m2_baseline_produces_structures_and_conserves_energy",
+        ],
+    },
+    {
+        "id": "M2-03",
+        "title": "Coppie ammesse, max_bonds e adiacenza",
+        "contract": "docx S2 — reazioni locali e generali",
+        "slug": "regole_locali",
+        "tests": [
+            "tests/test_chemistry.py::test_no_bond_for_non_allowed_species",
+            "tests/test_chemistry.py::test_no_bond_when_species_cannot_bond",
+            "tests/test_chemistry.py::test_max_bonds_is_respected",
+            "tests/test_chemistry.py::test_chains_grow_to_max_bonds",
+            "tests/test_invariants.py::test_validate_detects_non_adjacent_bond",
+            "tests/test_invariants.py::test_validate_detects_bond_beyond_max_bonds",
+        ],
+    },
+    {
+        "id": "M2-04",
+        "title": "Catalisi locale per differenza",
+        "contract": "docx S2 — catalisi basata su proprietà locali",
+        "slug": "catalisi",
+        "tests": [
+            "tests/test_chemistry.py::test_catalysis_multiplies_only_when_adjacent",
+            "tests/test_chemistry.py::test_catalysis_config_changes_chemistry",
+        ],
+    },
+    {
+        "id": "M2-05",
+        "title": "Aggregati: distribuzione delle dimensioni",
+        "contract": "docx S2 — evidenze sulla varietà di strutture",
+        "slug": "aggregati",
+        "tests": [
+            "tests/test_chemistry.py::test_aggregate_statistics",
+            "tests/test_chemistry.py::test_m2_baseline_produces_structures_and_conserves_energy",
+        ],
+    },
+    {
+        "id": "M2-06",
+        "title": "Determinismo e ripresa con la chimica",
+        "contract": "docx S2 / contratto M1 (riproducibilità)",
+        "slug": "determinismo_chimica",
+        "tests": [
+            "tests/test_chemistry.py::test_m2_quick_is_deterministic",
+            "tests/test_checkpoint.py::test_v2_resume_is_equivalent_to_continuous_run",
+            "tests/test_checkpoint.py::test_v2_roundtrip_preserves_bonds_and_energy",
+        ],
+    },
+    {
+        "id": "M2-07",
+        "title": "Migrazione dei checkpoint M1",
+        "contract": "prerequisito M2 — identificativi persistenti",
+        "slug": "migrazione_checkpoint",
+        "tests": [
+            "tests/test_checkpoint.py::test_v1_checkpoint_is_migrated",
+            "tests/test_config.py::test_v1_hash_is_unchanged",
         ],
     },
 ]
@@ -441,6 +524,250 @@ def evidence_08(tmp: Path) -> tuple[str, list[Measure], list[Check]]:
     )
 
 
+def evidence_m2_01(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = make_chemistry_config()
+    world = world_with(config, [(1, 1), (2, 1)], [0, 0])
+    formed = chemistry.form_bonds(world)
+    bond_energy = sum(world.store.bonds.values())
+    energies_after_formation = list(world.store.energy)
+    total_after_formation = sum(world.store.energy) + bond_energy
+
+    breaking = make_chemistry_config(
+        chemistry={
+            "enabled": True,
+            "bond_cost": 2,
+            "formation_probability": 0.0,
+            "break_probability": 1.0,
+            "allowed_pairs": [["S0", "S0"]],
+            "catalysis": [],
+        }
+    )
+    second = world_with(
+        breaking, [(1, 1), (2, 1)], [0, 0], energy=[8, 8], bonds=[(0, 1, 4)]
+    )
+    second.advance(1)
+    return (
+        "Due particelle S0 adiacenti, formation_probability = 1 e break_probability = 1.",
+        [
+            ("legami formati", str(len(formed))),
+            ("energia delle particelle dopo la formazione", str(energies_after_formation)),
+            ("energia immagazzinata nel legame", str(bond_energy)),
+            ("energia totale dopo la formazione", str(total_after_formation)),
+            ("energia delle particelle dopo la rottura", str(second.store.energy)),
+            ("legami residui dopo la rottura", str(len(second.store.bonds))),
+        ],
+        [
+            ("il legame si forma fra vicini ammessi", len(formed) == 1),
+            ("il costo è pagato da entrambe le particelle", energies_after_formation == [8, 8]),
+            ("l'energia non si perde", total_after_formation == 20),
+            ("la rottura restituisce l'energia", second.store.energy == [10, 10]),
+            ("dopo la rottura non restano legami", not second.store.bonds),
+        ],
+    )
+
+
+def evidence_m2_02(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = World.create(load_config(M2_QUICK))
+    world.advance(200)
+    return (
+        "Configurazione M2 quick (32×32, 4 specie), 200 passi con legami attivi.",
+        [
+            ("energia iniziale attesa", str(world.configured_energy())),
+            ("energia nelle particelle", str(world.energy_particles())),
+            ("energia nei legami", str(world.energy_bonds())),
+            ("energia totale", str(world.energy())),
+            ("delta", str(world.energy() - world.configured_energy())),
+            ("legami al passo 200", str(len(world.store.bonds))),
+        ],
+        [
+            ("energia totale = energia iniziale", world.energy() == world.configured_energy()),
+            ("particelle + legami = totale", world.energy_particles() + world.energy_bonds() == world.energy()),
+            ("esistono legami", bool(world.store.bonds)),
+            ("nessuna violazione di invariante", world.validate() == []),
+        ],
+    )
+
+
+def evidence_m2_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = World.create(load_config(M2_QUICK))
+    world.advance(300)
+    store = world.store
+    degrees = [
+        max((store.degree[index] for index in range(len(store)) if store.species[index] == sp), default=0)
+        for sp in range(len(world.config.species))
+    ]
+    limits = world.max_bonds
+    disallowed = 0
+    non_adjacent = 0
+    for index_a, index_b in store.bonds:
+        pair = (store.species[index_a], store.species[index_b])
+        if pair not in world.allowed_pairs and (pair[1], pair[0]) not in world.allowed_pairs:
+            disallowed += 1
+        if not world._adjacent(index_a, index_b):
+            non_adjacent += 1
+    return (
+        "Configurazione M2 quick, 300 passi: verifica delle regole locali sui legami formatisi.",
+        [
+            (
+                "grado massimo osservato per specie",
+                ", ".join(
+                    f"{species.name}={degree}"
+                    for species, degree in zip(world.config.species, degrees)
+                ),
+            ),
+            (
+                "max_bonds per specie",
+                ", ".join(
+                    f"{species.name}={limit}"
+                    for species, limit in zip(world.config.species, limits)
+                ),
+            ),
+            ("legami fra specie non ammesse", str(disallowed)),
+            ("legami fra particelle non adiacenti", str(non_adjacent)),
+            ("legami totali", str(len(store.bonds))),
+        ],
+        [
+            ("ogni grado rispetta max_bonds", all(degree <= limit for degree, limit in zip(degrees, limits))),
+            ("nessuna coppia non ammessa", disallowed == 0),
+            ("tutti i legami sono locali", non_adjacent == 0),
+        ],
+    )
+
+
+def evidence_m2_04(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    """Catalisi misurata in un regime limitato dalla probabilità, non dagli slot."""
+    import json as _json
+
+    base = _json.loads(M2_QUICK.read_text())
+    base["chemistry"]["formation_probability"] = 1e-9
+    base["chemistry"]["catalysis"] = []
+    plain = World.create(Config.from_dict(base).validate())
+
+    boosted = _json.loads(M2_QUICK.read_text())
+    boosted["chemistry"]["formation_probability"] = 1e-9
+    boosted["chemistry"]["catalysis"] = [
+        {"catalyst": "S3", "pair": ["S0", "S1"], "factor": 1e9}
+    ]
+    catalyzed = World.create(Config.from_dict(boosted).validate())
+
+    plain.advance(300)
+    catalyzed.advance(300)
+    return (
+        "Stessa configurazione e stesso seed; probabilità base 1e-9, fattore "
+        "catalitico 1e9 su S0-S1: senza catalisi non si forma nulla, con la "
+        "catalisi la coppia si forma.",
+        [
+            ("formazioni senza catalisi", str(plain.bonds_formed_total)),
+            ("formazioni con catalisi", str(catalyzed.bonds_formed_total)),
+            ("legami finali senza catalisi", str(len(plain.store.bonds))),
+            ("legami finali con catalisi", str(len(catalyzed.store.bonds))),
+            (
+                "configurazioni identiche tranne la catalisi",
+                str(
+                    {**plain.config.to_dict(), "chemistry": None}
+                    == {**catalyzed.config.to_dict(), "chemistry": None}
+                ),
+            ),
+        ],
+        [
+            ("senza catalisi non si formano legami", plain.bonds_formed_total == 0),
+            ("con la catalisi si formano legami", catalyzed.bonds_formed_total > 0),
+            ("l'energia resta conservata con la catalisi",
+             catalyzed.energy() == catalyzed.configured_energy()),
+        ],
+    )
+
+
+def evidence_m2_05(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = World.create(load_config(M2_QUICK))
+    world.advance(500)
+    stats = world.aggregates()
+    distribution = stats["size_distribution"]
+    top = ", ".join(f"{size}×{count}" for size, count in list(distribution.items())[:8])
+    return (
+        "Configurazione M2 quick, 500 passi: aggregati come componenti connesse dei legami.",
+        [
+            ("legami", str(stats["bonds"])),
+            ("particelle legate", str(stats["bonded_particles"])),
+            ("particelle libere", str(stats["free_particles"])),
+            ("aggregati", str(stats["aggregates"])),
+            ("dimensione massima", str(stats["largest_aggregate"])),
+            ("dimensione media", str(stats["mean_aggregate_size"])),
+            ("distribuzione (dimensione×numero)", top),
+        ],
+        [
+            ("esistono aggregati", stats["aggregates"] > 0),
+            ("la distribuzione è non banale", len(distribution) >= 2),
+            ("nessuna violazione di invariante", world.validate() == []),
+        ],
+    )
+
+
+def evidence_m2_06(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = load_config(M2_QUICK)
+    first = World.create(config)
+    second = World.create(config)
+    first.advance(100)
+    second.advance(100)
+    return (
+        "Due run indipendenti con lo stesso seed e 100 passi di chimica.",
+        [
+            ("state_hash_full run A", first.state_hash_full()[:32] + "…"),
+            ("state_hash_full run B", second.state_hash_full()[:32] + "…"),
+            ("legami A / B", f"{len(first.store.bonds)} / {len(second.store.bonds)}"),
+            ("formazioni A / B", f"{first.bonds_formed_total} / {second.bonds_formed_total}"),
+            ("rotture A / B", f"{first.bonds_broken_total} / {second.bonds_broken_total}"),
+        ],
+        [
+            ("hash completo identico", first.state_hash_full() == second.state_hash_full()),
+            ("legami identici", first.store.bond_records() == second.store.bond_records()),
+            ("stato RNG identico", first.rng.fingerprint() == second.rng.fingerprint()),
+        ],
+    )
+
+
+def evidence_m2_07(tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = make_config(seed=77)
+    original = World.create(config)
+    original.advance(5)
+    payload = {
+        "format": CHECKPOINT_FORMAT,
+        "schema_version": 1,
+        "config": config.to_dict(),
+        "config_hash": config.hash(),
+        "step": original.step,
+        "moves_total": original.moves_total,
+        "rng": original.rng.state(),
+        "particles": original.store.records(),
+        "counts": original.counts(),
+        "energy_total": original.energy(),
+        "state_hash": original.state_hash(),
+    }
+    path = tmp / "M2-07_v1.json"
+    path.write_text(json.dumps(payload))
+    migrated = load_checkpoint(path)
+    return (
+        "Checkpoint schema 1 (M1) costruito da un mondo M1 e ricaricato con il codice M2.",
+        [
+            ("identificativi assegnati", f"0..{len(migrated.store) - 1}"),
+            ("energia per particella", str(sorted(set(migrated.store.energy)))),
+            ("legami", str(len(migrated.store.bonds))),
+            ("state_hash M1 preservato", str(migrated.state_hash() == original.state_hash())),
+            ("next_id", str(migrated.next_id)),
+        ],
+        [
+            ("identificativi contigui", migrated.store.ids == list(range(len(migrated.store)))),
+            ("energia iniziale della specie", all(
+                migrated.store.energy[index] == config.species[species].energy
+                for index, species in enumerate(migrated.store.species)
+            )),
+            ("nessun legame importato", not migrated.store.bonds),
+            ("hash materiale identico", migrated.state_hash() == original.state_hash()),
+            ("stato valido", migrated.validate() == []),
+        ],
+    )
+
+
 BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-01": evidence_01,
     "M1-02": evidence_02,
@@ -450,6 +777,13 @@ BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-06": evidence_06,
     "M1-07": evidence_07,
     "M1-08": evidence_08,
+    "M2-01": evidence_m2_01,
+    "M2-02": evidence_m2_02,
+    "M2-03": evidence_m2_03,
+    "M2-04": evidence_m2_04,
+    "M2-05": evidence_m2_05,
+    "M2-06": evidence_m2_06,
+    "M2-07": evidence_m2_07,
 }
 
 

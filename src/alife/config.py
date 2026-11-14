@@ -1,8 +1,10 @@
 """Configurazione dell'esperimento: parsing, validazione, hashing canonico.
 
-La configurazione e' l'unica fonte di verita' per i parametri della simulazione.
-Il suo hash canonico identifica senza ambiguita' l'esperimento ed e' registrato
-in ogni artefatto prodotto (manifest, metriche, checkpoint).
+Schema 1: motore fisico (M1) — solo specie con mobilità ed energia iniziale.
+Schema 2: chimica (M2) — aggiunge `max_bonds` per specie e il blocco `chemistry`
+con costo dei legami, probabilità di formazione/rottura, coppie ammesse e
+catalisi. Le configurazioni schema 1 restano serializzabili e hashabili
+esattamente come in M1.
 """
 
 from __future__ import annotations
@@ -14,11 +16,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 MAX_SPECIES = 6
 VALID_BOUNDARIES = ("periodic", "closed")
 VALID_NEIGHBORHOODS = ("von_neumann",)
 VALID_PLACEMENTS = ("random_uniform",)
+MAX_BONDS_PER_PARTICLE = 4
 
 
 class ConfigError(ValueError):
@@ -74,20 +77,59 @@ class GridConfig:
 
 @dataclass(frozen=True, slots=True)
 class SpeciesConfig:
-    """Specie di particella: solo proprieta' locali, nessun comportamento codificato."""
+    """Specie di particella: proprietà locali, nessun comportamento codificato."""
 
     name: str
     count: int
     move_probability: float
     energy: int
+    max_bonds: int = 0
 
-    def to_dict(self) -> dict[str, Any]:
-        return {
+    def to_dict(self, include_max_bonds: bool = True) -> dict[str, Any]:
+        payload = {
             "name": self.name,
             "count": self.count,
             "move_probability": self.move_probability,
             "energy": self.energy,
         }
+        if include_max_bonds:
+            payload["max_bonds"] = self.max_bonds
+        return payload
+
+
+@dataclass(frozen=True, slots=True)
+class CatalysisRule:
+    """Una specie catalizza la formazione di un tipo di legame."""
+
+    catalyst: str
+    pair: tuple[str, str]
+    factor: float
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"catalyst": self.catalyst, "pair": list(self.pair), "factor": self.factor}
+
+
+@dataclass(frozen=True, slots=True)
+class ChemistryConfig:
+    enabled: bool = False
+    bond_cost: int = 0
+    formation_probability: float = 0.0
+    break_probability: float = 0.0
+    allowed_pairs: tuple[tuple[str, str], ...] = ()
+    catalysis: tuple[CatalysisRule, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "enabled": self.enabled,
+            "bond_cost": self.bond_cost,
+            "formation_probability": self.formation_probability,
+            "break_probability": self.break_probability,
+            "allowed_pairs": [list(pair) for pair in self.allowed_pairs],
+            "catalysis": [rule.to_dict() for rule in self.catalysis],
+        }
+
+
+DISABLED_CHEMISTRY = ChemistryConfig()
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,19 +148,26 @@ class Config:
     neighborhood: str = "von_neumann"
     placement: str = "random_uniform"
     metrics: MetricsConfig = field(default_factory=MetricsConfig)
+    chemistry: ChemistryConfig = field(default_factory=ChemistryConfig)
     schema_version: int = SCHEMA_VERSION
 
     # -- serializzazione -------------------------------------------------
     def to_dict(self) -> dict[str, Any]:
-        return {
+        include_bonds = self.schema_version >= 2
+        payload: dict[str, Any] = {
             "schema_version": self.schema_version,
             "seed": self.seed,
             "grid": self.grid.to_dict(),
             "neighborhood": self.neighborhood,
             "placement": self.placement,
-            "species": [species.to_dict() for species in self.species],
+            "species": [
+                species.to_dict(include_max_bonds=include_bonds) for species in self.species
+            ],
             "metrics": self.metrics.to_dict(),
         }
+        if include_bonds:
+            payload["chemistry"] = self.chemistry.to_dict()
+        return payload
 
     def canonical_json(self) -> str:
         """Serializzazione stabile: stessa config -> stessa stringa -> stesso hash."""
@@ -143,9 +192,13 @@ class Config:
                 "placement",
                 "species",
                 "metrics",
+                "chemistry",
             },
             "config",
         )
+        schema_version = _int(data.get("schema_version", SCHEMA_VERSION), "schema_version")
+        if schema_version not in (1, 2):
+            raise ConfigError(f"schema_version: attesa 1 o 2, ricevuta {schema_version}")
 
         grid_raw = _mapping(data.get("grid"), "grid")
         _reject_unknown(grid_raw, {"width", "height", "boundary"}, "grid")
@@ -163,8 +216,16 @@ class Config:
         if not isinstance(species_raw, list) or not species_raw:
             raise ConfigError("species: attesa una lista non vuota")
         species = tuple(
-            _species_from_dict(entry, index) for index, entry in enumerate(species_raw)
+            _species_from_dict(entry, index, schema_version)
+            for index, entry in enumerate(species_raw)
         )
+
+        if schema_version >= 2 and "chemistry" in data:
+            chemistry = _chemistry_from_dict(_mapping(data["chemistry"], "chemistry"))
+        else:
+            if schema_version == 1 and "chemistry" in data:
+                raise ConfigError("chemistry: non ammesso nello schema 1")
+            chemistry = DISABLED_CHEMISTRY
 
         return cls(
             seed=_int(data.get("seed"), "seed"),
@@ -173,15 +234,14 @@ class Config:
             neighborhood=_string(data.get("neighborhood", "von_neumann"), "neighborhood"),
             placement=_string(data.get("placement", "random_uniform"), "placement"),
             metrics=metrics,
-            schema_version=_int(data.get("schema_version", SCHEMA_VERSION), "schema_version"),
+            chemistry=chemistry,
+            schema_version=schema_version,
         )
 
     # -- validazione -----------------------------------------------------
     def validate(self) -> "Config":
-        if self.schema_version != SCHEMA_VERSION:
-            raise ConfigError(
-                f"schema_version: atteso {SCHEMA_VERSION}, ricevuto {self.schema_version}"
-            )
+        if self.schema_version not in (1, 2):
+            raise ConfigError(f"schema_version: attesa 1 o 2, ricevuta {self.schema_version}")
         if self.grid.width < 2 or self.grid.height < 2:
             raise ConfigError("grid: larghezza e altezza devono essere >= 2")
         if self.grid.boundary not in VALID_BOUNDARIES:
@@ -217,18 +277,76 @@ class Config:
                 )
             if species.energy < 0:
                 raise ConfigError(f"species[{species.name}].energy: deve essere >= 0")
+            if self.schema_version == 1 and species.max_bonds != 0:
+                raise ConfigError(
+                    f"species[{species.name}].max_bonds: non ammesso nello schema 1"
+                )
+            if not 0 <= species.max_bonds <= MAX_BONDS_PER_PARTICLE:
+                raise ConfigError(
+                    f"species[{species.name}].max_bonds: deve essere in [0, {MAX_BONDS_PER_PARTICLE}]"
+                )
 
         total = sum(species.count for species in self.species)
         if total > self.grid.cells:
             raise ConfigError(
                 f"species: {total} particelle richieste su {self.grid.cells} celle disponibili"
             )
+
+        self._validate_chemistry(set(names))
         return self
 
+    def _validate_chemistry(self, names: set[str]) -> None:
+        chemistry = self.chemistry
+        if self.schema_version == 1:
+            if chemistry.enabled:
+                raise ConfigError("chemistry: non ammesso nello schema 1")
+            return
 
-def _species_from_dict(entry: Any, index: int) -> SpeciesConfig:
+        if chemistry.bond_cost < 0:
+            raise ConfigError("chemistry.bond_cost: deve essere >= 0")
+        for field_name, value in (
+            ("formation_probability", chemistry.formation_probability),
+            ("break_probability", chemistry.break_probability),
+        ):
+            if not 0.0 <= value <= 1.0:
+                raise ConfigError(f"chemistry.{field_name}: deve essere in [0, 1]")
+
+        for pair in chemistry.allowed_pairs:
+            if len(pair) != 2 or pair[0] not in names or pair[1] not in names:
+                raise ConfigError(f"chemistry.allowed_pairs: coppia non valida {pair!r}")
+
+        if not chemistry.enabled:
+            return
+
+        if not chemistry.allowed_pairs:
+            raise ConfigError("chemistry.allowed_pairs: almeno una coppia con chimica attiva")
+        capable = {
+            species.name for species in self.species if species.max_bonds > 0
+        }
+        usable = [
+            pair for pair in chemistry.allowed_pairs if pair[0] in capable and pair[1] in capable
+        ]
+        if not usable:
+            raise ConfigError(
+                "chemistry: nessuna coppia ammessa fra specie con max_bonds > 0"
+            )
+        for rule in chemistry.catalysis:
+            if rule.catalyst not in names:
+                raise ConfigError(f"chemistry.catalysis: catalizzatore {rule.catalyst!r} inesistente")
+            if rule.pair not in chemistry.allowed_pairs:
+                raise ConfigError(
+                    f"chemistry.catalysis: la coppia {rule.pair!r} non è fra quelle ammesse"
+                )
+            if rule.factor < 1.0:
+                raise ConfigError("chemistry.catalysis.factor: deve essere >= 1")
+
+
+def _species_from_dict(entry: Any, index: int, schema_version: int) -> SpeciesConfig:
     entry = _mapping(entry, f"species[{index}]")
-    _reject_unknown(entry, {"name", "count", "move_probability", "energy"}, f"species[{index}]")
+    allowed = {"name", "count", "move_probability", "energy"}
+    if schema_version >= 2:
+        allowed.add("max_bonds")
+    _reject_unknown(entry, allowed, f"species[{index}]")
     return SpeciesConfig(
         name=_string(entry.get("name"), f"species[{index}].name"),
         count=_int(entry.get("count"), f"species[{index}].count"),
@@ -236,6 +354,67 @@ def _species_from_dict(entry: Any, index: int) -> SpeciesConfig:
             entry.get("move_probability"), f"species[{index}].move_probability"
         ),
         energy=_int(entry.get("energy"), f"species[{index}].energy"),
+        max_bonds=_int(entry.get("max_bonds", 0), f"species[{index}].max_bonds")
+        if schema_version >= 2
+        else 0,
+    )
+
+
+def _chemistry_from_dict(data: Mapping[str, Any]) -> ChemistryConfig:
+    _reject_unknown(
+        data,
+        {
+            "enabled",
+            "bond_cost",
+            "formation_probability",
+            "break_probability",
+            "allowed_pairs",
+            "catalysis",
+        },
+        "chemistry",
+    )
+    pairs_raw = data.get("allowed_pairs", [])
+    if not isinstance(pairs_raw, list):
+        raise ConfigError("chemistry.allowed_pairs: attesa una lista")
+    pairs: list[tuple[str, str]] = []
+    for entry in pairs_raw:
+        if not isinstance(entry, list) or len(entry) != 2:
+            raise ConfigError(f"chemistry.allowed_pairs: coppia malformata {entry!r}")
+        pairs.append((_string(entry[0], "allowed_pairs"), _string(entry[1], "allowed_pairs")))
+    # forma canonica: coppia ordinata, lista ordinata e senza duplicati
+    normalized = sorted({tuple(sorted(pair)) for pair in pairs})
+
+    catalysis_raw = data.get("catalysis", [])
+    if not isinstance(catalysis_raw, list):
+        raise ConfigError("chemistry.catalysis: attesa una lista")
+    rules: list[CatalysisRule] = []
+    for entry in catalysis_raw:
+        rule_raw = _mapping(entry, "catalysis")
+        _reject_unknown(rule_raw, {"catalyst", "pair", "factor"}, "catalysis")
+        pair_raw = rule_raw.get("pair")
+        if not isinstance(pair_raw, list) or len(pair_raw) != 2:
+            raise ConfigError("chemistry.catalysis.pair: attesa una coppia")
+        pair = tuple(sorted((_string(pair_raw[0], "pair"), _string(pair_raw[1], "pair"))))
+        rules.append(
+            CatalysisRule(
+                catalyst=_string(rule_raw.get("catalyst"), "chemistry.catalysis.catalyst"),
+                pair=pair,
+                factor=_number(rule_raw.get("factor"), "chemistry.catalysis.factor"),
+            )
+        )
+    rules.sort(key=lambda rule: (rule.pair, rule.catalyst))
+
+    return ChemistryConfig(
+        enabled=bool(data.get("enabled", False)),
+        bond_cost=_int(data.get("bond_cost", 0), "chemistry.bond_cost"),
+        formation_probability=_number(
+            data.get("formation_probability", 0.0), "chemistry.formation_probability"
+        ),
+        break_probability=_number(
+            data.get("break_probability", 0.0), "chemistry.break_probability"
+        ),
+        allowed_pairs=tuple(normalized),
+        catalysis=tuple(rules),
     )
 
 

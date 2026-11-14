@@ -2,8 +2,8 @@
 
 - Requisito: alife.md §7, punto 5
 - Esito: **PASS**
-- Eseguito: 2026-11-14T21:33:04+00:00
-- Test pytest associati: 5 (5 superati)
+- Eseguito: 2026-11-14T21:52:15+00:00
+- Test pytest associati: 6 (6 superati)
 
 ## Scenario
 
@@ -31,7 +31,8 @@ Due universi con seed 1234 e uno con seed 1235, 120 passi ciascuno.
 ## Test pytest associati
 
 - `tests/test_reproducibility.py::test_same_seed_same_result` → **PASSED** (0.0150 s)
-- `tests/test_reproducibility.py::test_different_seed_different_result` → **PASSED** (0.0050 s)
+- `tests/test_reproducibility.py::test_different_seed_different_result` → **PASSED** (0.0100 s)
 - `tests/test_reproducibility.py::test_initial_placement_is_seed_deterministic` → **PASSED** (0.0010 s)
-- `tests/test_reproducibility.py::test_repeated_advance_matches_single_call` → **PASSED** (0.0040 s)
-- `tests/test_reproducibility.py::test_baseline_config_is_reproducible` → **PASSED** (0.2800 s)
+- `tests/test_reproducibility.py::test_repeated_advance_matches_single_call` → **PASSED** (0.0050 s)
+- `tests/test_reproducibility.py::test_baseline_config_is_reproducible` → **PASSED** (0.2720 s)
+- `tests/test_reproducibility.py::test_m1_run_reproduces_the_published_hash` → **PASSED** (4.9320 s)
