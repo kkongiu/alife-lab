@@ -1,6 +1,6 @@
 # M1 — Report: performance, decisioni, problemi aperti
 
-Data: 2026-11-14 · Codice: `7bb1387` (M1) · Specifica: `SPEC.md`
+Data: 2026-11-14 · Milestone: M1 · Specifica: `SPEC.md` · Cronologia: `git log`
 
 ## 1. Sommario
 
