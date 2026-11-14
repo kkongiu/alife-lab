@@ -1,0 +1,83 @@
+{
+  "schema_version": 3,
+  "seed": 20261115,
+  "grid": {
+    "width": 128,
+    "height": 128,
+    "boundary": "periodic"
+  },
+  "neighborhood": "von_neumann",
+  "placement": "random_uniform",
+  "species": [
+    {
+      "name": "S0",
+      "count": 500,
+      "move_probability": 0.5,
+      "energy": 12,
+      "max_bonds": 2
+    },
+    {
+      "name": "S1",
+      "count": 400,
+      "move_probability": 0.4,
+      "energy": 10,
+      "max_bonds": 2
+    },
+    {
+      "name": "S2",
+      "count": 300,
+      "move_probability": 0.3,
+      "energy": 15,
+      "max_bonds": 1
+    },
+    {
+      "name": "S3",
+      "count": 200,
+      "move_probability": 0.6,
+      "energy": 8,
+      "max_bonds": 0
+    }
+  ],
+  "chemistry": {
+    "enabled": true,
+    "bond_cost": 2,
+    "formation_probability": 0.05,
+    "break_probability": 0.002,
+    "allowed_pairs": [
+      [
+        "S0",
+        "S0"
+      ],
+      [
+        "S0",
+        "S1"
+      ],
+      [
+        "S1",
+        "S1"
+      ],
+      [
+        "S1",
+        "S2"
+      ]
+    ],
+    "catalysis": []
+  },
+  "energy": {
+    "movement_cost": 0,
+    "formation_dissipation": 1,
+    "breaking_dissipation": 1,
+    "particle_decay": {
+      "num": 1,
+      "den": 2000
+    },
+    "bond_decay": {
+      "num": 1,
+      "den": 2000
+    },
+    "sources": []
+  },
+  "metrics": {
+    "every": 100
+  }
+}

@@ -1,11 +1,12 @@
-# SPEC — Modello computazionale (milestone M0, M1, M2)
+# SPEC — Modello computazionale (milestone M0, M1, M2, M3)
 
-Versione: 2.0 (M2) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
+Versione: 3.0 (M3) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
 
-Questa specifica descrive un universo chiuso, deterministico e osservabile. Deve
-essere sufficiente a reimplementare il motore senza decisioni implicite. Ogni
-scelta non imposta dai documenti di progetto è marcata come **decisione** ed è
-motivata.
+Questa specifica descrive un universo deterministico, misurabile e — da M3 —
+aperto: sorgenti, dissipazione e costi rendono il sistema lontano
+dall'equilibrio. Deve essere sufficiente a reimplementare il motore senza
+decisioni implicite. Ogni scelta non imposta dai documenti di progetto è marcata
+come **decisione** ed è motivata.
 
 ---
 
@@ -17,13 +18,17 @@ Il sistema realizzato copre:
   riproducibilità, checkpoint.
 - **M2 — chimica artificiale**: legami reversibili fra particelle adiacenti, con
   costo energetico esplicito, soglie, decadimento e catalisi locale.
+- **M3 — non-equilibrio**: sorgenti energetiche localizzate, dissipazione,
+  costi di movimento e di reazione, con contabilità intera esatta.
 
 Non esistono: organismi, genomi, DNA, replicatori, reti neurali, funzioni di
-fitness, sorgenti o pozzi di energia, meccanismi di copia.
+fitness, meccanismi di copia.
 
-L'universo è **chiuso**: materia ed energia sono costanti. Le strutture che
-possono comparire sono aggregati tenuti insieme da legami, non organismi. Non
-c'è ancora ereditarietà, e nessun risultato di M2 autorizza a parlarne.
+Da M3 l'energia **non** è costante: si conserva l'identità contabile
+`E(t) = E(0) + iniettata − dissipata − non assorbita`. Le strutture che possono
+comparire sono aggregati tenuti insieme da legami e alimentati da un flusso, non
+organismi. Non c'è ancora ereditarietà, e nessun risultato di M3 autorizza a
+parlarne.
 
 ---
 
@@ -71,7 +76,7 @@ minore.
 | Hash | Contenuto | Uso |
 |---|---|---|
 | `state_hash` | schema 1: posizioni e specie | confronto materiale, compatibilità con i risultati M1 |
-| `state_hash_full` | schema 2: id, posizioni, specie, energia, legami | identità completa dello stato, verifica dei checkpoint |
+| `state_hash_full` | schema 2/3: id, posizioni, specie, energia, legami; dallo schema 3 anche ledger, accumulatori e serbatoi | identità completa dello stato, verifica dei checkpoint |
 
 Il mantenimento della definizione M1 permette di rieseguire una configurazione
 M1 con il codice M2 e ottenere lo stesso hash pubblicato: la compatibilità è
@@ -167,21 +172,24 @@ dei legami, misurate a posteriori (§5.5).
 ### 5.2 Formazione
 
 Condizioni e soglia come in §4.4. Alla formazione ogni particella paga
-`bond_cost` quanti; il legame immagazzina `2 · bond_cost`. Non si crea né si
-distrugge energia: si sposta.
+`bond_cost + formation_dissipation`; il legame immagazzina `2 · bond_cost` e la
+quota `2 · formation_dissipation` va in dissipazione. Con
+`formation_dissipation = 0` (M2) il comportamento è identico a prima.
 
 ### 5.3 Rottura e restituzione dell'energia
 
-Alla rottura il legame restituisce `bond_energy` alle due particelle:
+Alla rottura il legame restituisce `bond_energy − breaking_dissipation`
+(limitato a `bond_energy`):
 
 ```
-quota_minore = bond_energy // 2
-quota_maggiore = bond_energy - quota_minore
+restituito = bond_energy − min(breaking_dissipation, bond_energy)
+quota_minore = restituito // 2
+quota_maggiore = restituito - quota_minore
 la particella con ID minore riceve quota_maggiore
 ```
 
-La regola del resto è deterministica e documentata perché `bond_energy` può
-essere dispari in M3. In M2 è sempre pari.
+La regola del resto è deterministica e documentata perché il restituito può
+essere dispari.
 
 ### 5.4 Catalisi
 
@@ -211,17 +219,59 @@ Nessuna di queste misure è un obiettivo del modello: sono descrizioni.
 
 ## 6. Energia
 
-**Decisione: energia intera, per particella, più un deposito nei legami.**
+**Decisione: energia intera, per particella, più un deposito nei legami, più un
+ledger dei flussi.**
 
 - Ogni specie ha `energy ∈ ℕ` quanti come dotazione iniziale di ogni particella.
-- L'energia totale è `E(t) = Σ energia_particelle + Σ energia_legami`.
-- La formazione sposta `2·bond_cost` dalle particelle al legame; la rottura lo
-  restituisce. Il movimento è gratuito.
-- Non esistono sorgenti, pozzi, dissipazione o decadimento delle particelle:
-  `E(t) = E(0)` per costruzione.
+- Energia interna: `E_int(t) = Σ energia_particelle + Σ energia_legami + Σ serbatoi`.
+  I serbatoi delle sorgenti sono energia interna: è stata iniettata e non è
+  ancora stata assorbita.
+- Identità contabile, verificata con interi esatti:
 
-M3 introdurrà costi di movimento, dissipazione e flussi: il bilancio diventerà
-`E(t+1) = E(t) + in − out − dissipato`, con gli stessi campi interi.
+```
+E_int(t) = E_int(0) + injected(t) − dissipated(t) − unabsorbed(t)
+```
+
+| Voce | Significato |
+|---|---|
+| `injected` | energia emessa dalle sorgenti (lordo) |
+| `dissipated` | dissipazione, costi di movimento e quote di attrito delle reazioni |
+| `unabsorbed` | energia emessa da una sorgente e non consegnata (cella vuota o capacità piena) |
+
+`unabsorbed` è contata come perdita: una sorgente che non trova destinatario non
+crea energia.
+
+### 6.1 Ordine delle fasi energetiche
+
+Fissato e non negoziabile:
+
+```
+dissipazione → iniezione → rottura → movimento → risoluzione → formazione
+```
+
+- **Dissipazione**: `num` quanti ogni `den` passi, sfasati per identificativo:
+  una particella perde 1 quanto nei passi in cui `(step + id) mod den < num`, un
+  legame quando `(step + id_a + id_b) mod den < num`. Ogni quanto rimosso va in
+  `dissipated`. Il tasso è **assoluto** (un quanto per evento), non proporzionale:
+  un tasso proporzionale intero `(E·num)//den` si annulla per arrotondamento alle
+  energie tipiche del modello (10–30 quanti) e la dissipazione diventa inerte.
+- **Iniezione**: per ogni sorgente, in ordine canonico `(y, x)`,
+  `acc += rate_num; quanti, acc = divmod(acc, rate_den)`. I quanti entrano in un
+  **serbatoio locale** di capacità `capacity`; se il serbatoio trabocca, l'eccesso
+  va in `unabsorbed`. La particella presente sulla cella assorbe l'intero
+  serbatoio. Nessuna estrazione casuale, nessun drift.
+- **Costo di movimento**: pagato solo dalle mosse accettate, dalla particella che
+  si sposta; va in `dissipated`.
+- **Costi di reazione**: come in §5.2–5.3.
+
+Se `particle_decay.num = 0`, `bond_decay.num = 0`, `movement_cost = 0`,
+`formation_dissipation = 0`, `breaking_dissipation = 0` e non ci sono sorgenti,
+il modello è chiuso e identico a M2.
+
+**Decisione: nessun riscalamento e nessun clamp.** I valori non vengono
+rinormalizzati per evitare overflow o per "stabilizzare" la dinamica: alterano il
+bilancio e rendono incomparabili i run. Gli interi Python non hanno overflow; nel
+file i valori restano leggibili.
 
 ---
 
@@ -268,13 +318,17 @@ configurazione.
 | I3 | Nessuna cella con più di una particella | griglia e posizioni |
 | I4 | Ogni particella dentro la griglia | limiti |
 | I5 | `grid` coerente con le posizioni | controllo incrociato |
-| I6 | `E(t) = E(0)` (particelle + legami) | confronto intero |
+| I6 | Identità energetica `E_int = E_0 + injected − dissipated − unabsorbed` | confronto intero |
 | I7 | Flusso RNG tracciabile | test sul caso senza chimica: `N + 2·N·t` |
 | I8 | ID unici, non negativi, `< next_id` | controllo |
 | I9 | Energia di ogni particella ≥ 0 | controllo |
 | I10 | Ogni legame unisce particelle adiacenti | distanza di Manhattan (toroidale se periodico) |
 | I11 | Grado di ogni particella = legami registrati e ≤ `max_bonds` | conteggio incrociato |
 | I12 | Nessun legame se la chimica è disabilitata | controllo |
+| I13 | `injected`, `dissipated`, `unabsorbed` ≥ 0 | controllo |
+| I14 | Un accumulatore di sorgente sta in `[0, rate_den)` | controllo |
+| I15 | Un serbatoio di sorgente sta in `[0, capacity]` | controllo |
+| I16 | Una sorgente esiste per ogni accumulatore e per ogni serbatoio | conteggio |
 
 `World.validate()` restituisce l'elenco dei problemi; `World.check()` solleva
 `InvariantError`. Esecuzione: alla creazione, a fine run, al caricamento di un
@@ -284,11 +338,13 @@ checkpoint e nei test.
 
 ## 10. Configurazione
 
-Formato JSON. Schema 1 = M1, schema 2 = M2. Le chiavi sconosciute sono rifiutate.
+Formato JSON. Schema 1 = M1, schema 2 = M2, schema 3 = M3 (flussi energetici).
+Le chiavi sconosciute sono rifiutate e ogni schema rifiuta i blocchi introdotti
+dai successivi.
 
 ```json
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "seed": 20261115,
   "grid": { "width": 128, "height": 128, "boundary": "periodic" },
   "neighborhood": "von_neumann",
@@ -307,6 +363,17 @@ Formato JSON. Schema 1 = M1, schema 2 = M2. Le chiavi sconosciute sono rifiutate
     "allowed_pairs": [["S0","S0"], ["S0","S1"], ["S1","S1"], ["S1","S2"]],
     "catalysis": []
   },
+  "energy": {
+    "movement_cost": 0,
+    "formation_dissipation": 1,
+    "breaking_dissipation": 1,
+    "particle_decay": { "num": 1, "den": 2000 },
+    "bond_decay": { "num": 1, "den": 2000 },
+    "sources": [
+      { "x": 32, "y": 32, "rate_num": 2, "rate_den": 1, "capacity": 30 },
+      { "x": 96, "y": 96, "rate_num": 2, "rate_den": 1, "capacity": 30 }
+    ]
+  },
   "metrics": { "every": 100 }
 }
 ```
@@ -320,33 +387,48 @@ Vincoli aggiuntivi di schema 2:
 - con `enabled: true` serve almeno una coppia fra specie con `max_bonds > 0`;
 - ogni coppia e ogni catalizzatore devono riferirsi a specie esistenti;
 - `factor ≥ 1`;
-- lo schema 1 rifiuta `chemistry` e `max_bonds`.
+- lo schema 1 rifiuta `chemistry` e `max_bonds`; lo schema 2 rifiuta `energy`.
+
+Vincoli aggiuntivi di schema 3:
+
+- `movement_cost`, `formation_dissipation`, `breaking_dissipation` interi ≥ 0;
+- `particle_decay.den`, `bond_decay.den` ≥ 1, `num` ≥ 0;
+- sorgenti dentro la griglia, su celle distinte, con `rate_den ≥ 1`,
+  `capacity ≥ 0` (capacità del serbatoio locale) e `overflow = "discard"`;
+- le sorgenti sono normalizzate in ordine `(y, x)`: l'hash e gli accumulatori
+  non dipendono dall'ordine di scrittura;
+- `formation_dissipation` o `breaking_dissipation` richiedono `chemistry.enabled`.
 
 **Hash canonico.** `sha256(JSON compatto con chiavi ordinate)` dell'oggetto
 risolto. Il valore per `configs/baseline.json` (schema 1) è invariato rispetto a
-M1: `f697f983…91c8`.
+M1: `f697f983…91c8`. Le configurazioni schema 2 mantengono hash e semantica.
 
-Baseline M2 (`configs/m2_baseline.json`): 4 specie, 1400 particelle (8.5%),
-energia iniziale `500·12 + 400·10 + 300·15 + 200·8 = 16 100` quanti.
+Baseline M3 (`configs/m3_baseline.json`): 4 specie, 1400 particelle (8.5%),
+energia iniziale 16 100 quanti, 4 sorgenti da 2 quanti/passo, decadimento
+`1/2000` su particelle e legami, dissipazione delle reazioni 1.
 
 ---
 
 ## 11. Checkpoint
 
-Formato JSON, scrittura atomica. Schema 2:
+Formato JSON, scrittura atomica. Schema 3:
 
 ```json
 {
   "format": "alife-checkpoint",
-  "schema_version": 2,
+  "schema_version": 3,
   "config": { ... },
   "config_hash": "...",
   "step": 10000,
   "moves_total": 0,
   "next_id": 1400,
   "rng": { ... },
+  "rng_draws": 0,
   "particles": [[id, x, y, specie, energia], ...],
   "bonds": [[id_a, id_b, energia], ...],
+  "ledger": { "injected": 0, "dissipated": 0, "unabsorbed": 0 },
+  "source_acc": [0],
+  "source_store": [0],
   "counts": { ... },
   "energy_total": 16100,
   "energy_particles": 0,
@@ -358,14 +440,15 @@ Formato JSON, scrittura atomica. Schema 2:
 }
 ```
 
-**Verifiche in lettura:** formato e schema (1 o 2); configurazione valida e hash
-coerente; stato RNG; particelle e legami ben formati; `state_hash`; per lo schema
-2 anche `state_hash_full`; bilancio energetico; invarianti I1–I12.
+**Verifiche in lettura:** formato e schema (1, 2 o 3); configurazione valida e
+hash coerente; stato RNG; particelle e legami ben formati; `state_hash`; per gli
+schemi 2 e 3 anche `state_hash_full`; ledger non negativo; accumulatori e
+serbatoi coerenti con le sorgenti; identità energetica; invarianti I1–I16.
 
-**Migrazione dallo schema 1.** Un checkpoint M1 viene letto assegnando
-`id = indice`, `energia = energia iniziale della specie`, nessun legame,
-`next_id = N`. Lo `state_hash` viene verificato con la definizione M1. Il mondo
-migrato è subito salvabile come schema 2.
+**Migrazione.** Schema 1: `id = indice`, energia iniziale della specie, nessun
+legame, `next_id = N`, `state_hash` verificato con la definizione M1. Schema 2:
+stessi campi fisici, ledger azzerato e accumulatori a zero. In entrambi i casi il
+mondo migrato è subito salvabile come schema 3 e conserva il proprio hash.
 
 ---
 
@@ -381,10 +464,11 @@ migrato è subito salvabile come schema 2.
 | `events.jsonl` | **solo con `--events`**: ogni formazione e rottura, con passo, ID, energia, catalisi |
 
 Serie temporale e riepilogo includono: passi, tempo, passi/s, spostamenti,
-particelle per specie, occupazione, energia totale/particelle/legami/in/out/delta,
-legami, particelle legate, aggregati, dimensione massima, formazioni e rotture
-cumulate, `state_hash`, `state_hash_full`, seed, hash della configurazione, picco
-di memoria e versioni.
+particelle per specie, occupazione, energia interna/particelle/legami/serbatoi,
+energia iniettata/dissipata/non assorbita, `identity_delta`, legami, particelle
+legate, aggregati, dimensione massima, formazioni e rotture cumulate,
+`state_hash`, `state_hash_full`, seed, hash della configurazione, picco di
+memoria e versioni.
 
 Memoria: `VmHWM` su Linux (picco dell'address space, azzerato all'exec),
 `ru_maxrss` su macOS; il riepilogo registra anche il delta rispetto al
@@ -403,7 +487,10 @@ Regole già attive:
 - la catalisi si valuta *per differenza* rispetto alla stessa configurazione
   senza catalisi, a parità di seed;
 - la distribuzione delle dimensioni degli aggregati va confrontata con quella
-  attesa per aggregazione casuale: un aggregato grande non è una scoperta.
+  attesa per aggregazione casuale: un aggregato grande non è una scoperta;
+- un bilancio energetico si verifica con l'identità intera
+  `E_int = E_0 + injected − dissipated − unabsorbed`, mai con una tolleranza:
+  `identity_delta ≠ 0` è un difetto, non un fenomeno.
 
 ---
 
@@ -434,6 +521,26 @@ Test M2 aggiunti:
 | Migrazione schema 1 → 2 | `test_v1_checkpoint_is_migrated` |
 | Legami non adiacenti, gradi, limiti | `test_validate_detects_*` |
 
+Test M3 aggiunti:
+
+| Regola | Test |
+|---|---|
+| Identità energetica in sistema chiuso | `test_closed_system_keeps_identity` |
+| Decadimento esatto di particelle e legami | `test_particle_decay_is_exact`, `test_bond_decay_is_exact` |
+| Accumulatore delle sorgenti senza drift | `test_source_accumulator_is_exact` |
+| Capacità e energia non assorbita | `test_source_capacity_and_unabsorbed`, `test_source_on_empty_cell_is_unabsorbed` |
+| Costo di movimento solo su mosse accettate | `test_movement_cost_charged_per_move` |
+| Movimento bloccato da energia insufficiente | `test_movement_cost_blocks_when_insufficient` |
+| Attrito di formazione e rottura | `test_formation_dissipation`, `test_breaking_dissipation` |
+| Identità su run aperto | `test_open_run_keeps_identity` |
+| Determinismo con flussi | `test_open_run_is_deterministic` |
+| Budget di estrazioni invariato | `test_rng_budget_with_flows_disabled` |
+| Golden hash M2 preservato | `test_golden_hash_m2_is_preserved` |
+| Accumulatore fuori intervallo, ledger alterato | `test_source_accumulator_out_of_range_is_detected`, `test_ledger_tampering_is_detected` |
+| Core senza sorgenti di non determinismo | `test_core_modules_do_not_import_nondeterministic_sources` |
+| Roundtrip e ripresa con ledger | `test_v3_roundtrip_preserves_ledger`, `test_v3_resume_is_equivalent_with_flows` |
+| Migrazione schema 2 → 3 | `test_v2_checkpoint_is_migrated_to_v3` |
+
 ---
 
 ## 15. Limiti dichiarati e decisioni aperte
@@ -445,42 +552,52 @@ Test M2 aggiunti:
 3. **Un legame per coppia, senza orientamento.** Non esistono valenze, ordini di
    legame o angoli.
 4. **Nessun decadimento delle particelle.** La materia è costante; la morte di
-   particelle richiede M3+ e una politica di rilascio degli ID.
-5. **Nessuna sorgente o pozzo.** Il sistema resta chiuso: le strutture non sono
-   mantenute da un flusso energetico. È l'oggetto di M3.
-6. **Nessuna nozione di "molecola".** Gli aggregati sono componenti connesse,
+   particelle richiede una politica di rilascio degli ID.
+5. **Sorgenti puntiformi e deterministiche.** Una sola particella per cella
+   riceve l'energia; non esistono gradienti, diffusione o campi.
+6. **Nessun termostato.** Non si riscalala l'energia per stabilizzare la
+   dinamica: romperebbe il ledger.
+7. **Nessuna nozione di "molecola".** Gli aggregati sono componenti connesse,
    misurate; il motore non le riconosce.
-7. **Costo superlineare in densità** per la risoluzione dei conflitti (§4.3).
-8. **Riproducibilità cross-version non garantita** (§8, livello C).
+8. **Costo superlineare in densità** per la risoluzione dei conflitti (§4.3).
+9. **Riproducibilità cross-version non garantita** (§8, livello C).
+10. **Nessun parallelismo.** Il flusso RNG sequenziale lo esclude; M9 richiederà
+    un RNG counter-based con chiave `(passo, id)` e un test di equivalenza.
 
-Decisioni rinviate a M3: costi di movimento, dissipazione, sorgenti e pozzi,
-politica di creazione/morte delle particelle, migrazione degli ID su array
-compattati, catalisi della rottura.
+Decisioni rinviate a M4: rilevamento e tracciamento delle strutture, eventi di
+nascita/scissione, politiche di creazione e morte delle particelle con rilascio
+degli ID, catalisi della rottura, gradienti di energia.
 
 ---
 
 ## 16. Reazioni consentite e controlli negativi
 
-In M2 la "tabella delle reazioni" è la coppia di regole:
+In M3 la "tabella delle reazioni" è:
 
 | Regola | Condizione | Effetto | Costo |
 |---|---|---|---|
-| Formazione | coppia ammessa, adiacenza, slot liberi, energia sufficiente, estrazione | nasce un legame | `bond_cost` per particella, immagazzinato |
-| Rottura | estrazione | il legame scompare | restituzione dell'energia |
+| Formazione | coppia ammessa, adiacenza, slot liberi, energia sufficiente, estrazione | nasce un legame | `bond_cost` immagazzinato + `formation_dissipation` dissipata |
+| Rottura | estrazione | il legame scompare | `breaking_dissipation` sottratta al restituito |
+| Movimento | estrazione, energia sufficiente | la particella cambia cella | `movement_cost` dissipato, solo se accettata |
+| Iniezione | accumulatore della sorgente | energia a una particella | nessuna, è il flusso entrante |
+| Dissipazione | decadimento intero per passo | energia rimossa | va in `dissipated` |
 
-Nessuna trasformazione di specie. Controlli negativi definiti in M0 e ancora da
-eseguire (richiedono M3 per i flussi): N1 particelle immobili senza reazioni, N2
-aggregazione casuale a densità controllata, N3 reazioni reversibili senza
-ereditarietà. Il controllo positivo resta previsto per M5, isolato.
+Nessuna trasformazione di specie. Controlli negativi definiti in M0 (N1
+particelle immobili senza reazioni, N2 aggregazione casuale a densità
+controllata, N3 reazioni reversibili senza ereditarietà) e il controllo positivo
+isolato per M5.
 
 ---
 
 ## 17. Glossario
 
-- **Passo**: rottura, movimento, risoluzione, formazione.
+- **Passo**: dissipazione, iniezione, rottura, movimento, risoluzione, formazione.
 - **Legame**: relazione locale reversibile con energia immagazzinata.
 - **Aggregato**: componente connessa di particelle legate, dimensione ≥ 2.
 - **Particella libera**: particella con grado 0.
+- **Ledger**: `injected`, `dissipated`, `unabsorbed`; rende verificabile il
+  bilancio di un sistema aperto.
+- **Accumulatore**: resto intero di una sorgente, stato persistente.
 - **`state_hash`**: hash materiale (posizioni e specie).
-- **`state_hash_full`**: hash completo (identità, energia, legami).
+- **`state_hash_full`**: hash completo (identità, energia, legami, flussi).
 - **Quanto**: unità intera di energia; nessuna unità fisica è attribuita.

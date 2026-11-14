@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 — evidenze sulla varietà di strutture
 - Esito: **PASS**
-- Eseguito: 2026-11-14T21:52:16+00:00
+- Eseguito: 2026-11-14T22:10:55+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -32,4 +32,4 @@ Configurazione M2 quick, 500 passi: aggregati come componenti connesse dei legam
 ## Test pytest associati
 
 - `tests/test_chemistry.py::test_aggregate_statistics` → **PASSED** (0.0000 s)
-- `tests/test_chemistry.py::test_m2_baseline_produces_structures_and_conserves_energy` → **PASSED** (2.0520 s)
+- `tests/test_chemistry.py::test_m2_baseline_produces_structures_and_conserves_energy` → **PASSED** (2.1620 s)

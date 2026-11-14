@@ -38,6 +38,7 @@ class BondEvent:
     id_b: int
     energy: int
     catalyzed: bool = False
+    dissipated: int = 0
 
 
 def break_bonds(world: "World") -> list[BondEvent]:
@@ -51,16 +52,23 @@ def break_bonds(world: "World") -> list[BondEvent]:
     for index_a, index_b in sorted(store.bonds):
         if raw() >= threshold:
             continue
-        bond_energy = store.remove_bond(index_a, index_b)
-        remainder = bond_energy - bond_energy // 2
+        bond_energy = store.bonds[(index_a, index_b)]
+        loss = world.breaking_dissipation
+        if loss > bond_energy:
+            loss = bond_energy
+        returned = bond_energy - loss
+        store.remove_bond(index_a, index_b)
+        remainder = returned - returned // 2
         store.energy[index_a] += remainder  # l'ID minore riceve il resto
-        store.energy[index_b] += bond_energy // 2
+        store.energy[index_b] += returned // 2
+        world.dissipated += loss
         event = BondEvent(
             kind="break",
             step=world.step,
             id_a=store.ids[index_a],
             id_b=store.ids[index_b],
-            energy=bond_energy,
+            energy=returned,
+            dissipated=loss,
         )
         events.append(event)
         world.bonds_broken_total += 1
@@ -74,7 +82,8 @@ def form_bonds(world: "World") -> list[BondEvent]:
         return []
     threshold = world.formation_threshold
     raw = world.rng.raw
-    cost = world.bond_cost
+    cost = world.formation_cost
+    extra = world.formation_dissipation
     max_bonds = world.max_bonds
     store = world.store
     events: list[BondEvent] = []
@@ -98,14 +107,16 @@ def form_bonds(world: "World") -> list[BondEvent]:
             continue
         store.energy[index_a] -= cost
         store.energy[index_b] -= cost
-        store.add_bond(index_a, index_b, 2 * cost)
+        store.add_bond(index_a, index_b, 2 * (cost - extra))
+        world.dissipated += 2 * extra
         event = BondEvent(
             kind="form",
             step=world.step,
             id_a=store.ids[index_a],
             id_b=store.ids[index_b],
-            energy=2 * cost,
+            energy=2 * (cost - extra),
             catalyzed=factor > 1.0,
+            dissipated=2 * extra,
         )
         events.append(event)
         world.bonds_formed_total += 1
@@ -118,7 +129,7 @@ def _candidate_pairs(world: "World") -> Iterator[tuple[int, int]]:
     store = world.store
     max_bonds = world.max_bonds
     allowed = world.allowed_pairs
-    cost = world.bond_cost
+    cost = world.formation_cost
     width = store.width
     height = store.height
     periodic = world.periodic

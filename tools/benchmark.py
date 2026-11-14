@@ -136,6 +136,7 @@ def main() -> int:
         ("quick (32x32)", load_config(ROOT / "configs" / "quick.json"), 1000),
         ("baseline (128x128, 6 specie)", load_config(ROOT / "configs" / "baseline.json"), 500),
         ("m2 chimica (128x128)", load_config(ROOT / "configs" / "m2_baseline.json"), 300),
+        ("m3 flussi (128x128)", load_config(ROOT / "configs" / "m3_baseline.json"), 300),
         ("densita 2.5%", _density_config(0.025), 500),
         ("densita 25%", _density_config(0.25), 200),
         ("densita 50%", _density_config(0.50), 100),
@@ -144,6 +145,7 @@ def main() -> int:
     results = [measure(name, config, steps, args.repeats) for name, config, steps in cases]
     equivalence_result = equivalence(ROOT / "configs" / "baseline.json", 2000)
     equivalence_m2 = equivalence(ROOT / "configs" / "m2_quick.json", 400, full=True)
+    equivalence_m3 = equivalence(ROOT / "configs" / "m3_quick.json", 400, full=True)
 
     payload = {
         "repeats": args.repeats,
@@ -151,7 +153,11 @@ def main() -> int:
         "versions": runtime_versions(),
         "baseline_memory_bytes": process_baseline_memory(),
         "cases": results,
-        "equivalence": {"m1": equivalence_result, "m2": equivalence_m2},
+        "equivalence": {
+            "m1": equivalence_result,
+            "m2": equivalence_m2,
+            "m3": equivalence_m3,
+        },
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 MAX_SPECIES = 6
 VALID_BOUNDARIES = ("periodic", "closed")
 VALID_NEIGHBORHOODS = ("von_neumann",)
@@ -133,6 +133,64 @@ DISABLED_CHEMISTRY = ChemistryConfig()
 
 
 @dataclass(frozen=True, slots=True)
+class DecayConfig:
+    """Decadimento deterministico: `num` quanti ogni `den` passi."""
+
+    num: int = 0
+    den: int = 1
+
+    def to_dict(self) -> dict[str, int]:
+        return {"num": self.num, "den": self.den}
+
+
+@dataclass(frozen=True, slots=True)
+class SourceConfig:
+    """Sorgente localizzata con tasso razionale e capacità per particella."""
+
+    x: int
+    y: int
+    rate_num: int
+    rate_den: int
+    capacity: int
+    overflow: str = "discard"
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "x": self.x,
+            "y": self.y,
+            "rate_num": self.rate_num,
+            "rate_den": self.rate_den,
+            "capacity": self.capacity,
+            "overflow": self.overflow,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class EnergyConfig:
+    """Flussi energetici, dissipazione e costi (schema 3)."""
+
+    movement_cost: int = 0
+    formation_dissipation: int = 0
+    breaking_dissipation: int = 0
+    particle_decay: DecayConfig = field(default_factory=DecayConfig)
+    bond_decay: DecayConfig = field(default_factory=DecayConfig)
+    sources: tuple[SourceConfig, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "movement_cost": self.movement_cost,
+            "formation_dissipation": self.formation_dissipation,
+            "breaking_dissipation": self.breaking_dissipation,
+            "particle_decay": self.particle_decay.to_dict(),
+            "bond_decay": self.bond_decay.to_dict(),
+            "sources": [source.to_dict() for source in self.sources],
+        }
+
+
+DISABLED_ENERGY = EnergyConfig()
+
+
+@dataclass(frozen=True, slots=True)
 class MetricsConfig:
     every: int = 100
 
@@ -149,6 +207,7 @@ class Config:
     placement: str = "random_uniform"
     metrics: MetricsConfig = field(default_factory=MetricsConfig)
     chemistry: ChemistryConfig = field(default_factory=ChemistryConfig)
+    energy: EnergyConfig = field(default_factory=EnergyConfig)
     schema_version: int = SCHEMA_VERSION
 
     # -- serializzazione -------------------------------------------------
@@ -167,6 +226,8 @@ class Config:
         }
         if include_bonds:
             payload["chemistry"] = self.chemistry.to_dict()
+        if self.schema_version >= 3:
+            payload["energy"] = self.energy.to_dict()
         return payload
 
     def canonical_json(self) -> str:
@@ -193,12 +254,13 @@ class Config:
                 "species",
                 "metrics",
                 "chemistry",
+                "energy",
             },
             "config",
         )
         schema_version = _int(data.get("schema_version", SCHEMA_VERSION), "schema_version")
-        if schema_version not in (1, 2):
-            raise ConfigError(f"schema_version: attesa 1 o 2, ricevuta {schema_version}")
+        if schema_version not in (1, 2, 3):
+            raise ConfigError(f"schema_version: attesa 1, 2 o 3, ricevuta {schema_version}")
 
         grid_raw = _mapping(data.get("grid"), "grid")
         _reject_unknown(grid_raw, {"width", "height", "boundary"}, "grid")
@@ -227,6 +289,13 @@ class Config:
                 raise ConfigError("chemistry: non ammesso nello schema 1")
             chemistry = DISABLED_CHEMISTRY
 
+        if schema_version >= 3 and "energy" in data:
+            energy = _energy_from_dict(_mapping(data["energy"], "energy"))
+        else:
+            if schema_version < 3 and "energy" in data:
+                raise ConfigError(f"energy: non ammesso nello schema {schema_version}")
+            energy = DISABLED_ENERGY
+
         return cls(
             seed=_int(data.get("seed"), "seed"),
             grid=grid,
@@ -235,13 +304,14 @@ class Config:
             placement=_string(data.get("placement", "random_uniform"), "placement"),
             metrics=metrics,
             chemistry=chemistry,
+            energy=energy,
             schema_version=schema_version,
         )
 
     # -- validazione -----------------------------------------------------
     def validate(self) -> "Config":
-        if self.schema_version not in (1, 2):
-            raise ConfigError(f"schema_version: attesa 1 o 2, ricevuta {self.schema_version}")
+        if self.schema_version not in (1, 2, 3):
+            raise ConfigError(f"schema_version: attesa 1, 2 o 3, ricevuta {self.schema_version}")
         if self.grid.width < 2 or self.grid.height < 2:
             raise ConfigError("grid: larghezza e altezza devono essere >= 2")
         if self.grid.boundary not in VALID_BOUNDARIES:
@@ -293,6 +363,7 @@ class Config:
             )
 
         self._validate_chemistry(set(names))
+        self._validate_energy()
         return self
 
     def _validate_chemistry(self, names: set[str]) -> None:
@@ -339,6 +410,126 @@ class Config:
                 )
             if rule.factor < 1.0:
                 raise ConfigError("chemistry.catalysis.factor: deve essere >= 1")
+
+    def _validate_energy(self) -> None:
+        if self.schema_version < 3:
+            if self.energy != DISABLED_ENERGY:
+                raise ConfigError(
+                    f"energy: non ammesso nello schema {self.schema_version}"
+                )
+            return
+
+        block = self.energy
+        for field_name in (
+            "movement_cost",
+            "formation_dissipation",
+            "breaking_dissipation",
+        ):
+            if getattr(block, field_name) < 0:
+                raise ConfigError(f"energy.{field_name}: deve essere >= 0")
+        if (
+            block.formation_dissipation or block.breaking_dissipation
+        ) and not self.chemistry.enabled:
+            raise ConfigError(
+                "energy: formation/breaking_dissipation richiedono chemistry.enabled"
+            )
+        for name, decay in (
+            ("particle_decay", block.particle_decay),
+            ("bond_decay", block.bond_decay),
+        ):
+            if decay.num < 0:
+                raise ConfigError(f"energy.{name}.num: deve essere >= 0")
+            if decay.den < 1:
+                raise ConfigError(f"energy.{name}.den: deve essere >= 1")
+            if decay.num > decay.den:
+                raise ConfigError(
+                    f"energy.{name}.num: non può superare den ({decay.num} > {decay.den})"
+                )
+
+        seen: set[tuple[int, int]] = set()
+        for index, source in enumerate(block.sources):
+            if not (0 <= source.x < self.grid.width and 0 <= source.y < self.grid.height):
+                raise ConfigError(
+                    f"energy.sources[{index}]: posizione ({source.x}, {source.y}) fuori griglia"
+                )
+            if (source.x, source.y) in seen:
+                raise ConfigError(f"energy.sources[{index}]: cella duplicata")
+            seen.add((source.x, source.y))
+            if source.rate_num < 0:
+                raise ConfigError(f"energy.sources[{index}].rate_num: deve essere >= 0")
+            if source.rate_den < 1:
+                raise ConfigError(f"energy.sources[{index}].rate_den: deve essere >= 1")
+            if source.capacity < 0:
+                raise ConfigError(f"energy.sources[{index}].capacity: deve essere >= 0")
+            if source.overflow != "discard":
+                raise ConfigError(
+                    f"energy.sources[{index}].overflow: unico valore ammesso è 'discard'"
+                )
+
+
+def _decay_from_dict(entry: Any, name: str) -> DecayConfig:
+    entry = _mapping(entry, name)
+    _reject_unknown(entry, {"num", "den"}, name)
+    return DecayConfig(
+        num=_int(entry.get("num", 0), f"{name}.num"),
+        den=_int(entry.get("den", 1), f"{name}.den"),
+    )
+
+
+def _energy_from_dict(data: Mapping[str, Any]) -> EnergyConfig:
+    _reject_unknown(
+        data,
+        {
+            "movement_cost",
+            "formation_dissipation",
+            "breaking_dissipation",
+            "particle_decay",
+            "bond_decay",
+            "sources",
+        },
+        "energy",
+    )
+    sources_raw = data.get("sources", [])
+    if not isinstance(sources_raw, list):
+        raise ConfigError("energy.sources: attesa una lista")
+    sources: list[SourceConfig] = []
+    for index, entry in enumerate(sources_raw):
+        entry = _mapping(entry, f"energy.sources[{index}]")
+        _reject_unknown(
+            entry,
+            {"x", "y", "rate_num", "rate_den", "capacity", "overflow"},
+            f"energy.sources[{index}]",
+        )
+        sources.append(
+            SourceConfig(
+                x=_int(entry.get("x"), f"energy.sources[{index}].x"),
+                y=_int(entry.get("y"), f"energy.sources[{index}].y"),
+                rate_num=_int(entry.get("rate_num", 0), f"energy.sources[{index}].rate_num"),
+                rate_den=_int(entry.get("rate_den", 1), f"energy.sources[{index}].rate_den"),
+                capacity=_int(entry.get("capacity", 0), f"energy.sources[{index}].capacity"),
+                overflow=_string(
+                    entry.get("overflow", "discard"), f"energy.sources[{index}].overflow"
+                ),
+            )
+        )
+    # forma canonica: ordine (y, x), così gli accumulatori sono serializzati in
+    # un ordine indipendente da come l'utente ha scritto il file
+    sources.sort(key=lambda source: (source.y, source.x))
+
+    return EnergyConfig(
+        movement_cost=_int(data.get("movement_cost", 0), "energy.movement_cost"),
+        formation_dissipation=_int(
+            data.get("formation_dissipation", 0), "energy.formation_dissipation"
+        ),
+        breaking_dissipation=_int(
+            data.get("breaking_dissipation", 0), "energy.breaking_dissipation"
+        ),
+        particle_decay=_decay_from_dict(
+            data.get("particle_decay", {}), "energy.particle_decay"
+        ),
+        bond_decay=_decay_from_dict(data.get("bond_decay", {}), "energy.bond_decay"),
+        sources=tuple(sources),
+    )
 
 
 def _species_from_dict(entry: Any, index: int, schema_version: int) -> SpeciesConfig:

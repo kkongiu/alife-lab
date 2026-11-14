@@ -91,12 +91,18 @@ def _report(summary: dict[str, Any], out_dir: Path, label: str) -> None:
         if chemistry["enabled"]
         else ""
     )
+    energy = summary["energy"]
+    flows = (
+        f" [in {energy['injected']} / out {energy['out']}]"
+        if energy["injected"] or energy["out"]
+        else ""
+    )
     print(
         f"{label}: {summary['steps']} passi in {summary['duration_s']:.2f} s "
         f"({summary['steps_per_second']:.1f} passi/s), "
         f"{summary['particles_total']} particelle, "
         f"{summary['moves_total']} spostamenti{bonds}, "
-        f"energia {summary['energy']['total']}, "
+        f"energia {energy['total']}{flows}, "
         f"hash {summary['state_hash_full'][:16]}"
     )
     print(f"Artefatti in: {out_dir}")

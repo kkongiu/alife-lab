@@ -44,8 +44,10 @@ EVIDENCE_DIR = OUT / "evidence"
 sys.path.insert(0, str(ROOT / "tests"))
 from support import (  # noqa: E402  (helper condivisi con la suite)
     M2_QUICK,
+    M3_QUICK,
     make_chemistry_config,
     make_config,
+    make_energy_config,
     world_with,
 )
 
@@ -203,6 +205,87 @@ REQUIRED = [
         "tests": [
             "tests/test_checkpoint.py::test_v1_checkpoint_is_migrated",
             "tests/test_config.py::test_v1_hash_is_unchanged",
+        ],
+    },
+    {
+        "id": "M3-01",
+        "title": "Identità energetica in sistema aperto",
+        "contract": "docx S3 — bilanci aggregati",
+        "slug": "identita_energetica",
+        "tests": [
+            "tests/test_energy.py::test_open_run_keeps_identity",
+            "tests/test_energy.py::test_closed_system_keeps_identity",
+        ],
+    },
+    {
+        "id": "M3-02",
+        "title": "Dissipazione esatta di particelle e legami",
+        "contract": "docx S3 — dissipazione",
+        "slug": "dissipazione",
+        "tests": [
+            "tests/test_energy.py::test_particle_decay_is_exact",
+            "tests/test_energy.py::test_bond_decay_is_exact",
+        ],
+    },
+    {
+        "id": "M3-03",
+        "title": "Sorgenti con accumulatore e capacità",
+        "contract": "docx S3 — ingresso energetico localizzato",
+        "slug": "sorgenti",
+        "tests": [
+            "tests/test_energy.py::test_source_accumulator_is_exact",
+            "tests/test_energy.py::test_source_capacity_and_unabsorbed",
+            "tests/test_energy.py::test_source_on_empty_cell_is_unabsorbed",
+        ],
+    },
+    {
+        "id": "M3-04",
+        "title": "Costo di movimento pagato solo se accettato",
+        "contract": "docx S3 — ogni trasformazione ha un costo",
+        "slug": "costo_movimento",
+        "tests": [
+            "tests/test_energy.py::test_movement_cost_charged_per_move",
+            "tests/test_energy.py::test_movement_cost_blocks_when_insufficient",
+        ],
+    },
+    {
+        "id": "M3-05",
+        "title": "Costi di formazione e rottura",
+        "contract": "docx S3 — costi delle reazioni",
+        "slug": "costi_reazione",
+        "tests": [
+            "tests/test_energy.py::test_formation_dissipation",
+            "tests/test_energy.py::test_breaking_dissipation",
+        ],
+    },
+    {
+        "id": "M3-06",
+        "title": "Determinismo con flussi e budget RNG",
+        "contract": "docx S3 / contratto M1 (riproducibilità)",
+        "slug": "determinismo_flussi",
+        "tests": [
+            "tests/test_energy.py::test_open_run_is_deterministic",
+            "tests/test_energy.py::test_rng_budget_with_flows_disabled",
+        ],
+    },
+    {
+        "id": "M3-07",
+        "title": "Checkpoint con ledger e accumulatori",
+        "contract": "docx S3 — riproducibilità dei run aperti",
+        "slug": "checkpoint_flussi",
+        "tests": [
+            "tests/test_checkpoint.py::test_v3_roundtrip_preserves_ledger",
+            "tests/test_checkpoint.py::test_v3_resume_is_equivalent_with_flows",
+            "tests/test_checkpoint.py::test_v2_checkpoint_is_migrated_to_v3",
+        ],
+    },
+    {
+        "id": "M3-08",
+        "title": "Core senza sorgenti di non determinismo",
+        "contract": "specifica M3 — regole R1–R10",
+        "slug": "core_deterministico",
+        "tests": [
+            "tests/test_energy.py::test_core_modules_do_not_import_nondeterministic_sources",
         ],
     },
 ]
@@ -768,6 +851,258 @@ def evidence_m2_07(tmp: Path) -> tuple[str, list[Measure], list[Check]]:
     )
 
 
+def evidence_m3_01(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = World.create(load_config(M3_QUICK))
+    world.advance(100)
+    delta = world.energy() - world.accounted_energy()
+    return (
+        "Configurazione M3 quick (32×32) con sorgenti, dissipazione, costi di "
+        "movimento e di reazione, 100 passi.",
+        [
+            ("energia interna", str(world.energy())),
+            ("energia iniziale", str(world.configured_energy())),
+            ("iniettata", str(world.injected)),
+            ("dissipata", str(world.dissipated)),
+            ("non assorbita", str(world.unabsorbed)),
+            ("identità: E − (E0 + in − out)", str(delta)),
+        ],
+        [
+            ("identità energetica esatta", delta == 0),
+            ("esiste un flusso entrante", world.injected > 0),
+            ("esiste dissipazione", world.dissipated > 0),
+            ("nessuna energia negativa", all(value >= 0 for value in world.store.energy)),
+            ("nessuna violazione di invariante", world.validate() == []),
+        ],
+    )
+
+
+def evidence_m3_02(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    particle_config = make_energy_config(
+        species=[{"name": "S0", "count": 1, "move_probability": 0.0, "energy": 100, "max_bonds": 0}],
+        chemistry={"enabled": False},
+        energy={"particle_decay": {"num": 1, "den": 3}},
+    )
+    particle = world_with(particle_config, [(2, 2)], [0], energy=[100])
+    particle.advance(9)
+
+    bond_config = make_energy_config(energy={"bond_decay": {"num": 1, "den": 1}})
+    bond = world_with(
+        bond_config, [(1, 1), (2, 1)], [0, 0], energy=[10, 10], bonds=[(0, 1, 100)]
+    )
+    bond.advance(3)
+    return (
+        "Decadimento sfasato: 1 quanto ogni 3 passi per una particella con 100 "
+        "quanti; 1 quanto per passo su un legame con 100.",
+        [
+            ("energia della particella dopo 9 passi", str(particle.store.energy[0])),
+            ("dissipato dalla particella", str(particle.dissipated)),
+            ("energia del legame dopo 3 passi", str(bond.store.bonds[(0, 1)])),
+            ("dissipato dal legame", str(bond.dissipated)),
+        ],
+        [
+            ("particella: 3 quanti in 9 passi", particle.store.energy == [97] and particle.dissipated == 3),
+            ("legame: 3 quanti in 3 passi", bond.store.bonds[(0, 1)] == 97 and bond.dissipated == 3),
+        ],
+    )
+
+
+def evidence_m3_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = make_energy_config(
+        species=[{"name": "S0", "count": 1, "move_probability": 0.0, "energy": 0, "max_bonds": 0}],
+        chemistry={"enabled": False},
+        energy={"sources": [{"x": 2, "y": 2, "rate_num": 1, "rate_den": 4, "capacity": 1000}]},
+    )
+    world = world_with(config, [(2, 2)], [0], energy=[0])
+    world.advance(1000)
+
+    spill_config = make_energy_config(
+        species=[{"name": "S0", "count": 1, "move_probability": 0.0, "energy": 0, "max_bonds": 0}],
+        chemistry={"enabled": False},
+        energy={"sources": [{"x": 2, "y": 2, "rate_num": 1, "rate_den": 1, "capacity": 10}]},
+    )
+    spill = world_with(spill_config, [(5, 5)], [0], energy=[0])
+    spill.advance(20)
+    return (
+        "Sorgente con tasso 1/4 e particella presente per 1000 passi (atteso 250 "
+        "quanti assorbiti) e serbatoio con capacità 10 su cella vuota per 20 "
+        "passi (atteso 10 immagazzinati, 10 traboccati).",
+        [
+            ("iniettati a tasso 1/4 in 1000 passi", str(world.injected)),
+            ("assorbiti", str(world.store.energy[0])),
+            ("serbatoio finale", str(world.source_store)),
+            ("iniettati con capacità 10 in 20 passi", str(spill.injected)),
+            ("immagazzinati nel serbatoio", str(spill.source_store)),
+            ("traboccati", str(spill.unabsorbed)),
+        ],
+        [
+            ("nessun drift: 250 quanti", world.injected == 250),
+            ("tutto assorbito dalla particella", world.store.energy == [250]),
+            ("serbatoio vuoto quando la particella è presente", world.source_store == [0]),
+            ("capacità del serbatoio rispettata", spill.source_store == [10]),
+            ("trabocco contabilizzato", spill.unabsorbed == 10),
+        ],
+    )
+
+
+def evidence_m3_04(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = make_energy_config(
+        species=[{"name": "S0", "count": 1, "move_probability": 1.0, "energy": 10, "max_bonds": 0}],
+        chemistry={"enabled": False},
+        energy={"movement_cost": 1},
+    )
+    world = world_with(config, [(2, 2)], [0], energy=[10])
+    world.advance(10)
+
+    blocked_config = make_energy_config(
+        species=[{"name": "S0", "count": 1, "move_probability": 1.0, "energy": 1, "max_bonds": 0}],
+        chemistry={"enabled": False},
+        energy={"movement_cost": 2},
+    )
+    blocked = world_with(blocked_config, [(2, 2)], [0], energy=[1])
+    blocked.advance(10)
+    return (
+        "Costo 1 con energia 10 per 10 passi; costo 2 con energia 1 per 10 passi.",
+        [
+            ("mosse pagate", str(world.moves_total)),
+            ("energia residua", str(world.store.energy[0])),
+            ("dissipato per movimento", str(world.dissipated)),
+            ("mosse con energia insufficiente", str(blocked.moves_total)),
+            ("energia del mondo bloccato", str(blocked.store.energy[0])),
+        ],
+        [
+            ("una mossa = un quanto", world.dissipated == world.moves_total == 10),
+            ("energia esaurita esattamente", world.store.energy == [0]),
+            ("nessuna mossa senza energia", blocked.moves_total == 0),
+            ("energia intatta nel mondo bloccato", blocked.store.energy == [1]),
+        ],
+    )
+
+
+def evidence_m3_05(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    formation = world_with(
+        make_energy_config(energy={"formation_dissipation": 1}),
+        [(1, 1), (2, 1)],
+        [0, 0],
+    )
+    chemistry.form_bonds(formation)
+
+    break_config = make_energy_config(
+        chemistry={
+            "enabled": True,
+            "bond_cost": 2,
+            "formation_probability": 0.0,
+            "break_probability": 1.0,
+            "allowed_pairs": [["S0", "S0"]],
+            "catalysis": [],
+        },
+        energy={"breaking_dissipation": 1},
+    )
+    breaking = world_with(
+        break_config, [(1, 1), (2, 1)], [0, 0], energy=[8, 8], bonds=[(0, 1, 4)]
+    )
+    breaking.advance(1)
+    return (
+        "Formazione con costo 2 e attrito 1; rottura con attrito 1 su un legame da 4.",
+        [
+            ("energia delle particelle dopo la formazione", str(formation.store.energy)),
+            ("energia nel legame", str(sum(formation.store.bonds.values()))),
+            ("dissipato dalla formazione", str(formation.dissipated)),
+            ("energia restituita alla rottura", str(breaking.store.energy)),
+            ("dissipato dalla rottura", str(breaking.dissipated)),
+        ],
+        [
+            ("attrito di formazione = 2", formation.dissipated == 2),
+            ("energia immagazzinata = 2×bond_cost", sum(formation.store.bonds.values()) == 4),
+            ("attrito di rottura = 1", breaking.dissipated == 1),
+            ("restituito 3 su 4", breaking.store.energy == [10, 9]),
+        ],
+    )
+
+
+def evidence_m3_06(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = load_config(M3_QUICK)
+    first = World.create(config)
+    second = World.create(config)
+    first.advance(60)
+    second.advance(60)
+    return (
+        "Due run indipendenti con sorgenti, dissipazione e costi, stesso seed, "
+        "60 passi.",
+        [
+            ("state_hash_full A", first.state_hash_full()[:32] + "…"),
+            ("state_hash_full B", second.state_hash_full()[:32] + "…"),
+            ("iniettata A / B", f"{first.injected} / {second.injected}"),
+            ("dissipata A / B", f"{first.dissipated} / {second.dissipated}"),
+            ("estrazioni A / B", f"{first.rng.draws} / {second.rng.draws}"),
+        ],
+        [
+            ("hash completo identico", first.state_hash_full() == second.state_hash_full()),
+            ("ledger identico", (first.injected, first.dissipated, first.unabsorbed)
+             == (second.injected, second.dissipated, second.unabsorbed)),
+            ("estrazioni identiche", first.rng.draws == second.rng.draws),
+        ],
+    )
+
+
+def evidence_m3_07(tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = World.create(load_config(M3_QUICK))
+    world.advance(30)
+    path = save_checkpoint(tmp / "M3-07.json", world)
+    restored = load_checkpoint(path)
+    return (
+        "Salvataggio e ricaricamento di un mondo aperto: ledger, accumulatori e "
+        "sorgenti devono sopravvivere identici.",
+        [
+            ("passo", str(restored.step)),
+            ("iniettata", str(restored.injected)),
+            ("dissipata", str(restored.dissipated)),
+            ("non assorbita", str(restored.unabsorbed)),
+            ("accumulatori", str(restored.source_acc)),
+            ("estrazioni RNG", str(restored.rng.draws)),
+            ("dimensione checkpoint", f"{path.stat().st_size} byte"),
+        ],
+        [
+            ("stato identico", restored.snapshot() == world.snapshot()),
+            ("hash completo identico", restored.state_hash_full() == world.state_hash_full()),
+            ("ledger identico", (restored.injected, restored.dissipated, restored.unabsorbed)
+             == (world.injected, world.dissipated, world.unabsorbed)),
+            ("accumulatori identici", restored.source_acc == world.source_acc),
+        ],
+    )
+
+
+def evidence_m3_08(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    forbidden = ("import time", "import random", "import secrets", "os.urandom")
+    allowed = {"metrics.py", "events.py", "cli.py", "persistence.py"}
+    package = Path(ROOT) / "src" / "alife"
+    scanned = 0
+    offenders: list[str] = []
+    for path in sorted(package.glob("*.py")):
+        if path.name in allowed:
+            continue
+        scanned += 1
+        source = path.read_text(encoding="utf-8")
+        for module in forbidden:
+            if module in source:
+                offenders.append(f"{path.name}: {module}")
+    return (
+        "Scansione statica dei moduli del core: nessuna sorgente di non "
+        "determinismo che possa alterare lo stato.",
+        [
+            ("moduli scansionati", str(scanned)),
+            (
+                "moduli esclusi (solo metadati)",
+                ", ".join(sorted(allowed)),
+            ),
+            ("occorrenze vietate", ", ".join(offenders) if offenders else "nessuna"),
+        ],
+        [
+            ("nessun import vietato", not offenders),
+            ("core coperto dalla scansione", scanned >= 8),
+        ],
+    )
+
+
 BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-01": evidence_01,
     "M1-02": evidence_02,
@@ -784,6 +1119,14 @@ BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M2-05": evidence_m2_05,
     "M2-06": evidence_m2_06,
     "M2-07": evidence_m2_07,
+    "M3-01": evidence_m3_01,
+    "M3-02": evidence_m3_02,
+    "M3-03": evidence_m3_03,
+    "M3-04": evidence_m3_04,
+    "M3-05": evidence_m3_05,
+    "M3-06": evidence_m3_06,
+    "M3-07": evidence_m3_07,
+    "M3-08": evidence_m3_08,
 }
 
 

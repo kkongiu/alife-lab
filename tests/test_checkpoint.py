@@ -15,7 +15,7 @@ from alife.persistence import (
     world_to_checkpoint,
 )
 from alife.world import World
-from support import M2_QUICK, make_config
+from support import M2_QUICK, M3_QUICK, make_config
 
 
 def test_roundtrip_preserves_state(tmp_path) -> None:
@@ -261,3 +261,92 @@ def test_v1_checkpoint_with_bonds_is_rejected(tmp_path) -> None:
     path.write_text(json.dumps(payload))
     with pytest.raises(CheckpointError, match="legami non ammessi"):
         load_checkpoint(path)
+
+
+# --- schema 3: ledger, sorgenti, flussi ------------------------------------
+
+
+def test_v3_roundtrip_preserves_ledger(tmp_path) -> None:
+    world = World.create(load_config(M3_QUICK))
+    world.advance(40)
+    assert world.injected > 0
+    path = save_checkpoint(tmp_path / "m3.json", world)
+
+    restored = load_checkpoint(path)
+    assert restored.snapshot() == world.snapshot()
+    assert restored.injected == world.injected
+    assert restored.dissipated == world.dissipated
+    assert restored.unabsorbed == world.unabsorbed
+    assert restored.source_acc == world.source_acc
+    assert restored.source_store == world.source_store
+    assert restored.rng.draws == world.rng.draws
+    assert restored.state_hash_full() == world.state_hash_full()
+
+
+def test_v3_resume_is_equivalent_with_flows(tmp_path) -> None:
+    config = load_config(M3_QUICK)
+    continuous = World.create(config)
+    continuous.advance(120)
+
+    interrupted = World.create(config)
+    interrupted.advance(50)
+    path = save_checkpoint(tmp_path / "m3.json", interrupted)
+    resumed = load_checkpoint(path)
+    resumed.advance(70)
+
+    assert resumed.state_hash_full() == continuous.state_hash_full()
+    assert resumed.injected == continuous.injected
+    assert resumed.dissipated == continuous.dissipated
+    assert resumed.source_acc == continuous.source_acc
+
+
+def test_detects_tampered_ledger(tmp_path) -> None:
+    world = World.create(load_config(M3_QUICK))
+    world.advance(10)
+    path = save_checkpoint(tmp_path / "m3.json", world)
+    data = json.loads(path.read_text())
+    data["ledger"]["injected"] += 1
+    path.write_text(json.dumps(data))
+
+    with pytest.raises(CheckpointError, match="hash completo"):
+        load_checkpoint(path)
+
+
+def test_detects_wrong_source_accumulators(tmp_path) -> None:
+    world = World.create(load_config(M3_QUICK))
+    path = save_checkpoint(tmp_path / "m3.json", world)
+    data = json.loads(path.read_text())
+    data["source_acc"] = data["source_acc"][:-1]
+    path.write_text(json.dumps(data))
+
+    with pytest.raises(CheckpointError, match="accumulatori"):
+        load_checkpoint(path)
+
+
+def test_v2_checkpoint_is_migrated_to_v3(tmp_path) -> None:
+    config = load_config(M2_QUICK)
+    world = World.create(config)
+    world.advance(30)
+    payload = {
+        "format": CHECKPOINT_FORMAT,
+        "schema_version": 2,
+        "config": config.to_dict(),
+        "config_hash": config.hash(),
+        "step": world.step,
+        "moves_total": world.moves_total,
+        "next_id": world.next_id,
+        "rng": world.rng.state(),
+        "particles": world.store.full_records(),
+        "bonds": world.store.bond_records(),
+        "energy_total": world.energy(),
+        "state_hash": world.state_hash(),
+        "state_hash_full": world.state_hash_full(),
+    }
+    path = tmp_path / "v2.json"
+    path.write_text(json.dumps(payload))
+
+    migrated = load_checkpoint(path)
+    assert migrated.injected == migrated.dissipated == migrated.unabsorbed == 0
+    assert migrated.source_acc == []
+    assert migrated.state_hash_full() == world.state_hash_full()
+    assert migrated.step == world.step

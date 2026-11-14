@@ -188,11 +188,15 @@ class ParticleStore:
         return _hash(payload)
 
     def state_hash_full(
-        self, species_names: Sequence[str], boundary: str
+        self,
+        species_names: Sequence[str],
+        boundary: str,
+        schema: int = 2,
+        extras: dict | None = None,
     ) -> str:
-        """Hash completo: identità, energia e legami inclusi."""
+        """Hash completo: identità, energia e legami (e, dallo schema 3, i flussi)."""
         payload = {
-            "schema": 2,
+            "schema": schema,
             "width": self.width,
             "height": self.height,
             "boundary": boundary,
@@ -200,6 +204,8 @@ class ParticleStore:
             "particles": self.full_records(),
             "bonds": self.bond_records(),
         }
+        if extras:
+            payload.update(extras)
         return _hash(payload)
 
     def occupied_cells(self) -> int:

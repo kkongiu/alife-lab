@@ -44,6 +44,19 @@ class World:
         "bonds_formed_total",
         "bonds_broken_total",
         "event_sink",
+        "energy_config",
+        "movement_cost",
+        "formation_dissipation",
+        "breaking_dissipation",
+        "formation_cost",
+        "particle_decay",
+        "bond_decay",
+        "sources",
+        "source_acc",
+        "source_store",
+        "injected",
+        "dissipated",
+        "unabsorbed",
     )
 
     def __init__(
@@ -56,6 +69,11 @@ class World:
         next_id: int | None = None,
         bonds_formed_total: int = 0,
         bonds_broken_total: int = 0,
+        injected: int = 0,
+        dissipated: int = 0,
+        unabsorbed: int = 0,
+        source_acc: list[int] | None = None,
+        source_store: list[int] | None = None,
     ) -> None:
         if store.width != config.grid.width or store.height != config.grid.height:
             raise InvariantError("la griglia delle particelle non corrisponde alla configurazione")
@@ -83,6 +101,35 @@ class World:
         self.bonds_formed_total = bonds_formed_total
         self.bonds_broken_total = bonds_broken_total
         self.event_sink = None
+
+        energy_config = config.energy
+        self.energy_config = energy_config
+        self.movement_cost = energy_config.movement_cost
+        self.formation_dissipation = energy_config.formation_dissipation
+        self.breaking_dissipation = energy_config.breaking_dissipation
+        self.formation_cost = chemistry.bond_cost + self.formation_dissipation
+        self.particle_decay = energy_config.particle_decay
+        self.bond_decay = energy_config.bond_decay
+        self.sources = energy_config.sources
+        self.source_acc = (
+            list(source_acc) if source_acc is not None else [0] * len(self.sources)
+        )
+        self.source_store = (
+            list(source_store) if source_store is not None else [0] * len(self.sources)
+        )
+        if len(self.source_acc) != len(self.sources):
+            raise InvariantError(
+                f"accumulatori delle sorgenti: {len(self.source_acc)} per "
+                f"{len(self.sources)} sorgenti"
+            )
+        if len(self.source_store) != len(self.sources):
+            raise InvariantError(
+                f"serbatoi delle sorgenti: {len(self.source_store)} per "
+                f"{len(self.sources)} sorgenti"
+            )
+        self.injected = injected
+        self.dissipated = dissipated
+        self.unabsorbed = unabsorbed
 
     # -- costruzione -----------------------------------------------------
     @classmethod
@@ -117,15 +164,84 @@ class World:
 
     # -- evoluzione ------------------------------------------------------
     def advance(self, steps: int, observer: Observer | None = None) -> None:
-        """Esegue ``steps`` passi; dopo ogni passo invoca ``observer(self)``."""
+        """Esegue ``steps`` passi; dopo ogni passo invoca ``observer(self)``.
+
+        Ordine fissato: dissipazione → iniezione → rottura → movimento →
+        risoluzione → formazione. Cambiarlo è un cambio di schema.
+        """
         if steps < 0:
             raise ValueError("steps non può essere negativo")
         for _ in range(steps):
+            self.dissipate()
+            self.inject()
             report = advance_one_step(self)
             self.moves_total += report.moves
             self.step += 1
             if observer is not None:
                 observer(self)
+
+    # -- flussi energetici -----------------------------------------------
+    def dissipate(self) -> None:
+        """Decadimento deterministico: `num` quanti ogni `den` passi, sfasati per ID.
+
+        Ogni particella perde **un** quanto nei passi in cui
+        `(step + id) mod den < num`; ogni legame nei passi in cui
+        `(step + id_a + id_b) mod den < num`. Non serve stato aggiuntivo, non si
+        consumano estrazioni, e il decadimento non dipende dal livello di energia
+        (a differenza di un tasso proporzionale, che a basse energie si annulla
+        per arrotondamento intero).
+        """
+        store = self.store
+        decay = self.particle_decay
+        if decay.num:
+            num = decay.num
+            den = decay.den
+            step = self.step
+            for index in range(len(store.energy)):
+                if (step + index) % den < num and store.energy[index] > 0:
+                    store.energy[index] -= 1
+                    self.dissipated += 1
+        decay = self.bond_decay
+        if decay.num and store.bonds:
+            num = decay.num
+            den = decay.den
+            step = self.step
+            for (index_a, index_b) in sorted(store.bonds):
+                if store.bonds[(index_a, index_b)] > 0 and (
+                    (step + store.ids[index_a] + store.ids[index_b]) % den < num
+                ):
+                    store.bonds[(index_a, index_b)] -= 1
+                    self.dissipated += 1
+
+    def inject(self) -> None:
+        """Iniezione localizzata con serbatoio e accumulatori interi.
+
+        Ogni sorgente accumula l'energia emessa in un serbatoio locale (capacità
+        `capacity`); la particella presente sulla cella assorbe l'intero
+        serbatoio. Il trabocco del serbatoio va in `unabsorbed`: una sorgente non
+        crea energia e non la trattiene oltre la propria capacità.
+        """
+        if not self.sources:
+            return
+        store = self.store
+        width = store.width
+        for index, source in enumerate(self.sources):
+            accumulated = self.source_acc[index] + source.rate_num
+            emitted, accumulated = divmod(accumulated, source.rate_den)
+            self.source_acc[index] = accumulated
+            if emitted <= 0:
+                continue
+            self.injected += emitted
+            buffer = self.source_store[index] + emitted
+            if buffer > source.capacity:
+                self.unabsorbed += buffer - source.capacity
+                buffer = source.capacity
+            particle = store.grid[source.y * width + source.x]
+            if particle == EMPTY:
+                self.source_store[index] = buffer
+                continue
+            store.energy[particle] += buffer
+            self.source_store[index] = 0
 
     # -- energia ---------------------------------------------------------
     def energy_particles(self) -> int:
@@ -134,8 +250,12 @@ class World:
     def energy_bonds(self) -> int:
         return sum(self.store.bonds.values())
 
+    def energy_sources(self) -> int:
+        """Energia immagazzinata nei serbatoi delle sorgenti: è ancora interna."""
+        return sum(self.source_store)
+
     def energy(self) -> int:
-        return self.energy_particles() + self.energy_bonds()
+        return self.energy_particles() + self.energy_bonds() + self.energy_sources()
 
     def configured_energy(self) -> int:
         return sum(species.count * species.energy for species in self.config.species)
@@ -155,8 +275,21 @@ class World:
         return self.store.state_hash(self.species_names, self.config.grid.boundary)
 
     def state_hash_full(self) -> str:
-        """Hash completo: identità, energia e legami."""
-        return self.store.state_hash_full(self.species_names, self.config.grid.boundary)
+        """Hash completo: identità, energia, legami e stato dei flussi (schema 3)."""
+        schema = 2
+        extras = None
+        if self.config.schema_version >= 3:
+            schema = 3
+            extras = {
+                "injected": self.injected,
+                "dissipated": self.dissipated,
+                "unabsorbed": self.unabsorbed,
+                "source_acc": list(self.source_acc),
+                "source_store": list(self.source_store),
+            }
+        return self.store.state_hash_full(
+            self.species_names, self.config.grid.boundary, schema=schema, extras=extras
+        )
 
     def snapshot(self) -> dict:
         """Fotografia compatta dello stato, usata nei test e nei confronti."""
@@ -169,6 +302,11 @@ class World:
             "energy": self.energy(),
             "energy_particles": self.energy_particles(),
             "energy_bonds": self.energy_bonds(),
+            "injected": self.injected,
+            "dissipated": self.dissipated,
+            "unabsorbed": self.unabsorbed,
+            "source_acc": list(self.source_acc),
+            "source_store": list(self.source_store),
             "counts": self.counts(),
             "bonds": len(self.store.bonds),
             "next_id": self.next_id,
@@ -250,12 +388,48 @@ class World:
         problems.extend(self._validate_bonds())
 
         if invalid_species == 0:
-            expected_energy = self.configured_energy()
+            expected_energy = self.accounted_energy()
             actual_energy = self.energy()
             if actual_energy != expected_energy:
-                problems.append(f"energia {actual_energy} diversa da {expected_energy}")
+                problems.append(
+                    f"energia {actual_energy} diversa da {expected_energy} "
+                    f"(iniziale {self.configured_energy()}, iniettata {self.injected}, "
+                    f"dissipata {self.dissipated}, non assorbita {self.unabsorbed})"
+                )
+
+        if self.injected < 0 or self.dissipated < 0 or self.unabsorbed < 0:
+            problems.append("ledger energetico con valori negativi")
+        if len(self.source_acc) != len(self.sources):
+            problems.append(
+                f"accumulatori {len(self.source_acc)} per {len(self.sources)} sorgenti"
+            )
+        else:
+            for index, (acc, source) in enumerate(zip(self.source_acc, self.sources)):
+                if not 0 <= acc < source.rate_den:
+                    problems.append(
+                        f"sorgente {index}: accumulatore {acc} fuori da [0, {source.rate_den})"
+                    )
+        if len(self.source_store) != len(self.sources):
+            problems.append(
+                f"serbatoi {len(self.source_store)} per {len(self.sources)} sorgenti"
+            )
+        else:
+            for index, (stored, source) in enumerate(zip(self.source_store, self.sources)):
+                if not 0 <= stored <= source.capacity:
+                    problems.append(
+                        f"sorgente {index}: serbatoio {stored} fuori da [0, {source.capacity}]"
+                    )
 
         return problems
+
+    def accounted_energy(self) -> int:
+        """Energia attesa secondo il ledger: iniziale + iniettata − dissipata − non assorbita."""
+        return (
+            self.configured_energy()
+            + self.injected
+            - self.dissipated
+            - self.unabsorbed
+        )
 
     def _validate_bonds(self) -> list[str]:
         problems: list[str] = []

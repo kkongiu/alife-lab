@@ -16,6 +16,9 @@ QUICK = ROOT / "configs" / "quick.json"
 M2_QUICK = ROOT / "configs" / "m2_quick.json"
 M2_BASELINE = ROOT / "configs" / "m2_baseline.json"
 M2_CATALYSIS = ROOT / "configs" / "m2_catalysis.json"
+M3_QUICK = ROOT / "configs" / "m3_quick.json"
+M3_BASELINE = ROOT / "configs" / "m3_baseline.json"
+M3_UNFED = ROOT / "configs" / "m3_unfed.json"
 
 
 def make_config(
@@ -76,6 +79,47 @@ def make_chemistry_config(
             "placement": "random_uniform",
             "species": species,
             "chemistry": chemistry,
+            "metrics": {"every": 5},
+        }
+    ).validate()
+
+
+def make_energy_config(
+    seed: int = 3,
+    width: int = 8,
+    height: int = 8,
+    species: list[dict] | None = None,
+    chemistry: dict | None = None,
+    energy: dict | None = None,
+) -> Config:
+    """Configurazione M3 minima: schema 3, flussi disattivati salvo diversa indicazione."""
+    if species is None:
+        species = [
+            {"name": "S0", "count": 4, "move_probability": 1.0, "energy": 10, "max_bonds": 2},
+            {"name": "S1", "count": 4, "move_probability": 1.0, "energy": 10, "max_bonds": 2},
+            {"name": "S2", "count": 2, "move_probability": 1.0, "energy": 10, "max_bonds": 0},
+        ]
+    if chemistry is None:
+        chemistry = {
+            "enabled": True,
+            "bond_cost": 2,
+            "formation_probability": 1.0,
+            "break_probability": 0.0,
+            "allowed_pairs": [["S0", "S0"], ["S0", "S1"]],
+            "catalysis": [],
+        }
+    if energy is None:
+        energy = {}
+    return Config.from_dict(
+        {
+            "schema_version": 3,
+            "seed": seed,
+            "grid": {"width": width, "height": height, "boundary": "periodic"},
+            "neighborhood": "von_neumann",
+            "placement": "random_uniform",
+            "species": species,
+            "chemistry": chemistry,
+            "energy": energy,
             "metrics": {"every": 5},
         }
     ).validate()

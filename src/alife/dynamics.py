@@ -63,17 +63,21 @@ def _propose_moves(world: "World") -> dict[int, int]:
     height = store.height
     periodic = world.periodic
     thresholds = world.move_thresholds
+    movement_cost = world.movement_cost
     raw = world.rng.raw
     xs = store.xs
     ys = store.ys
     sp = store.species
     degree = store.degree
+    energy = store.energy
     proposals: dict[int, int] = {}
 
     for index in range(len(xs)):
         roll = raw()
         direction = raw() & 3
         if degree[index] > 0:
+            continue
+        if energy[index] < movement_cost:
             continue
         if roll >= thresholds[sp[index]]:
             continue
@@ -192,6 +196,17 @@ def step(world: "World") -> StepReport:
     proposals = _propose_moves(world)
     accepted = resolve_moves(proposals, world.store.grid, world.step)
     apply_moves(world.store, accepted)
+    if accepted:
+        cost = world.movement_cost
+        if cost:
+            for index in sorted(accepted):
+                if world.store.energy[index] < cost:
+                    raise RuntimeError(
+                        f"energia insufficiente per il costo di movimento della particella "
+                        f"{world.store.ids[index]}"
+                    )
+                world.store.energy[index] -= cost
+                world.dissipated += cost
     formed = chemistry.form_bonds(world)
     return StepReport(
         moves=len(accepted),

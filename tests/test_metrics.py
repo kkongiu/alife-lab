@@ -50,6 +50,10 @@ def test_summary_contains_required_fields(tmp_path) -> None:
     assert required <= set(summary)
     assert summary["steps"] == 6
     assert summary["energy"]["delta"] == 0
+    assert summary["energy"]["identity_delta"] == 0
+    assert summary["energy"]["injected"] == 0
+    assert summary["energy"]["dissipated"] == 0
+    assert summary["state_hash_full"] != summary["state_hash"]
     assert summary["invariants"] == "ok"
     assert summary["config_hash"] == world.config.hash()
 

@@ -7,7 +7,7 @@ import json
 import pytest
 
 from alife.config import Config, ConfigError, load_config
-from support import BASELINE, M2_BASELINE, M2_QUICK, make_config
+from support import BASELINE, M2_BASELINE, M2_QUICK, M3_QUICK, make_config
 
 
 def test_baseline_config_is_valid() -> None:
@@ -179,3 +179,70 @@ def test_max_bonds_is_validated() -> None:
 
 def test_m1_and_m2_configs_differ_in_hash() -> None:
     assert load_config(BASELINE).hash() != load_config(M2_BASELINE).hash()
+
+
+# --- schema 3: flussi energetici -------------------------------------------
+
+
+def test_schema3_roundtrip_preserves_hash() -> None:
+    config = load_config(M3_QUICK)
+    assert config.schema_version == 3
+    again = Config.from_dict(config.to_dict()).validate()
+    assert again == config
+    assert again.hash() == config.hash()
+
+
+def test_schema3_sources_order_is_canonical() -> None:
+    base = json.loads(M3_QUICK.read_text())
+    reordered = json.loads(M3_QUICK.read_text())
+    reordered["energy"]["sources"] = list(reversed(reordered["energy"]["sources"]))
+    assert Config.from_dict(base).hash() == Config.from_dict(reordered).hash()
+
+
+def test_energy_block_rejected_before_schema3() -> None:
+    raw = json.loads(M2_QUICK.read_text())
+    raw["energy"] = {}
+    with pytest.raises(ConfigError, match="schema 2"):
+        Config.from_dict(raw)
+
+
+def test_invalid_decay_denominator_rejected() -> None:
+    raw = json.loads(M3_QUICK.read_text())
+    raw["energy"]["particle_decay"] = {"num": 1, "den": 0}
+    with pytest.raises(ConfigError, match="den"):
+        Config.from_dict(raw).validate()
+
+
+def test_negative_energy_cost_rejected() -> None:
+    raw = json.loads(M3_QUICK.read_text())
+    raw["energy"]["movement_cost"] = -1
+    with pytest.raises(ConfigError, match="movement_cost"):
+        Config.from_dict(raw).validate()
+
+
+def test_duplicate_source_rejected() -> None:
+    raw = json.loads(M3_QUICK.read_text())
+    raw["energy"]["sources"].append(dict(raw["energy"]["sources"][0]))
+    with pytest.raises(ConfigError, match="duplicata"):
+        Config.from_dict(raw).validate()
+
+
+def test_source_out_of_grid_rejected() -> None:
+    raw = json.loads(M3_QUICK.read_text())
+    raw["energy"]["sources"][0]["x"] = 10_000
+    with pytest.raises(ConfigError, match="fuori griglia"):
+        Config.from_dict(raw).validate()
+
+
+def test_dissipation_requires_chemistry() -> None:
+    raw = json.loads(M3_QUICK.read_text())
+    raw["chemistry"]["enabled"] = False
+    with pytest.raises(ConfigError, match="chemistry"):
+        Config.from_dict(raw).validate()
+
+
+def test_invalid_overflow_rejected() -> None:
+    raw = json.loads(M3_QUICK.read_text())
+    raw["energy"]["sources"][0]["overflow"] = "accumulate"
+    with pytest.raises(ConfigError, match="overflow"):
+        Config.from_dict(raw).validate()

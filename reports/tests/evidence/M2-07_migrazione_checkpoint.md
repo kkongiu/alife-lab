@@ -2,7 +2,7 @@
 
 - Requisito: prerequisito M2 — identificativi persistenti
 - Esito: **PASS**
-- Eseguito: 2026-11-14T21:52:16+00:00
+- Eseguito: 2026-11-14T22:10:56+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario

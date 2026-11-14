@@ -25,7 +25,7 @@ from .rng import RNG, RNGError
 from .world import World
 
 CHECKPOINT_FORMAT = "alife-checkpoint"
-CHECKPOINT_SCHEMA = 2
+CHECKPOINT_SCHEMA = 3
 
 
 class CheckpointError(ValueError):
@@ -43,8 +43,16 @@ def world_to_checkpoint(world: World) -> dict[str, Any]:
         "moves_total": world.moves_total,
         "next_id": world.next_id,
         "rng": world.rng.state(),
+        "rng_draws": world.rng.draws,
         "particles": world.store.full_records(),
         "bonds": world.store.bond_records(),
+        "ledger": {
+            "injected": world.injected,
+            "dissipated": world.dissipated,
+            "unabsorbed": world.unabsorbed,
+        },
+        "source_acc": list(world.source_acc),
+        "source_store": list(world.source_store),
         "counts": world.counts(),
         "energy_total": world.energy(),
         "energy_particles": world.energy_particles(),
@@ -92,9 +100,9 @@ def load_checkpoint(path: str | Path) -> World:
     if data.get("format") != CHECKPOINT_FORMAT:
         raise CheckpointError(f"checkpoint: formato inatteso {data.get('format')!r}")
     schema_version = data.get("schema_version")
-    if schema_version not in (1, 2):
+    if schema_version not in (1, 2, 3):
         raise CheckpointError(
-            f"checkpoint: schema {schema_version!r}, atteso 1 o {CHECKPOINT_SCHEMA}"
+            f"checkpoint: schema {schema_version!r}, atteso 1, 2 o {CHECKPOINT_SCHEMA}"
         )
 
     config = Config.from_dict(data.get("config"))
@@ -113,6 +121,45 @@ def load_checkpoint(path: str | Path) -> World:
     else:
         store, next_id = _store_from_v2(data, config)
 
+    ledger_raw = data.get("ledger", {})
+    if not isinstance(ledger_raw, dict):
+        raise CheckpointError("checkpoint: campo 'ledger' non valido")
+    try:
+        injected = int(ledger_raw.get("injected", 0))
+        dissipated = int(ledger_raw.get("dissipated", 0))
+        unabsorbed = int(ledger_raw.get("unabsorbed", 0))
+    except (TypeError, ValueError) as exc:
+        raise CheckpointError(f"checkpoint: ledger malformato ({exc})") from exc
+
+    if schema_version >= 3:
+        source_acc_raw = data.get("source_acc", [])
+        if not isinstance(source_acc_raw, list):
+            raise CheckpointError("checkpoint: campo 'source_acc' non valido")
+        try:
+            source_acc = [int(value) for value in source_acc_raw]
+        except (TypeError, ValueError) as exc:
+            raise CheckpointError(f"checkpoint: accumulatori malformati ({exc})") from exc
+        if len(source_acc) != len(config.energy.sources):
+            raise CheckpointError(
+                f"checkpoint: {len(source_acc)} accumulatori per "
+                f"{len(config.energy.sources)} sorgenti"
+            )
+        source_store_raw = data.get("source_store", [])
+        if not isinstance(source_store_raw, list):
+            raise CheckpointError("checkpoint: campo 'source_store' non valido")
+        try:
+            source_store = [int(value) for value in source_store_raw]
+        except (TypeError, ValueError) as exc:
+            raise CheckpointError(f"checkpoint: serbatoi malformati ({exc})") from exc
+        if len(source_store) != len(config.energy.sources):
+            raise CheckpointError(
+                f"checkpoint: {len(source_store)} serbatoi per "
+                f"{len(config.energy.sources)} sorgenti"
+            )
+    else:
+        source_acc = [0] * len(config.energy.sources)
+        source_store = [0] * len(config.energy.sources)
+
     world = World(
         config,
         rng,
@@ -122,7 +169,13 @@ def load_checkpoint(path: str | Path) -> World:
         next_id=next_id,
         bonds_formed_total=int(data.get("bonds_formed_total", 0)),
         bonds_broken_total=int(data.get("bonds_broken_total", 0)),
+        injected=injected,
+        dissipated=dissipated,
+        unabsorbed=unabsorbed,
+        source_acc=source_acc,
+        source_store=source_store,
     )
+    world.rng.draws = int(data.get("rng_draws", 0))
 
     if world.state_hash() != data.get("state_hash"):
         raise CheckpointError("checkpoint: hash dello stato non coerente (file corrotto)")

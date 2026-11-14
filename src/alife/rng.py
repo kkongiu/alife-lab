@@ -25,15 +25,17 @@ class RNGError(ValueError):
 class RNG:
     """Wrapper minimo e serializzabile attorno a NumPy PCG64."""
 
-    __slots__ = ("_bitgen",)
+    __slots__ = ("_bitgen", "draws")
 
     def __init__(self, seed: int) -> None:
         if seed < 0:
             raise RNGError("seed negativa")
         self._bitgen = np.random.PCG64(int(seed))
+        self.draws = 0
 
     def raw(self) -> int:
         """Prossimo uint64 del flusso (0 .. 2**64-1)."""
+        self.draws += 1
         return int(self._bitgen.random_raw())
 
     def state(self) -> dict[str, Any]:
@@ -67,7 +69,6 @@ class RNG:
     def fingerprint(self) -> str:
         payload = json.dumps(self.state(), sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RNG):
             return NotImplemented

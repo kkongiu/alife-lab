@@ -1,0 +1,29 @@
+{
+  "tool": "alife",
+  "tool_version": "0.1.0",
+  "command": "run",
+  "argv": [
+    "run",
+    "--config",
+    "configs/m3_unfed.json",
+    "--steps",
+    "10000",
+    "--out",
+    "runs/m3_unfed"
+  ],
+  "cwd": "/home/kongiu/Documenti/Alife",
+  "python_executable": "/home/kongiu/Documenti/Alife/.venv/bin/python",
+  "created_utc": "2026-11-14T22:08:24+00:00",
+  "seed": 20261115,
+  "config_hash": "76ffd81000e80de76205c905ea35a387f8cc627af229636cdf4f16db662ba205",
+  "config_schema_version": 3,
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "git_commit": "8460fe480e0675858f80c7619e8cf0bd1bed1f5c",
+  "config_source": "/home/kongiu/Documenti/Alife/configs/m3_unfed.json"
+}

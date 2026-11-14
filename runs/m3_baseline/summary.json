@@ -1,0 +1,73 @@
+{
+  "steps": 10000,
+  "moves_total": 4509494,
+  "moves_per_step": 450.9494,
+  "particles": {
+    "S0": 500,
+    "S1": 400,
+    "S2": 300,
+    "S3": 200
+  },
+  "particles_total": 1400,
+  "occupancy": 0.085449,
+  "grid": {
+    "width": 128,
+    "height": 128,
+    "cells": 16384,
+    "boundary": "periodic"
+  },
+  "energy": {
+    "total": 84272,
+    "internal": 84272,
+    "initial": 16100,
+    "particles": 83754,
+    "bonds": 440,
+    "sources": 78,
+    "injected": 180000,
+    "dissipated": 18830,
+    "unabsorbed": 92998,
+    "in": 180000,
+    "out": 111828,
+    "delta": 68172,
+    "identity_delta": 0
+  },
+  "chemistry": {
+    "enabled": true,
+    "bond_cost": 2,
+    "bonds": 116,
+    "bond_energy": 440,
+    "bonded_particles": 176,
+    "free_particles": 1224,
+    "aggregates": 65,
+    "largest_aggregate": 6,
+    "mean_aggregate_size": 2.7077,
+    "size_distribution": {
+      "2": 38,
+      "3": 12,
+      "4": 12,
+      "5": 2,
+      "6": 1
+    },
+    "formed_total": 4176,
+    "broken_total": 4060
+  },
+  "duration_s": 46.186332,
+  "steps_per_second": 216.514,
+  "peak_memory_bytes": 45125632,
+  "baseline_memory_bytes": 38686720,
+  "simulation_memory_bytes": 6438912,
+  "state_hash": "88987bba60c7a375cc93765b0fe3680acf005aecceae49ee6ab9de620d807805",
+  "state_hash_full": "3e6aae8ee88f5b5ac775faccec043886a5214d16f5a33ebf125217632a39dcd8",
+  "seed": 20261115,
+  "config_hash": "ec1b4b276ad2c91a907fdc8fdf4584e1d52cd200a4882231dd2aaad9aac3415c",
+  "config_schema_version": 3,
+  "metrics_records": 101,
+  "invariants": "ok",
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  }
+}

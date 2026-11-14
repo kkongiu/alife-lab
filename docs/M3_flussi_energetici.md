@@ -1,6 +1,6 @@
 # M3 — Flussi energetici, dissipazione e costi delle reazioni
 
-Specifica tecnica (bozza di progetto, **non implementata**) · 2026-11-15
+Specifica tecnica · 2026-11-15 · **Implementata in M3** (schema di configurazione 3)
 
 Obiettivo: aprire il sistema (sorgenti, pozzi, dissipazione, costi di movimento e
 di reazione) mantenendo la proprietà che rende utili i risultati: **la stessa
@@ -27,7 +27,7 @@ con
 
 | Simbolo | Significato | Tipo |
 |---|---|---|
-| `E_int` | energia interna: particelle + legami | intero |
+| `E_int` | energia interna: particelle + legami + serbatoi delle sorgenti | intero |
 | `I` | energia iniettata cumulativa dalle sorgenti | intero ≥ 0, monotono |
 | `D` | energia dissipata cumulativa (pozzi + costi non immagazzinati) | intero ≥ 0, monotono |
 
@@ -55,7 +55,7 @@ Una sorgente è un punto localizzato con un tasso razionale e una capacità.
 { "x": 64, "y": 64, "rate_num": 1, "rate_den": 4, "capacity": 50, "overflow": "discard" }
 ```
 
-- Emissione con **accumulatore intero**, non con probabilità per passo:
+- Emissione **con accumulatore intero**, non con probabilità per passo:
 
   ```
   acc += rate_num
@@ -66,11 +66,11 @@ Una sorgente è un punto localizzato con un tasso razionale e una capacità.
   Zero drift, zero float, nessuna estrazione casuale. `acc` è stato e va
   serializzato.
 
-- Destinazione **deterministica**: la particella nella cella della sorgente.
-  Se la cella è vuota o la particella ha già raggiunto `capacity`, i quanti
-  vanno in `unabsorbed` (contati come dissipati). Nessuna scelta casuale,
-  nessuna ambiguità.
-- Emissione solo ai passi previsti (`step % period == 0`), mai su tempo reale.
+- Serbatoio locale: i quanti emessi entrano in un buffer di capacità `capacity`.
+  La particella presente sulla cella della sorgente assorbe l'intero buffer; il
+  trabocco del buffer va in `unabsorbed` (contato come perdita). Il buffer è
+  energia interna: è già entrata nel sistema, non è ancora stata raccolta.
+- Emissione solo ai passi previsti, mai su tempo reale.
 
 Alternative scartate: sorgenti "poissoniane" (numero variabile di estrazioni,
 difficili da verificare) e sorgenti che scelgono una particella a caso nel
@@ -79,10 +79,18 @@ scientifico in M3).
 
 ### 2.2 Dissipazione
 
-- **Particelle**: `e -= (e * decay_num) // decay_den`, tutto intero.
-- **Legami**: `bond_energy -= (bond_energy * bond_decay_num) // bond_decay_den`.
+- **Particelle**: `num` quanti ogni `den` passi, sfasati per identificativo: la
+  particella perde 1 quanto nei passi in cui `(step + id) mod den < num`.
+- **Legami**: la stessa regola con chiave `(step + id_a + id_b) mod den < num`.
 - Ogni quanto rimosso va in `D`. Mai ricalcolare l'energia per differenza:
   sottrarre e contabilizzare nello stesso punto del codice.
+
+Il tasso è **assoluto** (un quanto per evento), non proporzionale. Un tasso
+proporzionale intero `(E·num)//den` sembra più naturale ma si annulla per
+arrotondamento alle energie tipiche del modello (10–30 quanti): con `num/den =
+1/2000` ogni particella perderebbe zero quanti a ogni passo e la dissipazione
+sarebbe inerte. La variante sfasata è esatta, non richiede stato aggiuntivo e non
+consuma estrazioni.
 
 La dissipazione è ciò che rende il sistema lontano dall'equilibrio: se tutte le
 sorgenti sono attive ma `D = 0`, il modello non è aperto, è solo gonfiato.
@@ -203,12 +211,12 @@ Campi aggiunti a quelli dello schema 2:
 
 ```json
 "ledger": { "injected": 0, "dissipated": 0, "unabsorbed": 0 },
-"sources": [ { "acc": 0 } ],
+"sources": [ { "acc": 0, "store": 0 } ],
 "draws_consumed": 0
 ```
 
-`acc` per sorgente, nell'ordine canonico della configurazione (che è ordinato e
-hashata: nessuna ambiguità).
+`acc` e `store` per sorgente, nell'ordine canonico della configurazione (che è
+ordinato e hashata: nessuna ambiguità). Entrambi sono coperti dall'hash completo.
 
 ---
 
