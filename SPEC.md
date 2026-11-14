@@ -452,13 +452,22 @@ Limiti del modello M1:
    entrambi sono candidati per M9, non per M1.
 8. **Riproducibilità cross-version non garantita** (§7, livello C).
 
-Decisioni rinviate, da prendere prima di M2:
+Decisioni rinviate, da prendere **prima** di M2 (sono prerequisiti bloccanti):
 
-- ID persistenti delle particelle e politica di riuso;
+- ID persistenti delle particelle: assegnazione, politica di riuso, inclusione
+  nello `state_hash`, migrazione dello schema di checkpoint;
 - schema di checkpoint v2 (retrocompatibilità o migrazione);
-- se l'energia diventa un campo per particella (necessario per costi e
-  dissipazione differenziati) e come mantenerla intera;
+- energia come campo per particella (necessario per costi e dissipazione
+  differenziati), sempre in quanti interi;
+- **costo di formazione e rottura dei legami**: quanti per legame, chi li paga,
+  come si contabilizza la dissipazione e come resta verificabile
+  `E(t+1) = E(t) + in − out − dissipato`;
 - rappresentazione dei legami e loro ordine canonico per la serializzazione.
+
+Senza i primi due punti M2 non può introdurre nascita, morte o trasformazioni
+senza perdere la tracciabilità delle discendenze, che è il presupposto di M4–M7.
+Senza il quarto, l'energia resta un'etichetta e i test di bilancio non misurano
+nulla.
 
 ---
 

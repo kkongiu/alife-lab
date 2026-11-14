@@ -1,13 +1,13 @@
 # M1 — Report: performance, decisioni, problemi aperti
 
-Data: 2026-11-14 · Codice: `7521319` (M1) · Specifica: `SPEC.md`
+Data: 2026-11-14 · Codice: `7bb1387` (M1) · Specifica: `SPEC.md`
 
 ## 1. Sommario
 
 | Milestone | Esito | Evidenza |
 |---|---|---|
 | **M0** | **GO** | `SPEC.md` specifica stato, particelle, tempo, movimento, conflitti, RNG, energia, invarianti, formati e limiti. Un'implementazione indipendente non richiede decisioni implicite. |
-| **M1** | **GO** | 61 test superati; determinismo verificato; checkpoint e ripresa equivalenti al run continuo; invarianti conservati su 10 000 passi; performance misurate, non dichiarate. |
+| **M1** | **GO** | 64 test superati, con un file di risultati per ogni caso e un'evidenza misurata per gli 8 test obbligatori (`reports/tests/index.md`); determinismo verificato; checkpoint e ripresa equivalenti al run continuo; invarianti conservati su 10 000 passi; performance misurate, non dichiarate. |
 
 Nessuna proprietà biologica è stata introdotta o osservata. M1 è un risultato
 ingegneristico, non scientifico, e non autorizza conclusioni sull'ipotesi del
@@ -181,19 +181,32 @@ codice diverso da zero se un test o un'evidenza non è PASS.
    potrebbero lavorare ad alta densità. Candidati: risoluzione a coda di
    dipendenze invece di giri di riscansione, oppure componenti connesse del
    grafo delle proposte. Da valutare solo dopo un caso d'uso reale.
-2. **Identità = indice dell'array**: da sostituire con ID persistenti quando
-   esisteranno nascita e morte (M2), con migrazione dello schema di checkpoint.
-3. **Energia derivata, non memorizzata per particella**: sufficiente in M1,
-   insufficiente appena i costi di movimento differiscono (M3).
+2. **Identità = indice dell'array.** In M1 è legittima perché non esistono
+   nascita, morte né riordino, e il checkpoint conserva l'ordine. Con
+   trasformazioni, nascita o scomparsa delle particelle serviranno
+   **identificativi persistenti**: assegnazione monotona, politica di riuso (o
+   non riuso), ID salvati nel checkpoint, ID inclusi nello `state_hash` e
+   migrazione allo schema di checkpoint v2. Senza questo passaggio M2 non può
+   introdurre creazione o distruzione senza perdere la tracciabilità delle
+   discendenze — che è il presupposto di M4–M7.
+3. **Energia passiva, movimento gratuito.** Semplificazione accettabile in M1
+   (sistema chiuso, bilancio esatto per costruzione), ma il modello chimico deve
+   definire *esattamente* il costo di formazione e rottura dei legami: quanti
+   interi, chi li paga, in quale ordine, e come resta verificabile il bilancio
+   `E(t+1) = E(t) + in − out − dissipato`. Va deciso prima di M2/M3: altrimenti
+   l'energia torna a essere un'etichetta e i test di bilancio perdono significato.
 4. **Ottimizzazione RNG**: l'overhead di chiamata pesa ~27%; richiede di esporre
    il bit generator o di memorizzare i raw a blocchi. Rimandato a M9.
-5. **`ru_maxrss`**: il picco assoluto dipende dall'ambiente; il delta è la metrica
-   affidabile. Da mantenere in tutti i report futuri.
+5. **`ru_maxrss` vs `VmHWM`**: il picco assoluto dipende dall'ambiente; il delta è
+   la metrica affidabile. Da mantenere in tutti i report futuri.
 6. **Riproducibilità cross-version** non garantita: accettata e documentata. Se
    M6 richiederà confronti fra macchine, servirà un riferimento numerico fisso
    (golden hash per configurazione).
 7. **Nessun visualizzatore**: escluso da M1 per contratto; il core è già
    indipendente dalla UI.
+
+I punti 2 e 3 sono **prerequisiti bloccanti per M2**: vanno risolti nella
+specifica prima di implementare chimica e legami, non dopo.
 
 ## 8. Riproduzione
 
