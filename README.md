@@ -92,7 +92,32 @@ La suite copre gli 8 test obbligatori del contratto M1: conservazione di materia
 specie, occupazione unica, confini, riproducibilità, integrità dei checkpoint,
 equivalenza fra run continuo e ripreso, rilevamento di violazioni intenzionali.
 Aggiunge test sulla risoluzione dei conflitti, sul consumo esatto del generatore,
-sulla validazione della configurazione e sulla CLI.
+sulla validazione della configurazione, sulla CLI e sulle metriche.
+
+### Risultati per ogni test
+
+```bash
+.venv/bin/python tools/test_report.py
+```
+
+Genera `reports/tests/`:
+
+- `index.md` — indice con esito di tutti i casi;
+- `cases/*.md` — **un file per ogni caso di test** (nodo, esito, durata,
+  requisito, comando di rerun, output o errore);
+- `evidence/M1-0N_*.md` — **un file per ogni test obbligatorio**, con le misure
+  reali dello scenario (conteggi, hash, delta, messaggi d'errore);
+- `results.json`, `junit.xml`, `pytest.log`.
+
+## Benchmark
+
+```bash
+.venv/bin/python tools/benchmark.py --steps 1000
+```
+
+Misura passi/s e memoria su più densità, verifica l'equivalenza fra run continuo e
+run ripreso alla scala della baseline e scrive `reports/benchmark.json`. I
+risultati misurati sono in [`reports/M1_baseline.md`](reports/M1_baseline.md).
 
 ## Struttura
 

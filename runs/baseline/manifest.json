@@ -13,7 +13,7 @@
   ],
   "cwd": "/home/kongiu/Documenti/Alife",
   "python_executable": "/home/kongiu/Documenti/Alife/.venv/bin/python",
-  "created_utc": "2026-11-14T21:17:14+00:00",
+  "created_utc": "2026-11-14T21:31:29+00:00",
   "seed": 20261114,
   "config_hash": "f697f983214246b4b7a96560a8e7de5d33c57e354e14899d6929e6a5226391c8",
   "config_schema_version": 1,
@@ -24,6 +24,6 @@
     "machine": "x86_64",
     "processor": "n/d"
   },
-  "git_commit": null,
+  "git_commit": "7521319ff660bfeb1fbaf3059aa5b4b2753e83e6",
   "config_source": "/home/kongiu/Documenti/Alife/configs/baseline.json"
 }

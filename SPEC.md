@@ -378,9 +378,24 @@ particelle per specie, occupazione, energia totale/in/out/delta, hash dello stat
 seed, hash e versione della configurazione, picco di memoria RSS, versione di
 Python e NumPy.
 
-**Memoria.** Picco RSS via `resource.getrusage(RUSAGE_SELF).ru_maxrss`, convertito
-in byte: su Linux il valore è in KiB, su macOS in byte. La conversione è esplicita
-perché è un classico errore di fattore 1024.
+**Memoria.** Picco RSS del processo: su Linux `VmHWM` da `/proc/self/status`, cioè
+il picco dell'address space corrente, azzerato all'`exec`; su macOS `ru_maxrss`,
+espresso in byte. `ru_maxrss` non è usato su Linux perché può ereditare il picco
+del processo genitore: in questo ambiente sono state osservate letture di 590 MiB
+con RSS reale di 44 MiB.
+
+Il picco assoluto dipende dall'ambiente (interprete, NumPy) e non è una misura
+stabile della simulazione. Per questo `summary.json` registra tre valori:
+
+| Campo | Significato |
+|---|---|
+| `peak_memory_bytes` | picco RSS dell'intero processo |
+| `baseline_memory_bytes` | picco al caricamento del modulo, con interprete e NumPy già importati |
+| `simulation_memory_bytes` | `peak − baseline`: memoria aggiuntiva della simulazione |
+
+Il valore da citare nei report è `simulation_memory_bytes`. Un `peak` anomalo con
+`simulation_memory_bytes` vicino a zero indica un artefatto dell'ambiente, non un
+consumo del motore.
 
 ---
 

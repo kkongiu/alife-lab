@@ -1,0 +1,945 @@
+{
+  "generated_utc": "2026-11-14T21:33:04+00:00",
+  "command": ".venv/bin/python -m pytest -v",
+  "exit_code": 0,
+  "duration_s": 3.487,
+  "total": 64,
+  "passed": 64,
+  "failed": 0,
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "required": [
+    {
+      "id": "M1-01",
+      "title": "Conservazione del numero di particelle",
+      "status": "PASS",
+      "file": "evidence/M1-01_conservazione_particelle.md",
+      "tests": [
+        "tests/test_invariants.py::test_particle_count_conserved"
+      ],
+      "tests_passed": 1,
+      "checks": [
+        {
+          "name": "numero di particelle invariato",
+          "ok": true
+        },
+        {
+          "name": "nessuna violazione di invariante",
+          "ok": true
+        },
+        {
+          "name": "lo stato \u00e8 cambiato (la simulazione ha evoluto)",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "particelle iniziali": "20",
+        "particelle finali": "20",
+        "delta": "0",
+        "hash iniziale": "a57513f60b96804fcab84c68dc4f2e47\u2026",
+        "hash finale": "3ad08713b25a3f2e30b2d780a97af531\u2026",
+        "violazioni rilevate": "0"
+      }
+    },
+    {
+      "id": "M1-02",
+      "title": "Conservazione della quantit\u00e0 per specie",
+      "status": "PASS",
+      "file": "evidence/M1-02_conservazione_specie.md",
+      "tests": [
+        "tests/test_invariants.py::test_species_quantities_conserved"
+      ],
+      "tests_passed": 1,
+      "checks": [
+        {
+          "name": "specie A conservata",
+          "ok": true
+        },
+        {
+          "name": "specie B conservata",
+          "ok": true
+        },
+        {
+          "name": "conteggi finali = configurazione",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "specie A: iniziale \u2192 finale": "12 \u2192 12",
+        "specie B: iniziale \u2192 finale": "8 \u2192 8",
+        "conteggi finali": "{\"A\": 12, \"B\": 8}"
+      }
+    },
+    {
+      "id": "M1-03",
+      "title": "Assenza di occupazione multipla",
+      "status": "PASS",
+      "file": "evidence/M1-03_occupazione_unica.md",
+      "tests": [
+        "tests/test_invariants.py::test_no_multiple_occupancy"
+      ],
+      "tests_passed": 1,
+      "checks": [
+        {
+          "name": "posizioni tutte distinte",
+          "ok": true
+        },
+        {
+          "name": "griglia coerente con le posizioni",
+          "ok": true
+        },
+        {
+          "name": "celle occupate = particelle",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "particelle": "20",
+        "celle distinte occupate": "20",
+        "celle occupate secondo la griglia": "20",
+        "celle con pi\u00f9 di un occupante": "0"
+      }
+    },
+    {
+      "id": "M1-04",
+      "title": "Rispetto dei confini configurati",
+      "status": "PASS",
+      "file": "evidence/M1-04_confini.md",
+      "tests": [
+        "tests/test_invariants.py::test_periodic_boundaries",
+        "tests/test_dynamics.py::test_closed_boundary_keeps_particles_inside"
+      ],
+      "tests_passed": 2,
+      "checks": [
+        {
+          "name": "confini periodici rispettati",
+          "ok": true
+        },
+        {
+          "name": "confini chiusi rispettati",
+          "ok": true
+        },
+        {
+          "name": "nessuna violazione (periodico)",
+          "ok": true
+        },
+        {
+          "name": "nessuna violazione (chiuso)",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "periodico: intervallo x / y": "0..19 / 0..18",
+        "periodico: particelle fuori griglia": "0",
+        "chiuso: intervallo x / y": "0..9 / 1..8",
+        "chiuso: particelle fuori griglia": "0"
+      }
+    },
+    {
+      "id": "M1-05",
+      "title": "Riproducibilit\u00e0 con identico seed",
+      "status": "PASS",
+      "file": "evidence/M1-05_riproducibilita.md",
+      "tests": [
+        "tests/test_reproducibility.py::test_same_seed_same_result",
+        "tests/test_reproducibility.py::test_different_seed_different_result",
+        "tests/test_reproducibility.py::test_initial_placement_is_seed_deterministic",
+        "tests/test_reproducibility.py::test_repeated_advance_matches_single_call",
+        "tests/test_reproducibility.py::test_baseline_config_is_reproducible"
+      ],
+      "tests_passed": 5,
+      "checks": [
+        {
+          "name": "stesso seed \u21d2 stesso stato completo",
+          "ok": true
+        },
+        {
+          "name": "stesso seed \u21d2 stesso hash",
+          "ok": true
+        },
+        {
+          "name": "stesso seed \u21d2 stesso numero di mosse",
+          "ok": true
+        },
+        {
+          "name": "seed diverso \u21d2 stato diverso",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "hash seed 1234 (run A)": "cd9827e4acb14329f33f6a4c82512b66\u2026",
+        "hash seed 1234 (run B)": "cd9827e4acb14329f33f6a4c82512b66\u2026",
+        "hash seed 1235": "b383b55a4bd0c00aebd9a8adeec1f6ad\u2026",
+        "spostamenti run A / run B": "1380 / 1380",
+        "fingerprint RNG uguale": "True"
+      }
+    },
+    {
+      "id": "M1-06",
+      "title": "Integrit\u00e0 del salvataggio e caricamento",
+      "status": "PASS",
+      "file": "evidence/M1-06_checkpoint.md",
+      "tests": [
+        "tests/test_checkpoint.py::test_roundtrip_preserves_state",
+        "tests/test_checkpoint.py::test_repeated_save_load_cycles_are_stable",
+        "tests/test_checkpoint.py::test_checkpoint_does_not_mutate_world",
+        "tests/test_checkpoint.py::test_no_temporary_file_left_behind"
+      ],
+      "tests_passed": 4,
+      "checks": [
+        {
+          "name": "stato identico dopo il caricamento",
+          "ok": true
+        },
+        {
+          "name": "configurazione identica",
+          "ok": true
+        },
+        {
+          "name": "file corrotto rifiutato",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "dimensione checkpoint": "1109 byte",
+        "passo ricaricato": "17",
+        "hash originale = hash ricaricato": "True",
+        "RNG originale = RNG ricaricato": "True",
+        "errore sul file corrotto": "checkpoint: hash dello stato non coerente (file corrotto)"
+      }
+    },
+    {
+      "id": "M1-07",
+      "title": "Equivalenza tra esecuzione continua e interrotta/ripresa",
+      "status": "PASS",
+      "file": "evidence/M1-07_ripresa_equivalente.md",
+      "tests": [
+        "tests/test_checkpoint.py::test_resume_is_equivalent_to_continuous_run",
+        "tests/test_cli.py::test_resume_matches_continuous_run"
+      ],
+      "tests_passed": 2,
+      "checks": [
+        {
+          "name": "hash di stato identico",
+          "ok": true
+        },
+        {
+          "name": "numero di mosse identico",
+          "ok": true
+        },
+        {
+          "name": "stato RNG identico",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "hash continuo": "2515213dac46178bfdfaf37092bd3c84\u2026",
+        "hash ripreso": "2515213dac46178bfdfaf37092bd3c84\u2026",
+        "mosse continue / riprese": "662 / 662",
+        "fingerprint RNG uguale": "True",
+        "passo finale": "60"
+      }
+    },
+    {
+      "id": "M1-08",
+      "title": "Rilevamento di una violazione intenzionale delle invarianti",
+      "status": "PASS",
+      "file": "evidence/M1-08_violazioni_intenzionali.md",
+      "tests": [
+        "tests/test_invariants.py::test_validate_detects_duplicate_cell",
+        "tests/test_invariants.py::test_validate_detects_out_of_bounds_particle",
+        "tests/test_invariants.py::test_validate_detects_grid_desynchronisation",
+        "tests/test_invariants.py::test_validate_detects_missing_particle",
+        "tests/test_invariants.py::test_validate_detects_invalid_species_index",
+        "tests/test_checkpoint.py::test_detects_tampered_particle",
+        "tests/test_checkpoint.py::test_detects_tampered_config_hash",
+        "tests/test_checkpoint.py::test_detects_energy_imbalance",
+        "tests/test_checkpoint.py::test_detects_invalid_json",
+        "tests/test_checkpoint.py::test_detects_wrong_format",
+        "tests/test_checkpoint.py::test_detects_missing_rng_state"
+      ],
+      "tests_passed": 11,
+      "checks": [
+        {
+          "name": "doppia occupazione: rilevata",
+          "ok": true
+        },
+        {
+          "name": "particella fuori griglia: rilevata",
+          "ok": true
+        },
+        {
+          "name": "griglia desincronizzata: rilevata",
+          "ok": true
+        },
+        {
+          "name": "particella mancante: rilevata",
+          "ok": true
+        },
+        {
+          "name": "specie inesistente: rilevata",
+          "ok": true
+        },
+        {
+          "name": "energia alterata: rilevata",
+          "ok": true
+        }
+      ],
+      "measures": {
+        "doppia occupazione": "stato non valido: - cella (14, 15) occupata da pi\u00f9 particelle - cella (14, 15): la griglia indica 0, la particella 1 la rivendica - griglia con 20 celle occupate ma 19 posizioni valide",
+        "particella fuori griglia": "stato non valido: - particella 0: posizione (-1, 15) fuori griglia - griglia con 20 celle occupate ma 19 posizioni valide",
+        "griglia desincronizzata": "stato non valido: - griglia con 21 celle occupate ma 20 posizioni valide",
+        "particella mancante": "stato non valido: - griglia con 20 celle occupate ma 19 posizioni valide - conteggi per specie {'A': 12, 'B': 7} diversi da {'A': 12, 'B': 8} - energia 71 diversa da 76",
+        "specie inesistente": "stato non valido: - particella 0: specie 7 inesistente - conteggi per specie {'A': 11, 'B': 8} diversi da {'A': 12, 'B': 8}",
+        "energia alterata": "checkpoint: bilancio energetico non coerente"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "node": "tests/test_checkpoint.py::test_checkpoint_does_not_mutate_world",
+      "module": "test_checkpoint.py",
+      "name": "test_checkpoint_does_not_mutate_world",
+      "status": "passed",
+      "seconds": 0.002,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/01_test_checkpoint__test_checkpoint_does_not_mutate_world.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_detects_energy_imbalance",
+      "module": "test_checkpoint.py",
+      "name": "test_detects_energy_imbalance",
+      "status": "passed",
+      "seconds": 0.002,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/02_test_checkpoint__test_detects_energy_imbalance.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_detects_invalid_json",
+      "module": "test_checkpoint.py",
+      "name": "test_detects_invalid_json",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/03_test_checkpoint__test_detects_invalid_json.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_detects_missing_rng_state",
+      "module": "test_checkpoint.py",
+      "name": "test_detects_missing_rng_state",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/04_test_checkpoint__test_detects_missing_rng_state.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_detects_tampered_config_hash",
+      "module": "test_checkpoint.py",
+      "name": "test_detects_tampered_config_hash",
+      "status": "passed",
+      "seconds": 0.002,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/05_test_checkpoint__test_detects_tampered_config_hash.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_detects_tampered_particle",
+      "module": "test_checkpoint.py",
+      "name": "test_detects_tampered_particle",
+      "status": "passed",
+      "seconds": 0.002,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/06_test_checkpoint__test_detects_tampered_particle.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_detects_wrong_format",
+      "module": "test_checkpoint.py",
+      "name": "test_detects_wrong_format",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/07_test_checkpoint__test_detects_wrong_format.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_missing_file",
+      "module": "test_checkpoint.py",
+      "name": "test_missing_file",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/08_test_checkpoint__test_missing_file.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_no_temporary_file_left_behind",
+      "module": "test_checkpoint.py",
+      "name": "test_no_temporary_file_left_behind",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/09_test_checkpoint__test_no_temporary_file_left_behind.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_repeated_save_load_cycles_are_stable",
+      "module": "test_checkpoint.py",
+      "name": "test_repeated_save_load_cycles_are_stable",
+      "status": "passed",
+      "seconds": 0.005,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/10_test_checkpoint__test_repeated_save_load_cycles_are_stable.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_resume_is_equivalent_to_continuous_run",
+      "module": "test_checkpoint.py",
+      "name": "test_resume_is_equivalent_to_continuous_run",
+      "status": "passed",
+      "seconds": 0.009,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/11_test_checkpoint__test_resume_is_equivalent_to_continuous_run.md"
+    },
+    {
+      "node": "tests/test_checkpoint.py::test_roundtrip_preserves_state",
+      "module": "test_checkpoint.py",
+      "name": "test_roundtrip_preserves_state",
+      "status": "passed",
+      "seconds": 0.026,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/12_test_checkpoint__test_roundtrip_preserves_state.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_inspect_reads_checkpoint",
+      "module": "test_cli.py",
+      "name": "test_inspect_reads_checkpoint",
+      "status": "passed",
+      "seconds": 0.552,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/13_test_cli__test_inspect_reads_checkpoint.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_invalid_config_reports_error",
+      "module": "test_cli.py",
+      "name": "test_invalid_config_reports_error",
+      "status": "passed",
+      "seconds": 0.274,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/14_test_cli__test_invalid_config_reports_error.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_negative_steps_rejected",
+      "module": "test_cli.py",
+      "name": "test_negative_steps_rejected",
+      "status": "passed",
+      "seconds": 0.241,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/15_test_cli__test_negative_steps_rejected.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_resume_matches_continuous_run",
+      "module": "test_cli.py",
+      "name": "test_resume_matches_continuous_run",
+      "status": "passed",
+      "seconds": 0.597,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/16_test_cli__test_resume_matches_continuous_run.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_run_produces_artifacts",
+      "module": "test_cli.py",
+      "name": "test_run_produces_artifacts",
+      "status": "passed",
+      "seconds": 0.284,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/17_test_cli__test_run_produces_artifacts.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_seed_override",
+      "module": "test_cli.py",
+      "name": "test_seed_override",
+      "status": "passed",
+      "seconds": 0.276,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/18_test_cli__test_seed_override.md"
+    },
+    {
+      "node": "tests/test_cli.py::test_version[command0]",
+      "module": "test_cli.py",
+      "name": "test_version[command0]",
+      "status": "passed",
+      "seconds": 0.245,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/19_test_cli__test_version[command0].md"
+    },
+    {
+      "node": "tests/test_config.py::test_baseline_config_is_valid",
+      "module": "test_config.py",
+      "name": "test_baseline_config_is_valid",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/20_test_config__test_baseline_config_is_valid.md"
+    },
+    {
+      "node": "tests/test_config.py::test_boolean_is_not_an_integer",
+      "module": "test_config.py",
+      "name": "test_boolean_is_not_an_integer",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/21_test_config__test_boolean_is_not_an_integer.md"
+    },
+    {
+      "node": "tests/test_config.py::test_duplicate_species_names_rejected",
+      "module": "test_config.py",
+      "name": "test_duplicate_species_names_rejected",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/22_test_config__test_duplicate_species_names_rejected.md"
+    },
+    {
+      "node": "tests/test_config.py::test_hash_changes_with_seed",
+      "module": "test_config.py",
+      "name": "test_hash_changes_with_seed",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/23_test_config__test_hash_changes_with_seed.md"
+    },
+    {
+      "node": "tests/test_config.py::test_hash_is_independent_of_key_order",
+      "module": "test_config.py",
+      "name": "test_hash_is_independent_of_key_order",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/24_test_config__test_hash_is_independent_of_key_order.md"
+    },
+    {
+      "node": "tests/test_config.py::test_invalid_json",
+      "module": "test_config.py",
+      "name": "test_invalid_json",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/25_test_config__test_invalid_json.md"
+    },
+    {
+      "node": "tests/test_config.py::test_missing_file",
+      "module": "test_config.py",
+      "name": "test_missing_file",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/26_test_config__test_missing_file.md"
+    },
+    {
+      "node": "tests/test_config.py::test_move_probability_range_enforced",
+      "module": "test_config.py",
+      "name": "test_move_probability_range_enforced",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/27_test_config__test_move_probability_range_enforced.md"
+    },
+    {
+      "node": "tests/test_config.py::test_negative_seed_rejected",
+      "module": "test_config.py",
+      "name": "test_negative_seed_rejected",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/28_test_config__test_negative_seed_rejected.md"
+    },
+    {
+      "node": "tests/test_config.py::test_roundtrip_preserves_hash",
+      "module": "test_config.py",
+      "name": "test_roundtrip_preserves_hash",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/29_test_config__test_roundtrip_preserves_hash.md"
+    },
+    {
+      "node": "tests/test_config.py::test_too_many_particles_rejected",
+      "module": "test_config.py",
+      "name": "test_too_many_particles_rejected",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/30_test_config__test_too_many_particles_rejected.md"
+    },
+    {
+      "node": "tests/test_config.py::test_unknown_key_rejected",
+      "module": "test_config.py",
+      "name": "test_unknown_key_rejected",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/31_test_config__test_unknown_key_rejected.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_blocked_chain_leaves_head_stuck",
+      "module": "test_dynamics.py",
+      "name": "test_blocked_chain_leaves_head_stuck",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/32_test_dynamics__test_blocked_chain_leaves_head_stuck.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_chain_towards_empty_cell_moves_entirely",
+      "module": "test_dynamics.py",
+      "name": "test_chain_towards_empty_cell_moves_entirely",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/33_test_dynamics__test_chain_towards_empty_cell_moves_entirely.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_closed_boundary_keeps_particles_inside",
+      "module": "test_dynamics.py",
+      "name": "test_closed_boundary_keeps_particles_inside",
+      "status": "passed",
+      "seconds": 0.005,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/34_test_dynamics__test_closed_boundary_keeps_particles_inside.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_contention_produces_single_winner",
+      "module": "test_dynamics.py",
+      "name": "test_contention_produces_single_winner",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/35_test_dynamics__test_contention_produces_single_winner.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_direction_set_is_von_neumann",
+      "module": "test_dynamics.py",
+      "name": "test_direction_set_is_von_neumann",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/36_test_dynamics__test_direction_set_is_von_neumann.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_free_move_accepted",
+      "module": "test_dynamics.py",
+      "name": "test_free_move_accepted",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/37_test_dynamics__test_free_move_accepted.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_immobile_species_never_moves",
+      "module": "test_dynamics.py",
+      "name": "test_immobile_species_never_moves",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/38_test_dynamics__test_immobile_species_never_moves.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_resolution_is_insertion_order_independent",
+      "module": "test_dynamics.py",
+      "name": "test_resolution_is_insertion_order_independent",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/39_test_dynamics__test_resolution_is_insertion_order_independent.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_rng_stream_is_two_draws_per_particle_per_step",
+      "module": "test_dynamics.py",
+      "name": "test_rng_stream_is_two_draws_per_particle_per_step",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/40_test_dynamics__test_rng_stream_is_two_draws_per_particle_per_step.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_single_particle_moves_exactly_one_cell",
+      "module": "test_dynamics.py",
+      "name": "test_single_particle_moves_exactly_one_cell",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/41_test_dynamics__test_single_particle_moves_exactly_one_cell.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_swap_is_resolved_as_rotation",
+      "module": "test_dynamics.py",
+      "name": "test_swap_is_resolved_as_rotation",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/42_test_dynamics__test_swap_is_resolved_as_rotation.md"
+    },
+    {
+      "node": "tests/test_dynamics.py::test_three_particle_cycle",
+      "module": "test_dynamics.py",
+      "name": "test_three_particle_cycle",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/43_test_dynamics__test_three_particle_cycle.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_energy_is_conserved",
+      "module": "test_invariants.py",
+      "name": "test_energy_is_conserved",
+      "status": "passed",
+      "seconds": 0.013,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/44_test_invariants__test_energy_is_conserved.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_no_multiple_occupancy",
+      "module": "test_invariants.py",
+      "name": "test_no_multiple_occupancy",
+      "status": "passed",
+      "seconds": 0.01,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/45_test_invariants__test_no_multiple_occupancy.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_particle_count_conserved",
+      "module": "test_invariants.py",
+      "name": "test_particle_count_conserved",
+      "status": "passed",
+      "seconds": 0.01,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/46_test_invariants__test_particle_count_conserved.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_periodic_boundaries",
+      "module": "test_invariants.py",
+      "name": "test_periodic_boundaries",
+      "status": "passed",
+      "seconds": 0.014,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/47_test_invariants__test_periodic_boundaries.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_species_quantities_conserved",
+      "module": "test_invariants.py",
+      "name": "test_species_quantities_conserved",
+      "status": "passed",
+      "seconds": 0.01,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/48_test_invariants__test_species_quantities_conserved.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_state_hash_is_stable_and_sensitive",
+      "module": "test_invariants.py",
+      "name": "test_state_hash_is_stable_and_sensitive",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/49_test_invariants__test_state_hash_is_stable_and_sensitive.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_store_rejects_double_placement",
+      "module": "test_invariants.py",
+      "name": "test_store_rejects_double_placement",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/50_test_invariants__test_store_rejects_double_placement.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_store_rejects_out_of_grid_particle",
+      "module": "test_invariants.py",
+      "name": "test_store_rejects_out_of_grid_particle",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/51_test_invariants__test_store_rejects_out_of_grid_particle.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_validate_detects_duplicate_cell",
+      "module": "test_invariants.py",
+      "name": "test_validate_detects_duplicate_cell",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/52_test_invariants__test_validate_detects_duplicate_cell.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_validate_detects_grid_desynchronisation",
+      "module": "test_invariants.py",
+      "name": "test_validate_detects_grid_desynchronisation",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/53_test_invariants__test_validate_detects_grid_desynchronisation.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_validate_detects_invalid_species_index",
+      "module": "test_invariants.py",
+      "name": "test_validate_detects_invalid_species_index",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/54_test_invariants__test_validate_detects_invalid_species_index.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_validate_detects_missing_particle",
+      "module": "test_invariants.py",
+      "name": "test_validate_detects_missing_particle",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/55_test_invariants__test_validate_detects_missing_particle.md"
+    },
+    {
+      "node": "tests/test_invariants.py::test_validate_detects_out_of_bounds_particle",
+      "module": "test_invariants.py",
+      "name": "test_validate_detects_out_of_bounds_particle",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/56_test_invariants__test_validate_detects_out_of_bounds_particle.md"
+    },
+    {
+      "node": "tests/test_metrics.py::test_peak_memory_is_plausible",
+      "module": "test_metrics.py",
+      "name": "test_peak_memory_is_plausible",
+      "status": "passed",
+      "seconds": 0.0,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/57_test_metrics__test_peak_memory_is_plausible.md"
+    },
+    {
+      "node": "tests/test_metrics.py::test_runtime_versions_are_recorded",
+      "module": "test_metrics.py",
+      "name": "test_runtime_versions_are_recorded",
+      "status": "passed",
+      "seconds": 0.002,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/58_test_metrics__test_runtime_versions_are_recorded.md"
+    },
+    {
+      "node": "tests/test_metrics.py::test_summary_contains_required_fields",
+      "module": "test_metrics.py",
+      "name": "test_summary_contains_required_fields",
+      "status": "passed",
+      "seconds": 0.003,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/59_test_metrics__test_summary_contains_required_fields.md"
+    },
+    {
+      "node": "tests/test_reproducibility.py::test_baseline_config_is_reproducible",
+      "module": "test_reproducibility.py",
+      "name": "test_baseline_config_is_reproducible",
+      "status": "passed",
+      "seconds": 0.28,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/60_test_reproducibility__test_baseline_config_is_reproducible.md"
+    },
+    {
+      "node": "tests/test_reproducibility.py::test_different_seed_different_result",
+      "module": "test_reproducibility.py",
+      "name": "test_different_seed_different_result",
+      "status": "passed",
+      "seconds": 0.005,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/61_test_reproducibility__test_different_seed_different_result.md"
+    },
+    {
+      "node": "tests/test_reproducibility.py::test_initial_placement_is_seed_deterministic",
+      "module": "test_reproducibility.py",
+      "name": "test_initial_placement_is_seed_deterministic",
+      "status": "passed",
+      "seconds": 0.001,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/62_test_reproducibility__test_initial_placement_is_seed_deterministic.md"
+    },
+    {
+      "node": "tests/test_reproducibility.py::test_repeated_advance_matches_single_call",
+      "module": "test_reproducibility.py",
+      "name": "test_repeated_advance_matches_single_call",
+      "status": "passed",
+      "seconds": 0.004,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/63_test_reproducibility__test_repeated_advance_matches_single_call.md"
+    },
+    {
+      "node": "tests/test_reproducibility.py::test_same_seed_same_result",
+      "module": "test_reproducibility.py",
+      "name": "test_same_seed_same_result",
+      "status": "passed",
+      "seconds": 0.015,
+      "detail": "",
+      "output": "--------------------------------- Captured Log ---------------------------------\n\n--------------------------------- Captured Out ---------------------------------",
+      "file": "cases/64_test_reproducibility__test_same_seed_same_result.md"
+    }
+  ]
+}

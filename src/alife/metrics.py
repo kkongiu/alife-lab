@@ -18,15 +18,36 @@ if TYPE_CHECKING:
 
 
 def peak_memory_bytes() -> int:
-    """Picco RSS del processo in byte.
+    """Picco RSS del processo corrente in byte.
 
-    ``ru_maxrss`` e' espresso in kilobyte su Linux e in byte su macOS: la
-    conversione esplicita evita un errore di fattore 1024 nei report.
+    Su Linux si legge ``VmHWM`` da ``/proc/self/status``: e' il picco
+    dell'address space corrente e viene azzerato all'exec. ``ru_maxrss`` non e'
+    affidabile in tutti i contesti, perché può ereditare il picco del processo
+    genitore (osservato: 590 MiB dichiarati con 44 MiB reali).
+
+    Su macOS ``ru_maxrss`` è espresso in byte; su Linux, come fallback, in KiB.
     """
+    if sys.platform.startswith("linux"):
+        try:
+            with open("/proc/self/status", encoding="ascii") as stream:
+                for line in stream:
+                    if line.startswith("VmHWM:"):
+                        return int(line.split()[1]) * 1024
+        except (OSError, ValueError, IndexError):
+            pass
     usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     if sys.platform == "darwin":
         return int(usage)
     return int(usage) * 1024
+
+
+# Picco RSS al caricamento del modulo: interprete e NumPy sono già importati,
+# quindi il delta rispetto a questo valore isola la memoria della simulazione.
+_MEMORY_AT_IMPORT = peak_memory_bytes()
+
+
+def process_baseline_memory() -> int:
+    return _MEMORY_AT_IMPORT
 
 
 def runtime_versions() -> dict[str, str]:
@@ -69,9 +90,9 @@ class MetricsRecorder:
         self.wall_time_s = 0.0
         self.records = 0
         # Il picco assoluto include l'interprete e le librerie (NumPy); il delta
-        # rispetto a questo valore stima la memoria attribuibile alla simulazione.
-        self.baseline_memory = peak_memory_bytes()
-        self.peak_memory = self.baseline_memory
+        # rispetto al caricamento del modulo stima la memoria della simulazione.
+        self.baseline_memory = process_baseline_memory()
+        self.peak_memory = max(self.baseline_memory, peak_memory_bytes())
 
     def observe(self, world: "World") -> None:
         if world.step % self.every != 0:

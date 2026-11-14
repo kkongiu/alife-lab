@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.9, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/kongiu/Documenti/Alife
+configfile: pyproject.toml
+testpaths: tests
+collected 64 items
+
+tests/test_checkpoint.py ............                                    [ 18%]
+tests/test_cli.py .......                                                [ 29%]
+tests/test_config.py ............                                        [ 48%]
+tests/test_dynamics.py ............                                      [ 67%]
+tests/test_invariants.py .............                                   [ 87%]
+tests/test_metrics.py ...                                                [ 92%]
+tests/test_reproducibility.py .....                                      [100%]
+
+--- generated xml file: /home/kongiu/Documenti/Alife/reports/tests/junit.xml ---
+============================== 64 passed in 3.13s ==============================
