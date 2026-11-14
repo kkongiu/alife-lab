@@ -1,0 +1,44 @@
+{
+  "steps": 10000,
+  "moves_total": 7974320,
+  "moves_per_step": 797.432,
+  "particles": {
+    "S0": 400,
+    "S1": 350,
+    "S2": 300,
+    "S3": 250,
+    "S4": 200,
+    "S5": 138
+  },
+  "particles_total": 1638,
+  "occupancy": 0.099976,
+  "grid": {
+    "width": 128,
+    "height": 128,
+    "cells": 16384,
+    "boundary": "periodic"
+  },
+  "energy": {
+    "total": 17668,
+    "initial": 17668,
+    "in": 0,
+    "out": 0,
+    "delta": 0
+  },
+  "duration_s": 50.834427,
+  "steps_per_second": 196.717,
+  "peak_memory_bytes": 552267776,
+  "state_hash": "f8fca930c290ebc7a0cd3530bb036b4a17de46921ae930074b27544c84e385a0",
+  "seed": 20261114,
+  "config_hash": "f697f983214246b4b7a96560a8e7de5d33c57e354e14899d6929e6a5226391c8",
+  "config_schema_version": 1,
+  "metrics_records": 101,
+  "invariants": "ok",
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  }
+}

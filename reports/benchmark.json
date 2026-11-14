@@ -1,0 +1,97 @@
+{
+  "steps_per_case": 1000,
+  "warmup_steps": 20,
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "cases": [
+    {
+      "case": "quick (32x32)",
+      "particles": 90,
+      "cells": 1024,
+      "occupancy": 0.0879,
+      "steps": 1000,
+      "seconds": 0.2034,
+      "steps_per_second": 4916.59,
+      "moves": 33638,
+      "moves_per_second": 165384.41,
+      "particle_updates_per_second": 442493.5,
+      "peak_memory_bytes": 576839680,
+      "simulation_memory_bytes": 0,
+      "state_hash": "85f593fa2dac8085"
+    },
+    {
+      "case": "baseline (128x128, 6 specie)",
+      "particles": 1638,
+      "cells": 16384,
+      "occupancy": 0.1,
+      "steps": 1000,
+      "seconds": 4.145,
+      "steps_per_second": 241.26,
+      "moves": 797080,
+      "moves_per_second": 192299.56,
+      "particle_updates_per_second": 395175.74,
+      "peak_memory_bytes": 576839680,
+      "simulation_memory_bytes": 0,
+      "state_hash": "00674fe83d3e6b00"
+    },
+    {
+      "case": "densita 2.5%",
+      "particles": 410,
+      "cells": 16384,
+      "occupancy": 0.025,
+      "steps": 1000,
+      "seconds": 0.9725,
+      "steps_per_second": 1028.23,
+      "moves": 201732,
+      "moves_per_second": 207427.88,
+      "particle_updates_per_second": 421576.31,
+      "peak_memory_bytes": 576839680,
+      "simulation_memory_bytes": 0,
+      "state_hash": "9520d74c631f3806"
+    },
+    {
+      "case": "densita 25%",
+      "particles": 4096,
+      "cells": 16384,
+      "occupancy": 0.25,
+      "steps": 1000,
+      "seconds": 16.628,
+      "steps_per_second": 60.14,
+      "moves": 1662432,
+      "moves_per_second": 99978.1,
+      "particle_updates_per_second": 246332.05,
+      "peak_memory_bytes": 576839680,
+      "simulation_memory_bytes": 0,
+      "state_hash": "d07d36145c9e1f79"
+    },
+    {
+      "case": "densita 50%",
+      "particles": 8192,
+      "cells": 16384,
+      "occupancy": 0.5,
+      "steps": 1000,
+      "seconds": 142.8062,
+      "steps_per_second": 7.0,
+      "moves": 2494401,
+      "moves_per_second": 17467.04,
+      "particle_updates_per_second": 57364.47,
+      "peak_memory_bytes": 576839680,
+      "simulation_memory_bytes": 0,
+      "state_hash": "0edace43e485f006"
+    }
+  ],
+  "equivalence": {
+    "steps": 2000,
+    "checkpoint_bytes": 22989,
+    "continuous_hash": "2b3bcd37720820894e89cb7bca80c3bf09b13cfdd652de48cb21cbd093be8cc5",
+    "resumed_hash": "2b3bcd37720820894e89cb7bca80c3bf09b13cfdd652de48cb21cbd093be8cc5",
+    "hashes_equal": true,
+    "rng_equal": true,
+    "moves_equal": true
+  }
+}

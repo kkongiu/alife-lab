@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "seed": 20261114,
+  "grid": {
+    "width": 128,
+    "height": 128,
+    "boundary": "periodic"
+  },
+  "neighborhood": "von_neumann",
+  "placement": "random_uniform",
+  "species": [
+    {
+      "name": "S0",
+      "count": 400,
+      "move_probability": 0.6,
+      "energy": 10
+    },
+    {
+      "name": "S1",
+      "count": 350,
+      "move_probability": 0.5,
+      "energy": 12
+    },
+    {
+      "name": "S2",
+      "count": 300,
+      "move_probability": 0.4,
+      "energy": 8
+    },
+    {
+      "name": "S3",
+      "count": 250,
+      "move_probability": 0.55,
+      "energy": 15
+    },
+    {
+      "name": "S4",
+      "count": 200,
+      "move_probability": 0.45,
+      "energy": 9
+    },
+    {
+      "name": "S5",
+      "count": 138,
+      "move_probability": 0.7,
+      "energy": 11
+    }
+  ],
+  "metrics": {
+    "every": 100
+  }
+}

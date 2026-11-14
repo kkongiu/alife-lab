@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "seed": 7,
+  "grid": {
+    "width": 32,
+    "height": 32,
+    "boundary": "periodic"
+  },
+  "neighborhood": "von_neumann",
+  "placement": "random_uniform",
+  "species": [
+    { "name": "S0", "count": 40, "move_probability": 0.60, "energy": 10 },
+    { "name": "S1", "count": 30, "move_probability": 0.40, "energy": 12 },
+    { "name": "S2", "count": 20, "move_probability": 0.00, "energy": 8 }
+  ],
+  "metrics": {
+    "every": 10
+  }
+}
