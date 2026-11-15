@@ -1,0 +1,156 @@
+{
+  "schema": "alife-m6-2e-p2-ic-counterfactual-v1",
+  "status": "preregistered-before-execution",
+  "recorded_date": "2026-11-15",
+  "parent_issue": "https://github.com/kkongiu/alife-lab/issues/4",
+  "original_frozen_m6_commit": "ff1355283ce91a63363f67020e6884f291de2f82",
+  "selected_post_hoc_source_run": "unfed-6101",
+  "epistemic_scope": "Post-hoc single historical case with prospectively frozen interventions; no independent inferential replication claim.",
+  "input": {
+    "source_manifest": "campaigns/m6_2e/manifest.json",
+    "run_id": "unfed-6101",
+    "expected_config_hash": "9d4a0dddcd861363d0813b5a011a9d1b1f31849ff2e05a4f278459c4b81f3882",
+    "expected_world_hash": "34dc7c81454bc8a2b7ed84972d14f19f155f8fd942afe19514fa1f12b57cff97"
+  },
+  "rationale": {
+    "first_cross_history_observed_step": 2,
+    "first_all_six_step": 381,
+    "last_all_six_episode": [
+      542,
+      770
+    ],
+    "protocol_intervention_step": 0,
+    "explanation": "Intervene on initial state AFTER uniform placement but BEFORE world.advance, so interventions precede the first shared physical component.",
+    "caveat": "This is a nonphysical alteration of initial conditions, not a change to the engine laws."
+  },
+  "hypothetical_parent_particle_ids": [
+    143,
+    290,
+    388,
+    414
+  ],
+  "daughter_seed_particle_ids": [
+    93,
+    245
+  ],
+  "daughter_expected_final_particle_ids": [
+    40,
+    93,
+    245,
+    477
+  ],
+  "final_signature": "T:(S0:(S0:(S0:(S0:))))",
+  "criteria": {
+    "arms": [
+      "unaltered_baseline",
+      "relocate_future_parent",
+      "relocate_matched_sham_a",
+      "relocate_matched_sham_b"
+    ],
+    "intervention": "Periodic rigid translation of four initially unbonded S0 particles into unoccupied cells; original identities, species, bonds, energies and RNG state preserved. Each arm cloned from exactly the same seeded post-placement world.",
+    "shams": "Two disjoint sets of four S0 particles, greedily matched without reference to future outcomes using toroidal distances to both daughter-seed IDs and occupancy within distance two at step zero; stable tie break by particle ID.",
+    "shifts": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        0
+      ],
+      [
+        0,
+        64
+      ],
+      [
+        32,
+        32
+      ],
+      [
+        96,
+        32
+      ],
+      [
+        32,
+        96
+      ],
+      [
+        48,
+        80
+      ],
+      [
+        80,
+        48
+      ],
+      [
+        16,
+        64
+      ],
+      [
+        64,
+        16
+      ],
+      [
+        96,
+        96
+      ],
+      [
+        16,
+        96
+      ],
+      [
+        96,
+        16
+      ],
+      [
+        48,
+        48
+      ],
+      [
+        80,
+        80
+      ],
+      [
+        24,
+        72
+      ]
+    ],
+    "matching": "For each fixed shift, consider a triplet valid ONLY if all three interventions can be placed on empty target cells without collisions and component boundary bond violations. Do not replace a failed shift or select valid shifts based on outcome.",
+    "min_valid_triplets": 4,
+    "end_step": 845,
+    "important_ticks": [
+      2,
+      381,
+      542,
+      770,
+      771,
+      792,
+      800,
+      835,
+      845
+    ],
+    "primary_measure": "Exact daughter seed component reaches the frozen four-S0 signature at tick 835 AND retains it at tick 845, with no target group particles in its connected component.",
+    "secondary_measures": [
+      "Exact signature at each of 835 and 845 separately",
+      "Original four daughter particle IDs present in matched component at 835 and 845",
+      "Material all-six common component at tick 770",
+      "First tick of RNG state/draw-count divergence versus baseline",
+      "First tick of daughter-seed component signature divergence versus baseline",
+      "Initial geometry and local occupancy of moved groups"
+    ],
+    "comparison": "Descriptive within-shift contrast: effect of parent displacement versus two shams and intact baseline. Report every valid/invalid shift; no statistical p-values.",
+    "decision_rule": "If <4 valid triplets or early RNG divergence makes matched trajectories noncomparable, mark inconclusive; otherwise report outcome counts with the same causal caution. Never classify signature occurrence as reproduction.",
+    "no_recalibration": true,
+    "no_engine_changes": true
+  },
+  "controls": {
+    "original_run_hash": "Exact original M6 final world hash after unaltered replay to tick 3000.",
+    "initial_clone_identity": "State hash, energy, bonds, RNG state and RNG draws identical before intervention.",
+    "invariants": "After intervention and at finish, World.check verifies occupancy, bonds, species, ledger and valid geometry.",
+    "observation": "All callbacks may read material state but not draw RNG or modify world.",
+    "negative_controls": "Two matched S0 sham sets, exact same 16 shift vectors and validity exclusions.",
+    "forbidden": "No changes to World.step, chemistry, molecule bonding laws, RNG mechanism, detector v2 or v2.1."
+  },
+  "stopping_rule": "Do not tune shifts, matching, windows, success metrics or shams after viewing outcomes; any revision requires protocol v2 and new independent run.",
+  "verdict_floor": "No causal replication demonstrated by this selected case regardless of results."
+}
