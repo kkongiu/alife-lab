@@ -1,0 +1,170 @@
+{
+  "schema": "alife-m6-3-0-variant-specificity-screen-v1",
+  "status": "preregistered-before-runner-and-simulation",
+  "date": "2026-11-15",
+  "references": {
+    "design_pr": "https://github.com/kkongiu/alife-lab/pull/9",
+    "research_issue": "https://github.com/kkongiu/alife-lab/issues/4",
+    "original_m6_config": "campaigns/m6/configs/unfed-6101.json",
+    "default_base_commit": "ff1355283ce91a63363f67020e6884f291de2f82"
+  },
+  "hypothesis": "With fixed local chemistry, a parent sequence A versus B might change the relative occurrence of newly assembled, particle-disjoint A/B four-atom chains nearby beyond changes in total reaction opportunities. A signal may be geometric/species-accessibility, NOT proven inheritance.",
+  "epistemic_status": "Prospective probe of a deliberately assembled nonreplicating initial scaffold; not natural origin of replication; no inference of genotype/organism.",
+  "model": {
+    "physical_laws": "unchanged original M6 unfed-6101 chemistry, movement, energy, species and RNG code",
+    "fixture_grid": {
+      "width": 24,
+      "height": 24,
+      "boundary": "periodic"
+    },
+    "fixture_species_counts": {
+      "S0": 80,
+      "S1": 80,
+      "S2": 24,
+      "S3": 16
+    },
+    "scaffold_sites": [
+      [
+        10,
+        12
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        12
+      ],
+      [
+        13,
+        12
+      ]
+    ],
+    "scaffold_particle_ids": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "scaffold_bonds": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "bonded_fixture_energy": "3 bonds each require 2 energy units from each endpoint and 1 dissipation from each endpoint; each bond stores 4 units, ledger dissipated starts at 6. No-bond fixtures have zero initial dissipation, a documented control confound.",
+    "background_placement": "196 non-scaffold particles sampled without replacement from free cells with RNG(seed), exactly one raw uint64 per placed particle; same positions, species and post-placement RNG state in all arms of one seed.",
+    "background_species_order": "78 S0 then 78 S1 then 24 S2 then 16 S3; S0/S1 scaffold each 2, total species counts stay fixed.",
+    "seed_list": [
+      7101,
+      7102,
+      7103,
+      7104,
+      7105,
+      7106,
+      7107,
+      7108,
+      7109,
+      7110,
+      7111,
+      7112
+    ],
+    "duration_steps": 300,
+    "arm_order": [
+      "A",
+      "B",
+      "A_reverse",
+      "B_reverse",
+      "unbonded_A",
+      "unbonded_B"
+    ],
+    "variant_sites": {
+      "A": [
+        "S0",
+        "S1",
+        "S0",
+        "S1"
+      ],
+      "B": [
+        "S0",
+        "S0",
+        "S1",
+        "S1"
+      ],
+      "A_reverse": [
+        "S1",
+        "S0",
+        "S1",
+        "S0"
+      ],
+      "B_reverse": [
+        "S1",
+        "S1",
+        "S0",
+        "S0"
+      ],
+      "unbonded_A": [
+        "S0",
+        "S1",
+        "S0",
+        "S1"
+      ],
+      "unbonded_B": [
+        "S0",
+        "S0",
+        "S1",
+        "S1"
+      ]
+    },
+    "bonded_arms": [
+      "A",
+      "B",
+      "A_reverse",
+      "B_reverse"
+    ],
+    "nonbonded_arms": [
+      "unbonded_A",
+      "unbonded_B"
+    ],
+    "variant_signatures": "computed with original alife.structures.signature() from fixture at tick 0; canonical exact tree for four nodes",
+    "no_external_copying": "prohibited; initial scaffold is manually synthesized once, without forcing offspring"
+  },
+  "measurements": {
+    "primary": "Count each new material set of four non-scaffold particle IDs with an exact A or B tree signature upon first detection, at a position within toroidal Manhattan distance <=2 of the four initial scaffold sites. Report counts split by whether any candidate constituent ever shared an aggregate with scaffold beforehand.",
+    "secondary": [
+      "Total disjoint-from-scaffold newly observed A/B signatures anywhere (distinct material-ID sets per signature)",
+      "All size-four tree appearances of either variant, including number previously material-connected to scaffold",
+      "Initial scaffold chemistry integrity and lifetime",
+      "Free non-scaffold particles within one cell of any fixed scaffold site, accumulated over time",
+      "Global bond formation and break totals",
+      "Run end full state hash, energy ledger, config hash, RNG draws/fingerprint"
+    ],
+    "unique_event_key": "(variant_signature, sorted four particle IDs) across a run; one count per such pair, not per persistence tick",
+    "ancestry_rule": "Any historical common bonded component with scaffold particles flags a material connection, and strict events exclude those flagged; geometric proximity alone is not causal evidence.",
+    "exclusions": "Do not count any aggregate containing scaffold particle IDs; do not infer generation from tracker continuity or shared species."
+  },
+  "comparison": {
+    "paired_seed": "Compare A/B and orientation-reversed arms within identical seeded background positions, never assume identical RNG trajectories after divergence.",
+    "specificity_contrasts": "For each arm, compare counts of A vs B among strict near-scaffold daughter structures; reverse orientations should agree in direction. Compare no-bond fixture arms to estimate background and kinetic confounding.",
+    "minimum_signal_for_followup": "At least 5 strict near-scaffold A/B occurrences total across each of A, B, A_reverse, B_reverse (not just counts of existing template) AND positive within-arm variant preference in both orientations across at least 8 of 12 seeds each. Otherwise declare underpowered/no signal in this screen.",
+    "decision_rule": "Regardless of screen result, no causal replication or heredity claim. Strong signal triggers new preregistered independent multi-seed causal validation, not physics change; null result is absence of observed specificity at tested fixture/300 ticks, not an impossibility proof.",
+    "no_p_hacking": "No adaptively adjusted seeds, sample size, arm order, duration, size, density, radius, success window, signatures, or kinetic rates after results.",
+    "data_output": "Machine-readable per-seed/per-arm metrics with all zero runs, canonical signatures, config SHA, world hash and full raw RNG accounting.",
+    "stop_on_failure": "Any broken initial constraint, nondeterministic replay, energy/bond/occupancy invariant, signature equivalence, or fixture mismatch fails CI and prevents scientific conclusion."
+  },
+  "historical_safety": {
+    "no_source_modifications": true,
+    "do_not_modify": "src/, existing configs, existing campaign manifests/results, preregistered detectors, SPEC.md, M6 hashes",
+    "experiment_is_synthetic_fixture": true,
+    "no_authorized_new_physics": true
+  }
+}
