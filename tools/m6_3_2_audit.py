@@ -336,7 +336,7 @@ def aggregate(rows,p):
                     "attachment_form_prestep_free",0) for r in subset
             ),
             "first_loss_prestep_bonded_forms":sum(
-                r["first_loss"]["incident_event_kinds"].get(
+                (r["first_loss"] or {"incident_event_kinds":{}})["incident_event_kinds"].get(
                     "attachment_form_prestep_bonded",0) for r in subset
             ),
             "mean_first_loss_tick_observed":round(sum(r["first_loss_tick"] for r in subset if r["first_loss_tick"] is not None)/sum(r["first_loss_tick"] is not None for r in subset),3) if any(r["first_loss_tick"] is not None for r in subset) else None,
