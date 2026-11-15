@@ -1,0 +1,43 @@
+name: M6.10 native eight-cycle geometric pocket survey
+
+on:
+  push:
+    branches:
+      - exp/m6-10-natural-enclosed-lattice-pockets
+    paths:
+      - 'campaigns/m6_10_pockets/**'
+      - 'tools/m6_10_pockets.py'
+      - 'tests/test_m6_10_pockets.py'
+      - '.github/workflows/m6_10_pockets.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_10_pockets/**'
+      - 'tools/m6_10_pockets.py'
+      - 'tests/test_m6_10_pockets.py'
+      - '.github/workflows/m6_10_pockets.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  natural-pockets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Run regression suite and precise 3x3 geometry tests
+        run: python -m pytest -q
+      - name: Run preregistered 100 world native eight-ring trap search
+        run: python -m tools.m6_10_pockets
+      - name: Archive all pocket episodes and negative worlds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-10-natural-geometric-pockets
+          path: campaigns/m6_10_pockets/results.json
+          if-no-files-found: warn
