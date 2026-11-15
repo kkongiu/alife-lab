@@ -1,0 +1,107 @@
+{
+  "schema": "alife-m6-3-2-five-stage-audit-v1",
+  "status": "frozen-before-audit-code-or-execution",
+  "date": "2026-11-15",
+  "source_protocol": "campaigns/m6_3_1/protocol.json",
+  "source_report": "reports/M6_3_1_density_accessibility.md",
+  "scientific_question": "Does the high-density loss of exact four-particle purity mainly reflect bond rupture, material accretion/merge, or mixtures? Is the original four-particle core still present, and does it have chemically eligible substrate encounters before loss?",
+  "study_type": "post-hoc mechanistic audit of exactly the 160 historical M6.3-1 conditions; descriptive, not preregistered independent replication inference",
+  "fixed_conditions": "Replay the same two densities, sixteen seeds, five A/B/reverse/C bonded motifs, and 450 ticks from unchanged M6.3-1 fixtures. No new trajectories or parameter tuning.",
+  "steps": [
+    {
+      "number": 1,
+      "id": "P1",
+      "name": "Protocol and invariant baseline",
+      "pass": "Freeze definitions, ensure initial paired energy/RNG, verify exact 160/160 and test full hashes against independently rerun M6.3-1 observer for selected fixed seeds/densities."
+    },
+    {
+      "number": 2,
+      "id": "P2",
+      "name": "First loss mechanism",
+      "pass": "For every run, identify first tick at which source quartet is no longer an isolated exact motif. Classify net difference and incident bond events as original edge loss, outsider attachment, both, or unexplained; distinguish attachment to pre-step monomer vs previously bonded cluster."
+    },
+    {
+      "number": 3,
+      "id": "P3",
+      "name": "Original core material continuity",
+      "pass": "Measure every tick with all three original bonds present, with core connected, and with original core plus outsider particles. Record first original-edge loss and first core growth, including regrowth separately."
+    },
+    {
+      "number": 4,
+      "id": "P4",
+      "name": "Physical accessibility and motif outcomes",
+      "pass": "Record potential bond-compatible free partners neighboring any source particle and unsaturated energy-qualified source slots while original core is present; tally accepted new source-outside bonds, new disjoint A/B/C near motifs while pure or merely core-bond-retained. Keep total and per-exposure counts and distinguish structural identity from causal copying."
+    },
+    {
+      "number": 5,
+      "id": "P5",
+      "name": "Evidence review and decision",
+      "pass": "Consolidate mechanisms by density/arm, classify explanatory limits, confirm null runs and unchanged original-world trajectories, publish report and explicit gate to future tests. No engine change, no M7 promotion."
+    }
+  ],
+  "frozen_timepoints": [
+    0,
+    450
+  ],
+  "pure_definition": "At post-step snapshot: exactly particles {0,1,2,3} in a single component with the exact original three bonds and canonical original signature, no outsider in that component.",
+  "core_edges": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "core_bond_retained_definition": "All 3 original bonded edges remain present, irrespective of outsiders attached, even if the source component has grown.",
+  "core_connected_definition": "All 4 initial source IDs share a physical connected component; original bond identities need not all remain.",
+  "first_loss_classification": {
+    "original_edge_loss": "One or more frozen original edges absent, no new outsider in the connected source component.",
+    "attachment": "All frozen edges remain, one or more outsiders bonded in the connected source component; split monomer/cluster using pre-transition bonded degree of first externally attached neighbor.",
+    "mixed": "Some original edges absent AND new outsider/source-attachment is present at that tick.",
+    "other": "Signature ceased to be pure but prior mechanisms do not account for change; flag and fail, do not hide."
+  },
+  "event_observation": "Existing World.event_sink receives BondEvent with event.step representing the pre-advance tick; recorder maps to post-advance tick step+1, keeping only events incident to source IDs. Read-only and no RNG consumed.",
+  "ancestry_restriction": "Exclude each candidate A/B/C four-atom aggregate if any member has ever belonged to a connected component with a source ID at or before its first observation.",
+  "motif_analysis": "Deduplicate first appearances by (exact canonical signature, sorted constituent particle IDs). Classify as strict near if any member within toroidal Manhattan distance <=2 from original source sites; report separately while pure, core-bond-retained but not pure, and core broken.",
+  "eligibility_definition": "For each post-step snapshot consider source-to-free-neighbor bond pairs (neighbor degree=0), count once per source-neighbor pair only when grid adjacency, allowed species, both below max valence, and both have formation_cost energy. This is a local state opportunity proxy, not actual _candidate_pairs count at pre-formation phase and not a causal exposure intervention.",
+  "observation": "Replay from t0 to 450; snapshots post-step only, initial state t0 tracked separately; preserve all 160 cases and all zero results.",
+  "not_interventions": "No algorithmic changes to World, chemistry, RNG, configuration, spontaneous reproduction, detectors, historical data. No artificial added bonds beyond original M6.3-1 synthetic source scaffold.",
+  "integrity": {
+    "two_fixed_replays": [
+      [
+        "baseline",
+        8101,
+        "A"
+      ],
+      [
+        "enriched",
+        8101,
+        "A"
+      ]
+    ],
+    "replay_comparison": "Reconstruct same world independently and run old M6.3-1 take_measurements observer; require final state hash, RNG draw count, RNG fingerprint, bond counts, and original energy ledger match this new observer exactly.",
+    "per_run": "Check World.check before and after each run. Observer reads only and assert rng.draws constant during callback.",
+    "expected_cases": 160,
+    "expected_steps": 450,
+    "expected_unique_signatures": 3,
+    "no_replacement_seed_or_density": true,
+    "no_statistical_significance_claim": true,
+    "no_adjustment_after_outcomes": true
+  },
+  "decision": {
+    "potential_growth_bottleneck": "Report if attachment-only cases exceed original_edge_loss-only cases, by density; descriptive mechanism, not causation.",
+    "potential_break_bottleneck": "Report if original_edge_loss-only cases exceed attachment-only cases; descriptive only.",
+    "mixed_or_unclear": "Report if mixture or other classifications dominate; no forced choice.",
+    "no_specificity": "Do not label any A/B difference as inheritance unless independent preregistered validation in future study shows a variant-specific effect with causal controls.",
+    "physics_gate": "No law modification during or following this audit; future proposal must explain observed bottleneck, alternatives, falsifiers and obtain user authorization.",
+    "next_actions": "Choose next experiment based on measured loss categories and verified surface exposure, not on the desire for a positive copying outcome."
+  },
+  "artifact": "campaigns/m6_3_2/audit_results.json",
+  "report": "reports/M6_3_2_five_stage_audit.md"
+}
