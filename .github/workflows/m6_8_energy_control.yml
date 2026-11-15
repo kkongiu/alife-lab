@@ -1,0 +1,43 @@
+name: M6.8 energy refund vs inert S3 sequestration
+
+on:
+  push:
+    branches:
+      - exp/m6-8-source-energy-redistribution-control
+    paths:
+      - 'campaigns/m6_8_energy_control/**'
+      - 'tools/m6_8_energy_control.py'
+      - 'tests/test_m6_8_energy_control.py'
+      - '.github/workflows/m6_8_energy_control.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_8_energy_control/**'
+      - 'tools/m6_8_energy_control.py'
+      - 'tests/test_m6_8_energy_control.py'
+      - '.github/workflows/m6_8_energy_control.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  energy-control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package and tests
+        run: python -m pip install -e '.[dev]'
+      - name: Full suite and 3-arm energy conservation regression
+        run: python -m pytest -q
+      - name: Run 40-world ring energy relocation experiments
+        run: python -m tools.m6_8_energy_control
+      - name: Archive full matched fork data including negative outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-8-ring-energy-control
+          path: campaigns/m6_8_energy_control/results.json
+          if-no-files-found: warn

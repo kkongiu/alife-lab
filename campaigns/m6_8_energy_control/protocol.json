@@ -1,0 +1,62 @@
+{
+  "schema": "alife-m6-8-inert-energy-allocation-v1",
+  "status": "frozen-before-runner-and-outcomes",
+  "hypothesis": "When the exact same naturally born four-ring is opened at the same edge, refunding its stored bond energy to the endpoints may affect reclosure or source quartet isolation versus moving that energy into a distant nonreactive S3; compare strictly the two opened initial conditions.",
+  "source": "Native M6 24x24 periodic world, initial zero bonds, baseline and enriched densities, first two distinct naturally born four-rings per world, selected by first observation then material IDs.",
+  "seeds": [
+    9401,
+    9402,
+    9403,
+    9404,
+    9405,
+    9406,
+    9407,
+    9408,
+    9409,
+    9410,
+    9411,
+    9412,
+    9413,
+    9414,
+    9415,
+    9416,
+    9417,
+    9418,
+    9419,
+    9420
+  ],
+  "densities": [
+    "baseline",
+    "enriched"
+  ],
+  "n_worlds": 40,
+  "select_until_tick": 600,
+  "first_distinct_rings_per_world": 2,
+  "max_forks": 80,
+  "horizon": 120,
+  "early_horizon": 10,
+  "arms": [
+    "keep_intact",
+    "open_refund_endpoints",
+    "open_sequester_in_S3"
+  ],
+  "opening_edge": "Lexicographically lowest material-ID edge of original ring for both opened arms.",
+  "opening_refund": "Use unchanged M6.5 open_bond (refund stored bond energy to source endpoints).",
+  "opening_sequester": "Remove same bond and put its entire stored energy into existing S3 of max valence 0 farthest in minimum toroidal Manhattan distance from the original four atoms (tie smallest ID). The four source particle energies remain exactly unchanged from intact at t0. All other particle energies unchanged. Total system energy and RNG unchanged.",
+  "isolated_measure": "At 120 ticks, four original IDs remain exactly one isolated four-particle connected aggregate with no outsiders, independent of whether a cycle remains.",
+  "reclosure_measure": "Any native BondEvent(kind=form) for the artificially opened ID pair at any of first ten ticks, recording events for 120 ticks; immediate snapshot 4-ring separately.",
+  "secondary": "First reclosure tick, ring snapshot, endpoint energy sufficiency for formation, first loss mechanism, neutral S3 distance and ID, final hashes RNG draws, energy and full individual fork outcomes. Preserve missing worlds and correlated forks.",
+  "gate": {
+    "min_forks_per_density": 20,
+    "small_margin": 0.1,
+    "strong_margin": 0.15,
+    "strong_rule": "Same nonzero sign and |refund-S3| >= 0.15 in both densities for EITHER early bond reformation rate OR final isolated-quartet rate; label allocation_effect_signal_needs_replication.",
+    "small_rule": "For both densities, |refund-S3| <=0.10 for BOTH early formation and final isolation: no_large_allocation_effect_detected_descriptive.",
+    "otherwise": "mixed_or_uncertain_energy_allocation_effect",
+    "underpowered": "underpowered",
+    "no_pvalues": true
+  },
+  "integrity": "Full tests, identical whole-world energy & RNG at fork, same physical bond topology and positions in two opened arms, S3 chemically inert, native chemistry unchanged, replays without event observer at first selected ring per density, no source or master modifications.",
+  "caveat": "An S3 allocation is a synthetic perturbation of initial energy distribution, not a native process. Any differences reflect energy distribution not a pure isolated biology mechanism. No self-repair, replication, heredity or life claim.",
+  "output": "campaigns/m6_8_energy_control/results.json"
+}
