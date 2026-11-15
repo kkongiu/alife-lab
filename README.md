@@ -3,9 +3,9 @@
 Universo computazionale minimo, deterministico e headless, nel quale osservare —
 senza imporle — eventuali proprietà emergenti.
 
-Stato: **M6 — campagna esplorativa multi-universo** (in attesa di approvazione),
-dopo M1–M5 approvati. Preregistrazione, cinque condizioni, stato di analisi
-ripristinabile e registrazione di tutti i run, compresi quelli nulli.
+Stato: **M6.1 — diagnosi della capacità evolutiva** (in attesa di approvazione),
+dopo M1–M6 approvati. Nessuna legge del motore è stata modificata: audit,
+sonde diagnostiche isolate e protocollo per le versioni future.
 
 **M3 non contiene vita, né la cerca.** Non ci sono organismi, genomi, replicatori,
 reti neurali, funzioni di fitness. Ci sono particelle che si spostano, legami
@@ -26,6 +26,8 @@ Documenti:
   negativi, sensibilità e falsi positivi.
 - [`reports/M6_campaign.md`](reports/M6_campaign.md) — campagna preregistrata,
   confronto fra condizioni, risultati anche nulli.
+- [`reports/M6_1_diagnosis.md`](reports/M6_1_diagnosis.md) — audit delle leggi,
+  sonde diagnostiche, proposte di evoluzione, protocollo di validazione.
 - [`reports/tests/index.md`](reports/tests/index.md) — risultati dei test, con un
   file per ogni caso e un'evidenza misurata per ogni requisito.
 - [`docs/M3_flussi_energetici.md`](docs/M3_flussi_energetici.md) — specifica

@@ -1,0 +1,614 @@
+{
+  "milestone": "m6.1",
+  "engine_unchanged": true,
+  "topology_census": {
+    "runs": [
+      {
+        "run": "closed/seed-6101",
+        "condition": "closed",
+        "structures": 291,
+        "max_size": 8,
+        "mean_size": 3.213,
+        "cyclic_components": 15,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 552,
+          "2": 383
+        },
+        "birth_sizes": {
+          "2": 998,
+          "3": 1
+        }
+      },
+      {
+        "run": "closed/seed-6102",
+        "condition": "closed",
+        "structures": 288,
+        "max_size": 12,
+        "mean_size": 3.208,
+        "cyclic_components": 23,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 530,
+          "2": 394
+        },
+        "birth_sizes": {
+          "2": 972,
+          "3": 3
+        }
+      },
+      {
+        "run": "closed/seed-6103",
+        "condition": "closed",
+        "structures": 273,
+        "max_size": 9,
+        "mean_size": 3.436,
+        "cyclic_components": 24,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 498,
+          "2": 440
+        },
+        "birth_sizes": {
+          "2": 950,
+          "3": 1
+        }
+      },
+      {
+        "run": "closed/seed-6104",
+        "condition": "closed",
+        "structures": 284,
+        "max_size": 10,
+        "mean_size": 3.268,
+        "cyclic_components": 23,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 522,
+          "2": 406
+        },
+        "birth_sizes": {
+          "2": 904,
+          "3": 5
+        }
+      },
+      {
+        "run": "closed/seed-6105",
+        "condition": "closed",
+        "structures": 270,
+        "max_size": 11,
+        "mean_size": 3.47,
+        "cyclic_components": 21,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 498,
+          "2": 439
+        },
+        "birth_sizes": {
+          "2": 881,
+          "3": 4
+        }
+      },
+      {
+        "run": "fed-high/seed-6101",
+        "condition": "fed-high",
+        "structures": 151,
+        "max_size": 6,
+        "mean_size": 2.298,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 302,
+          "2": 45
+        },
+        "birth_sizes": {
+          "2": 971,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-high/seed-6102",
+        "condition": "fed-high",
+        "structures": 148,
+        "max_size": 5,
+        "mean_size": 2.25,
+        "cyclic_components": 1,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 294,
+          "2": 39
+        },
+        "birth_sizes": {
+          "2": 1086,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-high/seed-6103",
+        "condition": "fed-high",
+        "structures": 149,
+        "max_size": 5,
+        "mean_size": 2.282,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 298,
+          "2": 42
+        },
+        "birth_sizes": {
+          "2": 990,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-high/seed-6104",
+        "condition": "fed-high",
+        "structures": 152,
+        "max_size": 4,
+        "mean_size": 2.164,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 304,
+          "2": 25
+        },
+        "birth_sizes": {
+          "2": 960,
+          "3": 4
+        }
+      },
+      {
+        "run": "fed-high/seed-6105",
+        "condition": "fed-high",
+        "structures": 150,
+        "max_size": 7,
+        "mean_size": 2.253,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 300,
+          "2": 38
+        },
+        "birth_sizes": {
+          "2": 1001,
+          "3": 3
+        }
+      },
+      {
+        "run": "fed-low/seed-6101",
+        "condition": "fed-low",
+        "structures": 159,
+        "max_size": 4,
+        "mean_size": 2.277,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 318,
+          "2": 44
+        },
+        "birth_sizes": {
+          "2": 985,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-low/seed-6102",
+        "condition": "fed-low",
+        "structures": 145,
+        "max_size": 4,
+        "mean_size": 2.2,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 290,
+          "2": 29
+        },
+        "birth_sizes": {
+          "2": 1042,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-low/seed-6103",
+        "condition": "fed-low",
+        "structures": 144,
+        "max_size": 4,
+        "mean_size": 2.278,
+        "cyclic_components": 1,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 286,
+          "2": 42
+        },
+        "birth_sizes": {
+          "2": 978,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-low/seed-6104",
+        "condition": "fed-low",
+        "structures": 160,
+        "max_size": 4,
+        "mean_size": 2.2,
+        "cyclic_components": 2,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 316,
+          "2": 36
+        },
+        "birth_sizes": {
+          "2": 954,
+          "3": 4
+        }
+      },
+      {
+        "run": "fed-low/seed-6105",
+        "condition": "fed-low",
+        "structures": 156,
+        "max_size": 5,
+        "mean_size": 2.218,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 312,
+          "2": 34
+        },
+        "birth_sizes": {
+          "2": 997,
+          "3": 4
+        }
+      },
+      {
+        "run": "fed-mid/seed-6101",
+        "condition": "fed-mid",
+        "structures": 151,
+        "max_size": 6,
+        "mean_size": 2.298,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 302,
+          "2": 45
+        },
+        "birth_sizes": {
+          "2": 971,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-mid/seed-6102",
+        "condition": "fed-mid",
+        "structures": 142,
+        "max_size": 6,
+        "mean_size": 2.31,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 284,
+          "2": 44
+        },
+        "birth_sizes": {
+          "2": 1015,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-mid/seed-6103",
+        "condition": "fed-mid",
+        "structures": 136,
+        "max_size": 6,
+        "mean_size": 2.257,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 272,
+          "2": 35
+        },
+        "birth_sizes": {
+          "2": 970,
+          "3": 2
+        }
+      },
+      {
+        "run": "fed-mid/seed-6104",
+        "condition": "fed-mid",
+        "structures": 152,
+        "max_size": 4,
+        "mean_size": 2.164,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 304,
+          "2": 25
+        },
+        "birth_sizes": {
+          "2": 960,
+          "3": 4
+        }
+      },
+      {
+        "run": "fed-mid/seed-6105",
+        "condition": "fed-mid",
+        "structures": 150,
+        "max_size": 7,
+        "mean_size": 2.253,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 300,
+          "2": 38
+        },
+        "birth_sizes": {
+          "2": 1001,
+          "3": 3
+        }
+      },
+      {
+        "run": "unfed/seed-6101",
+        "condition": "unfed",
+        "structures": 132,
+        "max_size": 3,
+        "mean_size": 2.144,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 264,
+          "2": 19
+        },
+        "birth_sizes": {
+          "2": 948,
+          "3": 2
+        }
+      },
+      {
+        "run": "unfed/seed-6102",
+        "condition": "unfed",
+        "structures": 129,
+        "max_size": 4,
+        "mean_size": 2.217,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 258,
+          "2": 28
+        },
+        "birth_sizes": {
+          "2": 1022,
+          "3": 2
+        }
+      },
+      {
+        "run": "unfed/seed-6103",
+        "condition": "unfed",
+        "structures": 128,
+        "max_size": 4,
+        "mean_size": 2.148,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 256,
+          "2": 19
+        },
+        "birth_sizes": {
+          "2": 979,
+          "3": 1
+        }
+      },
+      {
+        "run": "unfed/seed-6104",
+        "condition": "unfed",
+        "structures": 122,
+        "max_size": 3,
+        "mean_size": 2.098,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 244,
+          "2": 12
+        },
+        "birth_sizes": {
+          "2": 933,
+          "3": 4
+        }
+      },
+      {
+        "run": "unfed/seed-6105",
+        "condition": "unfed",
+        "structures": 132,
+        "max_size": 4,
+        "mean_size": 2.144,
+        "cyclic_components": 0,
+        "max_degree": 2,
+        "degree_histogram": {
+          "1": 264,
+          "2": 19
+        },
+        "birth_sizes": {
+          "2": 971,
+          "3": 3
+        }
+      }
+    ],
+    "by_condition": {
+      "closed": {
+        "runs": 5,
+        "median_structures": 284,
+        "median_max_size": 10,
+        "cyclic_components_total": 106,
+        "max_degree": 2,
+        "birth_sizes_total": {
+          "2": 4705,
+          "3": 14
+        }
+      },
+      "fed-high": {
+        "runs": 5,
+        "median_structures": 150,
+        "median_max_size": 5,
+        "cyclic_components_total": 1,
+        "max_degree": 2,
+        "birth_sizes_total": {
+          "2": 5008,
+          "3": 13
+        }
+      },
+      "fed-low": {
+        "runs": 5,
+        "median_structures": 156,
+        "median_max_size": 4,
+        "cyclic_components_total": 3,
+        "max_degree": 2,
+        "birth_sizes_total": {
+          "2": 4956,
+          "3": 14
+        }
+      },
+      "fed-mid": {
+        "runs": 5,
+        "median_structures": 150,
+        "median_max_size": 6,
+        "cyclic_components_total": 0,
+        "max_degree": 2,
+        "birth_sizes_total": {
+          "2": 4917,
+          "3": 13
+        }
+      },
+      "unfed": {
+        "runs": 5,
+        "median_structures": 129,
+        "median_max_size": 4,
+        "cyclic_components_total": 0,
+        "max_degree": 2,
+        "birth_sizes_total": {
+          "2": 4853,
+          "3": 12
+        }
+      }
+    }
+  },
+  "catalysis_probe": {
+    "steps": 1500,
+    "base_config": "campaigns/m6/configs/fed-mid-6101.json",
+    "off": {
+      "config_hash": "0da05785daf3611b8689bc02a6d12701fc0454bb5cabf7a2b6f7ebffba241118",
+      "structures": 283,
+      "births": 686,
+      "growths": 1023,
+      "max_size": 7,
+      "size_distribution": {
+        "2": 175,
+        "3": 69,
+        "4": 27,
+        "5": 8,
+        "6": 3,
+        "7": 1
+      },
+      "exact_observations": 415835,
+      "fuzzy_observations": 4560,
+      "ambiguous_steps": 715,
+      "candidates": 0,
+      "persistent": 0,
+      "classified": "not_replication",
+      "world_hash": "89df9396c1c3b1c173973c7e8d49dde3ef8326e817b7d2c007a07a50bfcfda67"
+    },
+    "on": {
+      "config_hash": "4cf22bb0b8ab088ccd6f435ef56fd6aef91582bb56819d861e06824d95fee211",
+      "structures": 292,
+      "births": 651,
+      "growths": 1007,
+      "max_size": 8,
+      "size_distribution": {
+        "2": 182,
+        "3": 80,
+        "4": 24,
+        "5": 3,
+        "6": 2,
+        "8": 1
+      },
+      "exact_observations": 428855,
+      "fuzzy_observations": 8597,
+      "ambiguous_steps": 1328,
+      "candidates": 0,
+      "persistent": 0,
+      "classified": "not_replication",
+      "world_hash": "756dc616f5d3274d9fd4a37e7a7dd42e0b5edca734a0aa88d80d851bbef69e58"
+    }
+  },
+  "autocatalysis_probe": {
+    "off": {
+      "config_hash": "61f16372b460d23d9ee611c7deb926563454a737d2d3906488651846da6c0e93",
+      "final_bonds": 53,
+      "bond_curve_every_100": [
+        0,
+        4,
+        8,
+        9,
+        15,
+        17,
+        21,
+        23,
+        27,
+        29,
+        32,
+        33,
+        35,
+        39,
+        41,
+        41,
+        44,
+        46,
+        49,
+        50,
+        53
+      ],
+      "world_hash": "66f6772c378914348e7e3c7ad13c8125d822430c50619c4e5527c500421dae3b"
+    },
+    "on": {
+      "config_hash": "4b75f0b85f8d26c92c08d8042b43ea8c1d42710de685542b19aec99de3cf1c65",
+      "final_bonds": 135,
+      "bond_curve_every_100": [
+        0,
+        62,
+        78,
+        92,
+        101,
+        108,
+        115,
+        117,
+        120,
+        124,
+        126,
+        127,
+        128,
+        129,
+        131,
+        133,
+        133,
+        134,
+        134,
+        134,
+        135
+      ],
+      "world_hash": "c89afc02f2a097514e0cd15b1dc82e7599d41a0a2ba7695dcd1b75ebc923558a"
+    },
+    "steps": 2000,
+    "formation_probability": 0.002,
+    "catalysis_factor": 1000.0
+  },
+  "same_species_probe": {
+    "config_hash": "cee99fda7ea2b20b19134296e6dad89b330751c2294258612852176ffd17315b",
+    "structures": 31,
+    "max_size": 13,
+    "birth_sizes": {
+      "2": 6,
+      "3": 25,
+      "4": 2
+    },
+    "candidates": 0,
+    "persistent": 0,
+    "max_generation": 0,
+    "classified": "not_replication",
+    "world_hash": "01bbbe72cdd48385b94c3f97f65668767c83818cd369512b3081dd765fcf26de"
+  }
+}
