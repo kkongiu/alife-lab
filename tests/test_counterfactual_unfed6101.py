@@ -13,7 +13,11 @@ def make_world(obstacle: bool = False):
     }]
     config = make_energy_config(
         width=8, height=8, species=species,
-        chemistry={"enabled": False},
+        chemistry={
+            "enabled": True, "bond_cost": 0,
+            "formation_probability": 0.0, "break_probability": 0.0,
+            "allowed_pairs": [["A", "A"]], "catalysis": [],
+        },
     )
     positions = [(0, 0), (1, 0), (2, 0)]
     if obstacle:
