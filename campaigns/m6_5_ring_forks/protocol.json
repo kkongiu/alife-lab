@@ -1,0 +1,72 @@
+{
+  "schema": "alife-m6-5-ring-opening-forks-v1",
+  "status": "frozen-before-implementation-and-results",
+  "date": "2026-11-15",
+  "question": "Do naturally formed four-particle rings preserve material isolation better than the SAME world after a controlled single-bond opening?",
+  "null_hypothesis": "No consistent advantage for the untouched ring versus opened variants under tested initial states.",
+  "physical_laws": "original M6, no modifications to simulator, chemistry, movement, energy decay or RNG",
+  "sampling": {
+    "source": "M6.4 zero-initial-bond natural world with 24x24 periodic grid and existing baseline/enriched species counts",
+    "seeds": [
+      8801,
+      8802,
+      8803,
+      8804,
+      8805,
+      8806,
+      8807,
+      8808,
+      8809,
+      8810,
+      8811,
+      8812
+    ],
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "precursor_max_tick": 600,
+    "selection": "First two distinct material-ID sets forming a four-cycle in each world, ordered by first observed tick then sorted IDs. Do not replace missing cases.",
+    "max_selected": 48,
+    "followup_steps": 120,
+    "arms": [
+      "keep_ring",
+      "open_lowest_edge",
+      "open_opposite_edge"
+    ],
+    "clone": "Exact independently cloned complete snapshot with same source particle IDs, bonds, energy, RNG state and draws, and all source reservoirs and accounting.",
+    "opening": "Remove lowest-sorted source-ID bond or its disjoint opposite and credit its *stored bond energy* to the two endpoint particles (floor-half, remainder). The already dissipated formation energy stays dissipated. World.check() must pass; this is an initial-condition perturbation, NOT a change in the evolution laws.",
+    "exact_signature": "src/alife/structures.py signature_v2 for simple cycles, old historical signature() unchanged"
+  },
+  "outcomes": {
+    "primary": "At followup step 120, all original ring particle IDs must remain a single connected aggregate with exactly the same four IDs and no outsiders. Ring topology at the endpoint is NOT required.",
+    "secondary": [
+      "Total ticks with exactly the original isolated four-particle connected aggregate, regardless of current ring or chain form",
+      "First loss of isolated four-material component (due to attachment or fragmentation) and later restoration, with right censoring",
+      "Time until reappearance of the exact four-ID cycle after opening",
+      "Hashes, RNG fingerprint and draws, total energy/dissipation, bond formation and break counts of each arm",
+      "Natural precursor ring signature, original occurrence tick and materials; all missing cases preserved"
+    ],
+    "exposed_confounders": "Opening changes topology, available valence and energy allocation. Its later RNG trajectory may diverge. Therefore an effect reflects the full specified physical perturbation, NOT topology alone.",
+    "pairing": "Compare three arms from each exact selected world snapshot. Selected rings from one world may be correlated. Never call them independent universes for statistical inference."
+  },
+  "decision": {
+    "min_selected_pairs": 20,
+    "pass": "Both densities must show keep_ring isolated-at-120 rate minus open_lowest_edge rate >=0.20; open_opposite_edge must have positive rate difference in both densities. If enough pairs, call only 'ring_closure_protection_signal', not heredity.",
+    "fail": "Otherwise 'no_robust_ring_closure_protection' or 'underpowered'; do not change seeds or threshold post hoc.",
+    "no_p_values": true,
+    "no_replication_claim": true,
+    "no_M7": true
+  },
+  "validation": {
+    "check_source_and_fork_states": true,
+    "clone_rng_initial_fingerprints_equal": true,
+    "energy_and_species_conserved": true,
+    "ring_intervention_reduces_bond_count_by_one": true,
+    "opposite_edge_disjoint": true,
+    "sham_clone_repeat_first_pair_per_density": true,
+    "zero_cases_included": true,
+    "existing_campaigns_and_master_unchanged": true
+  },
+  "artifact": "campaigns/m6_5_ring_forks/results.json"
+}

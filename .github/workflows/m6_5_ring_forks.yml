@@ -1,0 +1,43 @@
+name: M6.5 paired spontaneous ring opening
+
+on:
+  push:
+    branches:
+      - exp/m6-5-ring-opening-counterfactual
+    paths:
+      - 'campaigns/m6_5_ring_forks/**'
+      - 'tools/m6_5_ring_forks.py'
+      - 'tests/test_m6_5_ring_forks.py'
+      - '.github/workflows/m6_5_ring_forks.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_5_ring_forks/**'
+      - 'tools/m6_5_ring_forks.py'
+      - 'tests/test_m6_5_ring_forks.py'
+      - '.github/workflows/m6_5_ring_forks.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  paired-forks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Run full regression suite and intervention invariant tests
+        run: python -m pytest -q
+      - name: Run frozen paired counterfactual on naturally born rings
+        run: python -m tools.m6_5_ring_forks
+      - name: Archive all forks including zero and censored cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-5-natural-ring-paired-forks
+          path: campaigns/m6_5_ring_forks/results.json
+          if-no-files-found: warn
