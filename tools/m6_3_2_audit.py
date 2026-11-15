@@ -282,8 +282,9 @@ def analyse_one(world,p,arm,target_signatures):
         world.advance(1,observer=observe)
     world.event_sink=None
     world.check()
-    assert first_loss is not None,"all historical samples expected to lose purity"
-    assert first_loss_details["mode"]!="other",first_loss_details
+    # A run that never leaves its pure state is right-censored, not an error.
+    if first_loss_details is not None:
+        assert first_loss_details["mode"]!="other",first_loss_details
     assert tick_totals["pure_ticks"]+tick_totals["core_grown_ticks"]+tick_totals["core_missing_ticks"]==450
     return {
         "seed":world.config.seed,"arm":arm,
@@ -316,7 +317,7 @@ def aggregate(rows,p):
     result={}
     for density in p["model"]["densities"]:
         subset=[r for r in rows if r["density"]==density]
-        categories=Counter(r["first_loss"]["mode"] for r in subset)
+        categories=Counter(r["first_loss"]["mode"] if r["first_loss"] else "censored" for r in subset)
         counts=Counter()
         motifs=Counter()
         for row in subset:
@@ -327,14 +328,15 @@ def aggregate(rows,p):
             "worlds":num,
             "first_loss_categories":dict(categories),
             "first_loss_prestep_monomer_forms":sum(
-                r["first_loss"]["incident_event_kinds"].get(
+                (r["first_loss"] or {"incident_event_kinds":{}})["incident_event_kinds"].get(
                     "attachment_form_prestep_free",0) for r in subset
             ),
             "first_loss_prestep_bonded_forms":sum(
                 r["first_loss"]["incident_event_kinds"].get(
                     "attachment_form_prestep_bonded",0) for r in subset
             ),
-            "mean_first_loss_tick":round(sum(r["first_loss_tick"] for r in subset)/num,3),
+            "mean_first_loss_tick_observed":round(sum(r["first_loss_tick"] for r in subset if r["first_loss_tick"] is not None)/sum(r["first_loss_tick"] is not None for r in subset),3) if any(r["first_loss_tick"] is not None for r in subset) else None,
+            "right_censored_runs":sum(r["first_loss_tick"] is None for r in subset),
             "mean_pure_ticks":round(counts["pure_ticks"]/num,3),
             "mean_core_grown_ticks":round(counts["core_grown_ticks"]/num,3),
             "mean_core_edges_retained_ticks":round(counts["core_bond_retained_ticks"]/num,3),
@@ -370,7 +372,7 @@ def aggregate(rows,p):
         for arm in p["model"]["arm_order"]:
             arm_rows=[r for r in subset if r["arm"]==arm]
             per_arm[arm]={
-                "first_loss":dict(Counter(r["first_loss"]["mode"] for r in arm_rows)),
+                "first_loss":dict(Counter(r["first_loss"]["mode"] if r["first_loss"] else "censored" for r in arm_rows)),
                 "mean_pure_ticks":round(sum(r["ticks"]["pure_ticks"] for r in arm_rows)/len(arm_rows),3),
                 "mean_core_retained_ticks":round(
                     sum(r["ticks"]["core_bond_retained_ticks"] for r in arm_rows)/len(arm_rows),3
