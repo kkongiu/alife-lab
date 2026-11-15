@@ -12,6 +12,7 @@ from alife.controls import (
     positive_world,
 )
 from alife.replication_v2 import DETECTOR_VERSION, ProgressiveDetector
+from alife.replication_v21 import DETECTOR_VERSION as DETECTOR_VERSION_V21, ProgressiveDetector as ProgressiveDetectorV21
 from alife.structures import Tracker
 from support import make_energy_config, world_with
 
@@ -68,7 +69,7 @@ def _progressive_world():
         ],
         chemistry={"enabled": False},
     )
-    positions = [(x, 0) for x in range(4)] + [(x, 2) for x in range(4)]
+    positions = [(x, 0) for x in range(4)] + [(0, 2), (1, 2), (1, 3), (0, 3)]
     species = [0, 1, 1, 0, 0, 1, 1, 0]
     world = world_with(config, positions, species, bonds=[(0, 1, 0), (1, 2, 0), (2, 3, 0)])
     return world
@@ -169,3 +170,104 @@ def test_detector_is_deterministic() -> None:
     _, detector_first = _run(first, 40, TemplateCopier.for_world(first))
     _, detector_second = _run(second, 40, TemplateCopier.for_world(second))
     assert detector_first.summary() == detector_second.summary()
+
+
+def test_match_after_window_is_rejected() -> None:
+    """A match at birth+window+1 must not bypass the preregistered bound."""
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetectorV21(window=2, min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 4  # birth+3, strictly outside window 2
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    summary = detector.summary()
+    assert summary["candidates"] == 1
+    assert summary["matched"] == 0
+    assert summary["discarded"]["window_expired"] == 1
+
+
+def test_matched_copy_must_keep_signature_until_persistence_due() -> None:
+    """Same tracker identity is insufficient if the copied graph changes."""
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetectorV21(min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 3
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    assert detector.summary()["matched"] == 1
+
+    world.step = 4
+    world.store.add_bond(4, 7, 0)  # close square: same members, now a cycle
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    # The connected square retains its identity, but no longer has the copied tree signature.
+    for step in range(5, 15):
+        world.step = step
+        tracker.observe(world)
+        detector.observe(world, tracker)
+
+    summary = detector.summary()
+    assert summary["matched"] == 1
+    assert summary["persistent"] == 0
+    assert summary["classified"] == "not_replication"
+    assert summary["discarded"]["signature_changed_after_match"] == 1
+
+
+def test_match_at_exact_window_boundary_is_allowed() -> None:
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetectorV21(window=2, min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 3  # birth+window, inclusive
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    assert detector.summary()["matched"] == 1
+
+
+def test_strict_detector_is_separately_versioned() -> None:
+    assert DETECTOR_VERSION == "v2"
+    assert DETECTOR_VERSION_V21 == "v2.1"

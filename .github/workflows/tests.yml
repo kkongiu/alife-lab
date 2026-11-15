@@ -1,0 +1,35 @@
+name: Python tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - fix/m6-2e-persistence-window-audit
+
+permissions:
+  contents: read
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install package and test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Execute pytest suite
+        run: python -m pytest -q
+      - name: Audit M6.2-E unfed-6101 (read-only world)
+        run: python tools/audit_m6_2e_candidate.py
+      - name: Archive audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-2e-unfed-6101-audit
+          path: campaigns/m6_2e/unfed_6101_audit.json
+          if-no-files-found: warn
