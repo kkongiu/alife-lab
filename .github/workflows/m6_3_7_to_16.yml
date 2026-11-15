@@ -1,0 +1,43 @@
+name: M6.3-7 to M6.3-16 held-out structural audit
+
+on:
+  push:
+    branches:
+      - exp/m6-3-7-to-16-bond-continuity-and-heldout
+    paths:
+      - 'campaigns/m6_3_7_to_16/**'
+      - 'tools/m6_3_7_to_16.py'
+      - 'tests/test_m6_3_7_to_16.py'
+      - '.github/workflows/m6_3_7_to_16.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_3_7_to_16/**'
+      - 'tools/m6_3_7_to_16.py'
+      - 'tests/test_m6_3_7_to_16.py'
+      - '.github/workflows/m6_3_7_to_16.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  heldout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Run complete regression suite
+        run: python -m pytest -q
+      - name: Execute 120 frozen held-out worlds
+        run: python -m tools.m6_3_7_to_16
+      - name: Archive per-run evidence with zeros
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-3-7-to-16-heldout-results
+          path: campaigns/m6_3_7_to_16/results.json
+          if-no-files-found: warn
