@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_reproducibility.py::test_repeated_advance_matches_single_call`
 - Stato: **PASSED**
-- Durata: 0.0050 s
+- Durata: 0.0040 s
 - Modulo: `tests/test_reproducibility.py`
 - Requisito: M1-05 — Riproducibilità con identico seed
 - Comando: `.venv/bin/python -m pytest "tests/test_reproducibility.py::test_repeated_advance_matches_single_call"`

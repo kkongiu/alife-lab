@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 / vincolo di bilancio energetico
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -31,5 +31,5 @@ Configurazione M2 quick (32×32, 4 specie), 200 passi con legami attivi.
 
 ## Test pytest associati
 
-- `tests/test_invariants.py::test_energy_with_bonds_is_conserved` → **PASSED** (0.0990 s)
-- `tests/test_chemistry.py::test_m2_baseline_produces_structures_and_conserves_energy` → **PASSED** (2.1620 s)
+- `tests/test_invariants.py::test_energy_with_bonds_is_conserved` → **PASSED** (0.0730 s)
+- `tests/test_chemistry.py::test_m2_baseline_produces_structures_and_conserves_energy` → **PASSED** (1.9050 s)

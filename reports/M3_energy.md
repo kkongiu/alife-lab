@@ -8,7 +8,7 @@ Data: 2026-11-15 · Milestone: M3 · Specifica: `SPEC.md` (v3) · Cronologia: `g
 |---|---|---|
 | M1 | GO (approvato) | golden hash riprodotto dal codice M3 |
 | M2 | GO (approvato) | golden hash completo riprodotto dal codice M3 |
-| **M3** | **GO** | 136 test; 23 requisiti con evidenza misurata; identità energetica esatta su 10 000 passi; strutture persistenti con alimentazione, collasso senza; determinismo, ripresa e migrazione verificati |
+| **M3** | **GO** | 139 test; 23 requisiti con evidenza misurata; identità energetica esatta su 10 000 passi; strutture persistenti con alimentazione, collasso senza; determinismo, ripresa e migrazione verificati |
 
 Il gate del docx S3 — *ogni trasformazione ha un costo o un trasferimento
 coerente e i controlli si comportano in modo plausibile* — è soddisfatto dai
@@ -147,7 +147,7 @@ I dati grezzi sono in `reports/benchmark.json` (`tools/benchmark.py --repeats 3`
 ## 8. Test
 
 ```
-136 passed
+139 passed in 11.7 s
 ```
 
 23 requisiti hanno un file di evidenza con misure reali
@@ -193,3 +193,29 @@ difetto da nascondere.
 
 **M4 non è stata iniziata.** Rilevamento e tracciamento delle strutture
 richiedono approvazione esplicita.
+
+---
+
+## 12. Correzioni successive alla consegna
+
+**Decadimento e priorità usavano l'indice invece dell'identificativo.** La
+specifica richiede lo sfasamento sull'ID persistente:
+`(step + id) mod den < num`, mentre il codice usava `(step + index)`. Lo stesso
+problema era nella priorità dei conflitti, calcolata sull'indice.
+
+Corretto:
+
+- `World.dissipate()` usa `store.ids[index]`;
+- `resolve_moves(..., identity=store.ids)` calcola la priorità sull'ID, con
+  spareggio per ID;
+- aggiunto l'invariante I17: gli array sono mantenuti in ordine crescente di ID,
+  così l'ordine di iterazione resta canonico dopo una compattazione;
+- tre test nuovi: decadimento con ID sparsi (`id=3`, nessun decadimento al passo
+  0), priorità che segue l'identità anche quando l'ordine degli indici è diverso,
+  identificativi fuori ordine rilevati da `validate()`.
+
+**Impatto sui risultati: nessuno**, perché oggi ID e indice coincidono. Verificato
+confrontando gli hash del run alimentato al passo 1 000:
+`85610acb…d4918` (materiale) e `92357dc8…e868f` (completo) sono identici a quelli
+registrati in `runs/m3_baseline/metrics.jsonl` prima della correzione. I golden
+hash di M1 e M2 restano invariati.

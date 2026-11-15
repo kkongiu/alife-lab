@@ -131,9 +131,11 @@ def world_with(
     species: Sequence[int],
     energy: Sequence[int] | None = None,
     bonds: Sequence[tuple[int, int, int]] = (),
+    ids: Sequence[int] | None = None,
 ) -> World:
     """Mondo costruito a mano per test deterministici sulla chimica."""
-    ids = list(range(len(positions)))
+    if ids is None:
+        ids = list(range(len(positions)))
     xs = [position[0] for position in positions]
     ys = [position[1] for position in positions]
     if energy is None:
@@ -141,7 +143,7 @@ def world_with(
     store = ParticleStore(
         config.grid.width,
         config.grid.height,
-        ids,
+        list(ids),
         xs,
         ys,
         list(species),

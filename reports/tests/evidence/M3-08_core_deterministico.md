@@ -2,7 +2,7 @@
 
 - Requisito: specifica M3 — regole R1–R10
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:56+00:00
+- Eseguito: 2026-11-15T07:04:42+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario
@@ -26,4 +26,4 @@ Scansione statica dei moduli del core: nessuna sorgente di non determinismo che 
 
 ## Test pytest associati
 
-- `tests/test_energy.py::test_core_modules_do_not_import_nondeterministic_sources` → **PASSED** (0.0020 s)
+- `tests/test_energy.py::test_core_modules_do_not_import_nondeterministic_sources` → **PASSED** (0.0010 s)

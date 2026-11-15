@@ -107,7 +107,7 @@ Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 .venv/bin/python -m pytest
 ```
 
-136 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
+139 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
 (identità energetica, dissipazione, sorgenti, costi, determinismo, migrazione),
 più CLI e metriche.
 

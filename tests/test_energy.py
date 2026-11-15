@@ -209,6 +209,50 @@ def test_rng_budget_with_flows_disabled() -> None:
     assert world.rng.fingerprint() == reference.fingerprint()
 
 
+def test_particle_decay_uses_identity_not_index() -> None:
+    """Con ID sparsi il decadimento deve seguire l'ID, non la posizione nell'array."""
+    config = make_energy_config(
+        species=[{"name": "S0", "count": 1, "move_probability": 0.0, "energy": 100, "max_bonds": 0}],
+        chemistry={"enabled": False},
+        energy={"particle_decay": {"num": 1, "den": 5}},
+    )
+    world = world_with(config, [(2, 2)], [0], energy=[100], ids=[3])
+    world.advance(1)  # (0 + 3) % 5 = 3: nessun decadimento
+    assert world.store.energy == [100]
+    world.advance(2)  # (2 + 3) % 5 = 0: un quanto
+    assert world.store.energy == [99]
+    assert world.dissipated == 1
+
+
+def test_validate_detects_unsorted_identifiers() -> None:
+    config = make_energy_config(
+        species=[{"name": "S0", "count": 2, "move_probability": 0.0, "energy": 5, "max_bonds": 0}],
+        chemistry={"enabled": False},
+    )
+    world = world_with(config, [(1, 1), (2, 2)], [0, 0], ids=[5, 2])
+    assert any("non in ordine crescente" in problem for problem in world.validate())
+
+
+def test_priority_uses_identity() -> None:
+    from alife.dynamics import particle_priority, resolve_moves
+
+    grid = [-1] * 16
+    grid[0 * 4 + 1] = 0  # particella 0 in (1, 0)
+    grid[2 * 4 + 1] = 1  # particella 1 in (1, 2)
+    target = 1 * 4 + 1  # cella (1, 1)
+    arguments = {0: target, 1: target}
+
+    forward = resolve_moves(dict(arguments), grid, step=7, identity=[10, 20])
+    backward = resolve_moves(dict(arguments), grid, step=7, identity=[20, 10])
+
+    if particle_priority(10, 7) > particle_priority(20, 7):
+        assert forward == {0: target}
+        assert backward == {1: target}
+    else:
+        assert forward == {1: target}
+        assert backward == {0: target}
+
+
 def test_golden_hash_m2_is_preserved() -> None:
     # valore prodotto da M2: il codice M3 con schema 2 non deve cambiare nulla
     world = World.create(load_config(ROOT / "configs" / "m2_quick.json"))

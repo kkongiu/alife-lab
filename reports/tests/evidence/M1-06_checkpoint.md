@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 6
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 4 (4 superati)
 
 ## Scenario
@@ -30,6 +30,6 @@ Universo 16×16, seed 106, 17 passi: salvataggio, ricaricamento e corruzione int
 ## Test pytest associati
 
 - `tests/test_checkpoint.py::test_roundtrip_preserves_state` → **PASSED** (0.0160 s)
-- `tests/test_checkpoint.py::test_repeated_save_load_cycles_are_stable` → **PASSED** (0.0050 s)
+- `tests/test_checkpoint.py::test_repeated_save_load_cycles_are_stable` → **PASSED** (0.0070 s)
 - `tests/test_checkpoint.py::test_checkpoint_does_not_mutate_world` → **PASSED** (0.0020 s)
-- `tests/test_checkpoint.py::test_no_temporary_file_left_behind` → **PASSED** (0.0010 s)
+- `tests/test_checkpoint.py::test_no_temporary_file_left_behind` → **PASSED** (0.0020 s)

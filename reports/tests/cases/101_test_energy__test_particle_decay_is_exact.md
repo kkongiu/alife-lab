@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_energy.py::test_particle_decay_is_exact`
 - Stato: **PASSED**
-- Durata: 0.0010 s
+- Durata: 0.0000 s
 - Modulo: `tests/test_energy.py`
 - Requisito: M3-02 — Dissipazione esatta di particelle e legami
 - Comando: `.venv/bin/python -m pytest "tests/test_energy.py::test_particle_decay_is_exact"`

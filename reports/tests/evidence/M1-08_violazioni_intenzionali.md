@@ -2,8 +2,8 @@
 
 - Requisito: alife.md §7, punto 8
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
-- Test pytest associati: 11 (11 superati)
+- Eseguito: 2026-11-15T07:04:41+00:00
+- Test pytest associati: 12 (12 superati)
 
 ## Scenario
 
@@ -38,9 +38,10 @@ Sei violazioni introdotte deliberatamente su stati validi; ogni caso deve produr
 - `tests/test_invariants.py::test_validate_detects_grid_desynchronisation` → **PASSED** (0.0010 s)
 - `tests/test_invariants.py::test_validate_detects_missing_particle` → **PASSED** (0.0010 s)
 - `tests/test_invariants.py::test_validate_detects_invalid_species_index` → **PASSED** (0.0010 s)
-- `tests/test_checkpoint.py::test_detects_tampered_particle` → **PASSED** (0.0020 s)
-- `tests/test_checkpoint.py::test_detects_tampered_config_hash` → **PASSED** (0.0020 s)
-- `tests/test_checkpoint.py::test_detects_energy_imbalance` → **PASSED** (0.0020 s)
+- `tests/test_energy.py::test_validate_detects_unsorted_identifiers` → **PASSED** (0.0000 s)
+- `tests/test_checkpoint.py::test_detects_tampered_particle` → **PASSED** (0.0030 s)
+- `tests/test_checkpoint.py::test_detects_tampered_config_hash` → **PASSED** (0.0030 s)
+- `tests/test_checkpoint.py::test_detects_energy_imbalance` → **PASSED** (0.0030 s)
 - `tests/test_checkpoint.py::test_detects_invalid_json` → **PASSED** (0.0010 s)
 - `tests/test_checkpoint.py::test_detects_wrong_format` → **PASSED** (0.0010 s)
 - `tests/test_checkpoint.py::test_detects_missing_rng_state` → **PASSED** (0.0020 s)

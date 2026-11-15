@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 / contratto M1 (riproducibilità)
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:56+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -29,6 +29,6 @@ Due run indipendenti con lo stesso seed e 100 passi di chimica.
 
 ## Test pytest associati
 
-- `tests/test_chemistry.py::test_m2_quick_is_deterministic` → **PASSED** (0.1100 s)
-- `tests/test_checkpoint.py::test_v2_resume_is_equivalent_to_continuous_run` → **PASSED** (0.0740 s)
-- `tests/test_checkpoint.py::test_v2_roundtrip_preserves_bonds_and_energy` → **PASSED** (0.0270 s)
+- `tests/test_chemistry.py::test_m2_quick_is_deterministic` → **PASSED** (0.1260 s)
+- `tests/test_checkpoint.py::test_v2_resume_is_equivalent_to_continuous_run` → **PASSED** (0.0780 s)
+- `tests/test_checkpoint.py::test_v2_roundtrip_preserves_bonds_and_energy` → **PASSED** (0.0310 s)

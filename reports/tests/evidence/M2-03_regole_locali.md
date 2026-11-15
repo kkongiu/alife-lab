@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 — reazioni locali e generali
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 6 (6 superati)
 
 ## Scenario

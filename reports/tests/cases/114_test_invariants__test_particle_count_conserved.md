@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_invariants.py::test_particle_count_conserved`
 - Stato: **PASSED**
-- Durata: 0.0110 s
+- Durata: 0.0090 s
 - Modulo: `tests/test_invariants.py`
 - Requisito: M1-01 — Conservazione del numero di particelle
 - Comando: `.venv/bin/python -m pytest "tests/test_invariants.py::test_particle_count_conserved"`

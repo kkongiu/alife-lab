@@ -2,7 +2,7 @@
 
 - Requisito: docx S3 — ogni trasformazione ha un costo
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:56+00:00
+- Eseguito: 2026-11-15T07:04:42+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -31,4 +31,4 @@ Costo 1 con energia 10 per 10 passi; costo 2 con energia 1 per 10 passi.
 ## Test pytest associati
 
 - `tests/test_energy.py::test_movement_cost_charged_per_move` → **PASSED** (0.0010 s)
-- `tests/test_energy.py::test_movement_cost_blocks_when_insufficient` → **PASSED** (0.0010 s)
+- `tests/test_energy.py::test_movement_cost_blocks_when_insufficient` → **PASSED** (0.0000 s)

@@ -197,8 +197,9 @@ class World:
             num = decay.num
             den = decay.den
             step = self.step
+            ids = store.ids
             for index in range(len(store.energy)):
-                if (step + index) % den < num and store.energy[index] > 0:
+                if (step + ids[index]) % den < num and store.energy[index] > 0:
                     store.energy[index] -= 1
                     self.dissipated += 1
         decay = self.bond_decay
@@ -335,12 +336,18 @@ class World:
             problems.append(f"griglia di occupazione con {len(store.grid)} celle, attese {cells}")
 
         seen_ids = set()
+        previous_id = -1
         for index, identifier in enumerate(store.ids):
             if identifier < 0:
                 problems.append(f"particella {index}: identificativo negativo")
             elif identifier in seen_ids:
                 problems.append(f"identificativo duplicato: {identifier}")
+            elif identifier <= previous_id:
+                problems.append(
+                    f"identificativo {identifier} non in ordine crescente dopo {previous_id}"
+                )
             seen_ids.add(identifier)
+            previous_id = identifier
             if identifier >= self.next_id:
                 problems.append(
                     f"particella {identifier}: identificativo non inferiore a next_id "

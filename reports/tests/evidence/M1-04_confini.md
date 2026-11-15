@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 4
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -29,5 +29,5 @@ Periodico: 20×20, seed 104, 200 passi. Chiuso: 10×10, seed 104, 50 passi.
 
 ## Test pytest associati
 
-- `tests/test_invariants.py::test_periodic_boundaries` → **PASSED** (0.0150 s)
-- `tests/test_dynamics.py::test_closed_boundary_keeps_particles_inside` → **PASSED** (0.0050 s)
+- `tests/test_invariants.py::test_periodic_boundaries` → **PASSED** (0.0120 s)
+- `tests/test_dynamics.py::test_closed_boundary_keeps_particles_inside` → **PASSED** (0.0030 s)

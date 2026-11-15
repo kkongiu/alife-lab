@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 7
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -29,5 +29,5 @@ Seed 107: run continuo di 60 passi contro run interrotto a 20 e ripreso per 40.
 
 ## Test pytest associati
 
-- `tests/test_checkpoint.py::test_resume_is_equivalent_to_continuous_run` → **PASSED** (0.0090 s)
-- `tests/test_cli.py::test_resume_matches_continuous_run` → **PASSED** (0.6490 s)
+- `tests/test_checkpoint.py::test_resume_is_equivalent_to_continuous_run` → **PASSED** (0.0150 s)
+- `tests/test_cli.py::test_resume_matches_continuous_run` → **PASSED** (0.5010 s)

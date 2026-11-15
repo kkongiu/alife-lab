@@ -3,17 +3,17 @@ platform linux -- Python 3.14.9, pytest-9.2.0, pluggy-1.7.0
 rootdir: /home/kongiu/Documenti/Alife
 configfile: pyproject.toml
 testpaths: tests
-collected 136 items
+collected 139 items
 
 tests/test_checkpoint.py ........................                        [ 17%]
-tests/test_chemistry.py .............                                    [ 27%]
+tests/test_chemistry.py .............                                    [ 26%]
 tests/test_cli.py .........                                              [ 33%]
-tests/test_config.py ...............................                     [ 56%]
-tests/test_dynamics.py ............                                      [ 65%]
-tests/test_energy.py ..................                                  [ 78%]
+tests/test_config.py ...............................                     [ 55%]
+tests/test_dynamics.py ............                                      [ 64%]
+tests/test_energy.py .....................                               [ 79%]
 tests/test_invariants.py ....................                            [ 93%]
 tests/test_metrics.py ...                                                [ 95%]
 tests/test_reproducibility.py ......                                     [100%]
 
 --- generated xml file: /home/kongiu/Documenti/Alife/reports/tests/junit.xml ---
-============================= 136 passed in 13.48s =============================
+============================= 139 passed in 11.19s =============================

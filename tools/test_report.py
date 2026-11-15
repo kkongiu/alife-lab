@@ -123,6 +123,7 @@ REQUIRED = [
             "tests/test_invariants.py::test_validate_detects_grid_desynchronisation",
             "tests/test_invariants.py::test_validate_detects_missing_particle",
             "tests/test_invariants.py::test_validate_detects_invalid_species_index",
+            "tests/test_energy.py::test_validate_detects_unsorted_identifiers",
             "tests/test_checkpoint.py::test_detects_tampered_particle",
             "tests/test_checkpoint.py::test_detects_tampered_config_hash",
             "tests/test_checkpoint.py::test_detects_energy_imbalance",
@@ -225,6 +226,7 @@ REQUIRED = [
         "tests": [
             "tests/test_energy.py::test_particle_decay_is_exact",
             "tests/test_energy.py::test_bond_decay_is_exact",
+            "tests/test_energy.py::test_particle_decay_uses_identity_not_index",
         ],
     },
     {
@@ -266,6 +268,7 @@ REQUIRED = [
         "tests": [
             "tests/test_energy.py::test_open_run_is_deterministic",
             "tests/test_energy.py::test_rng_budget_with_flows_disabled",
+            "tests/test_energy.py::test_priority_uses_identity",
         ],
     },
     {

@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 5
 - Esito: **PASS**
-- Eseguito: 2026-11-14T22:10:55+00:00
+- Eseguito: 2026-11-15T07:04:41+00:00
 - Test pytest associati: 6 (6 superati)
 
 ## Scenario
@@ -30,9 +30,9 @@ Due universi con seed 1234 e uno con seed 1235, 120 passi ciascuno.
 
 ## Test pytest associati
 
-- `tests/test_reproducibility.py::test_same_seed_same_result` → **PASSED** (0.0170 s)
-- `tests/test_reproducibility.py::test_different_seed_different_result` → **PASSED** (0.0080 s)
+- `tests/test_reproducibility.py::test_same_seed_same_result` → **PASSED** (0.0140 s)
+- `tests/test_reproducibility.py::test_different_seed_different_result` → **PASSED** (0.0050 s)
 - `tests/test_reproducibility.py::test_initial_placement_is_seed_deterministic` → **PASSED** (0.0010 s)
-- `tests/test_reproducibility.py::test_repeated_advance_matches_single_call` → **PASSED** (0.0050 s)
-- `tests/test_reproducibility.py::test_baseline_config_is_reproducible` → **PASSED** (0.2940 s)
-- `tests/test_reproducibility.py::test_m1_run_reproduces_the_published_hash` → **PASSED** (5.6220 s)
+- `tests/test_reproducibility.py::test_repeated_advance_matches_single_call` → **PASSED** (0.0040 s)
+- `tests/test_reproducibility.py::test_baseline_config_is_reproducible` → **PASSED** (0.2180 s)
+- `tests/test_reproducibility.py::test_m1_run_reproduces_the_published_hash` → **PASSED** (4.5120 s)

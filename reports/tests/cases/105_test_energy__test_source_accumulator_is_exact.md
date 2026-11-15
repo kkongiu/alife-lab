@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_energy.py::test_source_accumulator_is_exact`
 - Stato: **PASSED**
-- Durata: 0.0080 s
+- Durata: 0.0030 s
 - Modulo: `tests/test_energy.py`
 - Requisito: M3-03 — Sorgenti con accumulatore e capacità
 - Comando: `.venv/bin/python -m pytest "tests/test_energy.py::test_source_accumulator_is_exact"`

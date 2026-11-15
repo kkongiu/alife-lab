@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_cli.py::test_negative_steps_rejected`
 - Stato: **PASSED**
-- Durata: 0.2980 s
+- Durata: 0.2620 s
 - Modulo: `tests/test_cli.py`
 - Requisito: test aggiuntivo (non obbligatorio dal contratto)
 - Comando: `.venv/bin/python -m pytest "tests/test_cli.py::test_negative_steps_rejected"`

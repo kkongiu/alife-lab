@@ -45,13 +45,13 @@ def _mix64(value: int) -> int:
     return value
 
 
-def particle_priority(index: int, step: int) -> int:
+def particle_priority(identity: int, step: int) -> int:
     """Priorità deterministica per la risoluzione dei conflitti.
 
-    Dipende solo da (indice, passo): nessuna estrazione RNG, nessuna dipendenza
-    dall'ordine di scansione della griglia.
+    Dipende solo da (identità, passo): nessuna estrazione RNG, nessuna dipendenza
+    dall'ordine di scansione della griglia né dalla posizione nell'array.
     """
-    mixed = ((index + 1) * 0x9E3779B97F4A7C15) & MASK64
+    mixed = ((identity + 1) * 0x9E3779B97F4A7C15) & MASK64
     mixed ^= ((step + 1) * 0xD6E8FEB86659FD93) & MASK64
     return _mix64(mixed)
 
@@ -73,6 +73,8 @@ def _propose_moves(world: "World") -> dict[int, int]:
     proposals: dict[int, int] = {}
 
     for index in range(len(xs)):
+        # ordine degli indici = ordine degli ID: l'invariante I17 impone array
+        # ordinati per identificativo, quindi il flusso RNG è canonico
         roll = raw()
         direction = raw() & 3
         if degree[index] > 0:
@@ -119,22 +121,31 @@ def _find_cycle(
 
 
 def resolve_moves(
-    proposals: dict[int, int], grid: list[int], step: int
+    proposals: dict[int, int],
+    grid: list[int],
+    step: int,
+    identity: list[int] | None = None,
 ) -> dict[int, int]:
     """Risolve le contese di movimento e ritorna {particella: cella} accettate.
 
+    `identity[i]` è l'identificativo persistente della particella con indice `i`
+    (se assente, si usa l'indice: utile nei test e nei mondi in cui coincidono).
+
     Proprietà garantite:
     - le destinazioni accettate sono tutte distinte (nessuna collisione);
-    - il risultato dipende solo da (proposte, griglia, passo), non dall'ordine
-      con cui le proposte sono state inserite;
+    - il risultato dipende solo da (proposte, griglia, passo, identità), non
+      dall'ordine con cui le proposte sono state inserite;
     - nessuna particella resta senza cella o finisce fuori griglia.
     """
     if not proposals:
         return {}
 
+    def priority_of(index: int) -> int:
+        return particle_priority(identity[index] if identity is not None else index, step)
+
     order = sorted(
         proposals,
-        key=lambda index: (-particle_priority(index, step), index),
+        key=lambda index: (-priority_of(index), identity[index] if identity is not None else index),
     )
     accepted: dict[int, int] = {}
     reserved: set[int] = set()
@@ -194,7 +205,7 @@ def step(world: "World") -> StepReport:
     """Avanza l'universo di un passo."""
     broken = chemistry.break_bonds(world)
     proposals = _propose_moves(world)
-    accepted = resolve_moves(proposals, world.store.grid, world.step)
+    accepted = resolve_moves(proposals, world.store.grid, world.step, world.store.ids)
     apply_moves(world.store, accepted)
     if accepted:
         cost = world.movement_cost

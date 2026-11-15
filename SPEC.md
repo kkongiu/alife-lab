@@ -71,6 +71,14 @@ verranno compattati e gli indici non saranno più stabili. `next_id` è il primo
 identificativo libero e un invariante verifica che ogni ID sia strettamente
 minore.
 
+**Decisione: gli array sono mantenuti in ordine crescente di ID** (invariante
+I17). Questo rende l'ordine di iterazione per indice identico all'ordine per ID,
+quindi canonico anche dopo una compattazione. Le formule che dipendono
+dall'*identità* — priorità dei conflitti, sfasamento del decadimento — usano il
+valore dell'ID, non la posizione nell'array: usare l'indice sarebbe corretto solo
+finché ID e indice coincidono, e diventerebbe un bug latente alla prima morte di
+una particella.
+
 **Decisione: due hash di stato.**
 
 | Hash | Contenuto | Uso |
@@ -128,7 +136,7 @@ dalla griglia (nessun rimbalzo, nessuna direzione privilegiata).
 Proposte simultanee, priorità
 
 ```
-priority(i, t) = splitmix64( (i+1)·0x9E3779B97F4A7C15  XOR  (t+1)·0xD6E8FEB86659FD93 )
+priority(id, t) = splitmix64( (id+1)·0x9E3779B97F4A7C15  XOR  (t+1)·0xD6E8FEB86659FD93 )
 ```
 
 calcolata senza RNG. Le mosse sono accettate in ordine di priorità decrescente;
@@ -290,6 +298,10 @@ Il flusso consumato dipende quindi dallo stato (numero di legami e di candidati)
 ma è deterministico e riproducibile. Non ci sono estrazioni "nascoste": ogni
 decisione casuale corrisponde a un'unità del flusso.
 
+L'ordine di consumo segue l'ordine degli identificativi: gli array sono mantenuti
+ordinati per ID (I17), quindi iterare per indice equivale a iterare per ID, anche
+dopo una compattazione.
+
 Tutte le soglie sono intere, calcolate una volta all'avvio: nel percorso caldo
 non c'è aritmetica in virgola mobile.
 
@@ -329,6 +341,7 @@ configurazione.
 | I14 | Un accumulatore di sorgente sta in `[0, rate_den)` | controllo |
 | I15 | Un serbatoio di sorgente sta in `[0, capacity]` | controllo |
 | I16 | Una sorgente esiste per ogni accumulatore e per ogni serbatoio | conteggio |
+| I17 | Gli identificativi sono in ordine strettamente crescente (ordine array = ordine ID) | controllo |
 
 `World.validate()` restituisce l'elenco dei problemi; `World.check()` solleva
 `InvariantError`. Esecuzione: alla creazione, a fine run, al caricamento di un

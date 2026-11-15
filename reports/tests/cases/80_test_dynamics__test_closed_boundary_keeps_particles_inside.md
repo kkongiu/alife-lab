@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_dynamics.py::test_closed_boundary_keeps_particles_inside`
 - Stato: **PASSED**
-- Durata: 0.0050 s
+- Durata: 0.0030 s
 - Modulo: `tests/test_dynamics.py`
 - Requisito: M1-04 — Rispetto dei confini configurati
 - Comando: `.venv/bin/python -m pytest "tests/test_dynamics.py::test_closed_boundary_keeps_particles_inside"`
