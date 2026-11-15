@@ -126,10 +126,11 @@ def run_world(world,arm,target_signatures,duration=450):
     source_s2_events=[]
     first_five=[]
     sink=IncidentSink()
+    prev_degrees=list(world.store.degree)
     world.event_sink=sink
 
     def observe(w):
-        nonlocal first_break,first_loss,first_growth,unbroken
+        nonlocal first_break,first_loss,first_growth,unbroken,prev_degrees
         before=w.rng.draws
         s=w.store
         ev=sink.pop(w.step)
@@ -150,6 +151,11 @@ def run_world(world,arm,target_signatures,duration=450):
                     outside_species=w.species_names[s.species[s.index_of(outside)]]
                     attachment_species[outside_species]+=1
                     event_counts[f"attachment_{outside_species}"]+=1
+                    event_counts[
+                        "attachment_prestep_free"
+                        if prev_degrees[s.index_of(outside)]==0
+                        else "attachment_prestep_bonded"
+                    ]+=1
                     terminal=ids[0] if ids[0] in SOURCE else ids[1]
                     if outside_species=="S2" and terminal in (0,3):
                         source_s2_events.append({
@@ -166,6 +172,19 @@ def run_world(world,arm,target_signatures,duration=450):
                "grown_with_original_edges" if state["core_edges_retained"]
                else "original_edges_missing")
         phase_ticks[f"{phase}_ticks"]+=1
+        source_open_slots=sum(
+            w.max_bonds[s.species[s.index_of(i)]]-s.degree[s.index_of(i)]
+            for i in SOURCE
+        )
+        source_energetic_slots=sum(
+            (w.max_bonds[s.species[s.index_of(i)]]-s.degree[s.index_of(i)])
+            for i in SOURCE
+            if s.energy[s.index_of(i)]>=w.formation_cost
+        )
+        if source_open_slots==0:
+            phase_ticks[f"{phase}_zero_valence_slots_ticks"]+=1
+        if source_energetic_slots==0:
+            phase_ticks[f"{phase}_zero_energy_qualified_slots_ticks"]+=1
         if unbroken:
             phase_ticks["continuous_unbroken_core_ticks"]+=1
             opportunity=terminal_s2_opportunities(w)
@@ -209,6 +228,7 @@ def run_world(world,arm,target_signatures,duration=450):
                 "tick":w.step,"unbroken":unbroken,
                 "events":[{"kind":k,"ids":list(ids)} for k,ids in ev]
             })
+        prev_degrees=list(s.degree)
         assert before==w.rng.draws,"observer consumed RNG"
 
     for _ in range(duration):
@@ -282,6 +302,28 @@ def summarize(records,p):
                     lambda r:r["phase_ticks"].get("pure_ticks",0))/len(selected),3),
                 "mean_core_edges_present_ticks":round(total(
                     lambda r:r["phase_ticks"].get("core_edges_present_ticks",0))/len(selected),3),
+                "mean_grown_unbroken_edges_ticks":round(total(
+                    lambda r:r["phase_ticks"].get("grown_with_original_edges_ticks",0))/len(selected),3),
+                "grown_zero_valence_fraction":(
+                    round(total(lambda r:r["phase_ticks"].get(
+                        "grown_with_original_edges_zero_valence_slots_ticks",0))/
+                    total(lambda r:r["phase_ticks"].get(
+                        "grown_with_original_edges_ticks",0)),4)
+                    if total(lambda r:r["phase_ticks"].get(
+                        "grown_with_original_edges_ticks",0)) else None
+                ),
+                "grown_zero_energy_qualified_slots_fraction":(
+                    round(total(lambda r:r["phase_ticks"].get(
+                        "grown_with_original_edges_zero_energy_qualified_slots_ticks",0))/
+                    total(lambda r:r["phase_ticks"].get(
+                        "grown_with_original_edges_ticks",0)),4)
+                    if total(lambda r:r["phase_ticks"].get(
+                        "grown_with_original_edges_ticks",0)) else None
+                ),
+                "accepted_external_attachment_prestep_free":total(
+                    lambda r:r["source_events"].get("attachment_prestep_free",0)),
+                "accepted_external_attachment_prestep_bonded":total(
+                    lambda r:r["source_events"].get("attachment_prestep_bonded",0)),
                 "mean_continuously_unbroken_ticks":round(total(
                     lambda r:r["phase_ticks"].get("continuous_unbroken_core_ticks",0))/len(selected),3),
                 "first_bond_break_observed":total(
