@@ -2,7 +2,7 @@
 
 - Requisito: docx S3 — bilanci aggregati
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -32,5 +32,5 @@ Configurazione M3 quick (32×32) con sorgenti, dissipazione, costi di movimento 
 
 ## Test pytest associati
 
-- `tests/test_energy.py::test_open_run_keeps_identity` → **PASSED** (0.0480 s)
-- `tests/test_energy.py::test_closed_system_keeps_identity` → **PASSED** (0.0080 s)
+- `tests/test_energy.py::test_open_run_keeps_identity` → **PASSED** (0.0380 s)
+- `tests/test_energy.py::test_closed_system_keeps_identity` → **PASSED** (0.0060 s)

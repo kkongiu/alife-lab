@@ -2,7 +2,7 @@
 
 - Requisito: docx S3 — dissipazione
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -29,4 +29,4 @@ Decadimento sfasato: 1 quanto ogni 3 passi per una particella con 100 quanti; 1 
 
 - `tests/test_energy.py::test_particle_decay_is_exact` → **PASSED** (0.0010 s)
 - `tests/test_energy.py::test_bond_decay_is_exact` → **PASSED** (0.0010 s)
-- `tests/test_energy.py::test_particle_decay_uses_identity_not_index` → **PASSED** (0.0010 s)
+- `tests/test_energy.py::test_particle_decay_uses_identity_not_index` → **PASSED** (0.0000 s)

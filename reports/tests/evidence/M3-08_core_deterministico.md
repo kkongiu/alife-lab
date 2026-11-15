@@ -2,7 +2,7 @@
 
 - Requisito: specifica M3 — regole R1–R10
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario
@@ -13,7 +13,7 @@ Scansione statica dei moduli del core: nessuna sorgente di non determinismo che 
 
 | Voce | Valore |
 |---|---|
-| moduli scansionati | 9 |
+| moduli scansionati | 10 |
 | moduli esclusi (solo metadati) | cli.py, events.py, metrics.py, persistence.py |
 | occorrenze vietate | nessuna |
 

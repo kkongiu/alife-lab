@@ -2,7 +2,7 @@
 
 - Requisito: docx S3 — ingresso energetico localizzato
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -32,6 +32,6 @@ Sorgente con tasso 1/4 e particella presente per 1000 passi (atteso 250 quanti a
 
 ## Test pytest associati
 
-- `tests/test_energy.py::test_source_accumulator_is_exact` → **PASSED** (0.0050 s)
+- `tests/test_energy.py::test_source_accumulator_is_exact` → **PASSED** (0.0040 s)
 - `tests/test_energy.py::test_source_capacity_and_unabsorbed` → **PASSED** (0.0010 s)
-- `tests/test_energy.py::test_source_on_empty_cell_is_unabsorbed` → **PASSED** (0.0010 s)
+- `tests/test_energy.py::test_source_on_empty_cell_is_unabsorbed` → **PASSED** (0.0000 s)

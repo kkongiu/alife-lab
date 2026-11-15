@@ -2,7 +2,7 @@
 
 - Requisito: docx S3 — costi delle reazioni
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -30,5 +30,5 @@ Formazione con costo 2 e attrito 1; rottura con attrito 1 su un legame da 4.
 
 ## Test pytest associati
 
-- `tests/test_energy.py::test_formation_dissipation` → **PASSED** (0.0010 s)
-- `tests/test_energy.py::test_breaking_dissipation` → **PASSED** (0.0010 s)
+- `tests/test_energy.py::test_formation_dissipation` → **PASSED** (0.0000 s)
+- `tests/test_energy.py::test_breaking_dissipation` → **PASSED** (0.0000 s)

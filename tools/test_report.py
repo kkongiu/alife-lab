@@ -53,6 +53,17 @@ from support import (  # noqa: E402  (helper condivisi con la suite)
     world_with,
 )
 from alife.structures import Tracker, components, signature  # noqa: E402
+from alife.controls import (  # noqa: E402
+    FIXTURE_VERSION,
+    TemplateCopier,
+    negative_burst,
+    negative_immobile,
+    negative_random_aggregation,
+    negative_reversible,
+    negative_single_species,
+    positive_world,
+)
+from alife.replication import ReplicationDetector  # noqa: E402
 
 REQUIRED = [
     {
@@ -357,6 +368,46 @@ REQUIRED = [
         "tests": [
             "tests/test_structures.py::test_tracker_writes_jsonl_files",
             "tests/test_cli.py::test_run_with_tracking",
+        ],
+    },
+    {
+        "id": "M5-01",
+        "title": "Controllo positivo riconosciuto (sensibilità)",
+        "contract": "docx S5 — il benchmark positivo è riconosciuto",
+        "slug": "positivo_riconosciuto",
+        "tests": [
+            "tests/test_controls.py::test_positive_control_is_detected",
+        ],
+    },
+    {
+        "id": "M5-02",
+        "title": "Controlli negativi non classificati (falsi positivi)",
+        "contract": "docx S5 — i negativi non sono replicazione",
+        "slug": "negativi_rifiutati",
+        "tests": [
+            "tests/test_controls.py::test_negative_immobile_is_not_replication",
+            "tests/test_controls.py::test_negative_random_aggregation_is_not_replication",
+            "tests/test_controls.py::test_negative_reversible_is_not_replication",
+            "tests/test_controls.py::test_negative_stress_cases_are_not_replication",
+        ],
+    },
+    {
+        "id": "M5-03",
+        "title": "Isolamento dei controlli dal mondo di scoperta",
+        "contract": "alife.md §2 — controlli completamente isolati",
+        "slug": "isolamento",
+        "tests": [
+            "tests/test_controls.py::test_engine_does_not_import_controls",
+        ],
+    },
+    {
+        "id": "M5-04",
+        "title": "Controllo positivo riproducibile e versionato",
+        "contract": "docx S5 — fixture versionate",
+        "slug": "controllo_riproducibile",
+        "tests": [
+            "tests/test_controls.py::test_positive_control_is_reproducible",
+            "tests/test_controls.py::test_fixture_version_is_declared",
         ],
     },
 ]
@@ -1411,6 +1462,132 @@ def evidence_m4_06(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
     )
 
 
+def _tracked_run(world, steps: int, copier: TemplateCopier | None = None):
+    tracker = Tracker()
+    detector = ReplicationDetector()
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    for _ in range(steps):
+        if copier is not None:
+            copier.step(world)
+        world.advance(1)
+        tracker.observe(world)
+        detector.observe(world, tracker)
+    return tracker, detector
+
+
+def evidence_m5_01(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = positive_world()
+    copier = TemplateCopier.for_world(world)
+    tracker, detector = _tracked_run(world, 40, copier)
+    summary = detector.summary()
+    tracker_summary = tracker.summary()
+    return (
+        "Controllo positivo: template A-B-B-A con nove siti di monomeri; a ogni "
+        "passo il copiatore assembla una catena nel sito a destra di un template.",
+        [
+            ("versione fixture", FIXTURE_VERSION),
+            ("strutture finali", str(tracker_summary["active_structures"])),
+            ("copie assemblate dalla fixture", str(copier.copies)),
+            ("copie candidate dal rilevatore", str(summary["candidates"])),
+            ("copie persistenti", str(summary["persistent"])),
+            ("generazione massima", str(summary["max_generation"])),
+            ("classificazione", summary["classified"]),
+        ],
+        [
+            ("nove copie assemblate", copier.copies == 9),
+            ("nove copie rilevate", summary["candidates"] == 9),
+            ("tutte persistenti", summary["persistent"] == 9),
+            ("almeno due generazioni", summary["max_generation"] >= 2),
+            ("classificato come replicazione", summary["classified"] == "replication"),
+        ],
+    )
+
+
+def evidence_m5_02(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    cases = [
+        ("N1 immobile", negative_immobile(), 100),
+        ("N2 aggregazione casuale", negative_random_aggregation(), 500),
+        ("N3 reazioni reversibili", negative_reversible(), 500),
+        ("stress specie unica", negative_single_species(), 300),
+        ("stress formazione massima", negative_burst(), 300),
+    ]
+    rows: list[Measure] = []
+    checks: list[Check] = []
+    for name, world, steps in cases:
+        tracker, detector = _tracked_run(world, steps)
+        summary = detector.summary()
+        rows.append(
+            (
+                name,
+                f"{tracker.summary()['active_structures']} strutture, "
+                f"{summary['candidates']} candidate, {summary['classified']}",
+            )
+        )
+        checks.append(
+            (
+                f"{name}: non replicazione e nessuna candidata",
+                summary["classified"] == "not_replication" and summary["candidates"] == 0,
+            )
+        )
+    return (
+        "Cinque condizioni senza copiatura: immobilità, aggregazione casuale, "
+        "reazioni reversibili e due casi di stress con firme molto ripetute.",
+        rows,
+        checks,
+    )
+
+
+def evidence_m5_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    package = Path(ROOT) / "src" / "alife"
+    engine_files = sorted(
+        path.name for path in package.glob("*.py") if path.name != "__init__.py"
+    )
+    offenders = [
+        path.name
+        for path in package.glob("*.py")
+        if "controls" in path.read_text(encoding="utf-8")
+    ]
+    return (
+        "Isolamento: i moduli del motore non devono importare né citare il "
+        "pacchetto dei controlli.",
+        [
+            ("moduli del motore", ", ".join(engine_files)),
+            ("moduli con riferimenti ai controlli", ", ".join(offenders) if offenders else "nessuno"),
+            ("fixture", FIXTURE_VERSION),
+        ],
+        [
+            ("nessun riferimento ai controlli", not offenders),
+            ("il motore è coperto dalla scansione", len(engine_files) >= 10),
+        ],
+    )
+
+
+def evidence_m5_04(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    first_world = positive_world()
+    first_copier = TemplateCopier.for_world(first_world)
+    _, first_detector = _tracked_run(first_world, 40, first_copier)
+
+    second_world = positive_world()
+    second_copier = TemplateCopier.for_world(second_world)
+    _, second_detector = _tracked_run(second_world, 40, second_copier)
+
+    return (
+        "Due esecuzioni indipendenti del controllo positivo con le stesse "
+        "posizioni e lo stesso seed.",
+        [
+            ("hash completo A", first_world.state_hash_full()[:32] + "…"),
+            ("hash completo B", second_world.state_hash_full()[:32] + "…"),
+            ("riepiloghi identici", str(first_detector.summary() == second_detector.summary())),
+            ("copie A / B", f"{first_copier.copies} / {second_copier.copies}"),
+        ],
+        [
+            ("hash completo identico", first_world.state_hash_full() == second_world.state_hash_full()),
+            ("stesso esito del rilevatore", first_detector.summary() == second_detector.summary()),
+        ],
+    )
+
+
 BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-01": evidence_01,
     "M1-02": evidence_02,
@@ -1441,6 +1618,10 @@ BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M4-04": evidence_m4_04,
     "M4-05": evidence_m4_05,
     "M4-06": evidence_m4_06,
+    "M5-01": evidence_m5_01,
+    "M5-02": evidence_m5_02,
+    "M5-03": evidence_m5_03,
+    "M5-04": evidence_m5_04,
 }
 
 

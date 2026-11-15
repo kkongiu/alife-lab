@@ -2,7 +2,7 @@
 
 - Requisito: docx S4 — incertezza dove una copia è ambigua
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario

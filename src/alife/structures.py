@@ -210,6 +210,7 @@ class Tracker:
         self.ambiguous_steps = 0
         self.ambiguous_structures = 0
         self.examples: dict[str, list[dict]] = defaultdict(list)
+        self.last_births: list[TrackedStructure] = []
 
     # -- osservazione ----------------------------------------------------
     def observe(self, world: "World") -> None:
@@ -249,6 +250,7 @@ class Tracker:
         new_active: dict[int, TrackedStructure] = {}
         consumed: set[int] = set()
         step_events: Counter = Counter()
+        self.last_births = []
 
         for position, (sig, particles, size) in enumerate(current):
             parents = sorted(parents_of[position])
@@ -258,6 +260,7 @@ class Tracker:
             if not parents:
                 tracked = self._new_structure(sig, particles, size, step, ())
                 step_events["birth"] += 1
+                self.last_births.append(tracked)
                 self._record("birth", step, tracked)
             elif len(parents) == 1 and len(children_of[parents[0]]) == 1:
                 parent = self.active[parents[0]]

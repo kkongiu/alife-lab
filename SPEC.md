@@ -1,6 +1,6 @@
-# SPEC — Modello computazionale (milestone M0, M1, M2, M3, M4)
+# SPEC — Modello computazionale (milestone M0–M5)
 
-Versione: 4.0 (M4) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
+Versione: 5.0 (M5) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
 
 Questa specifica descrive un universo deterministico, misurabile e — da M3 —
 aperto, con un livello di osservabilità separato dal motore (M4). Deve essere
@@ -21,6 +21,8 @@ Il sistema realizzato copre:
   costi di movimento e di reazione, con contabilità intera esatta.
 - **M4 — osservabilità**: firme canoniche delle strutture, tracciamento nel
   tempo, eventi e metriche di persistenza, con ambiguità dichiarata.
+- **M5 — controlli**: fixture isolate, un controllo positivo con copiatura nota,
+  controlli negativi e rilevatore preregistrato.
 
 Non esistono: organismi, genomi, DNA, replicatori, reti neurali, funzioni di
 fitness, meccanismi di copia.
@@ -570,6 +572,15 @@ Test M4 aggiunti:
 | Tracker non invasivo e deterministico | `test_tracking_does_not_change_the_world`, `test_tracker_is_deterministic` |
 | File di eventi e CLI | `test_tracker_writes_jsonl_files`, `test_run_with_tracking` |
 
+Test M5 aggiunti:
+
+| Regola | Test |
+|---|---|
+| Il positivo è riconosciuto | `test_positive_control_is_detected` |
+| I negativi non sono replicazione | `test_negative_immobile_is_not_replication`, `test_negative_random_aggregation_is_not_replication`, `test_negative_reversible_is_not_replication`, `test_negative_stress_cases_are_not_replication` |
+| Isolamento dal motore | `test_engine_does_not_import_controls` |
+| Riproducibilità e versione delle fixture | `test_positive_control_is_reproducible`, `test_fixture_version_is_declared` |
+
 ---
 
 ## 15. Limiti dichiarati e decisioni aperte
@@ -687,7 +698,85 @@ resta quello del checkpoint.
 
 ---
 
-## 18. Glossario
+## 18. Controlli (M5)
+
+I controlli servono a rispondere a una domanda precisa: *il rilevatore
+riconosce un sistema di copiatura noto e rifiuta i casi in cui la copiatura non
+c'è?* Non sono esperimenti sull'universo di scoperta.
+
+### 18.1 Isolamento
+
+Il pacchetto `alife.controls` contiene le fixture e l'unico replicatore
+codificato del progetto. Il motore non lo importa: un test statico verifica che
+nessun modulo di `src/alife/*.py` citi `controls`. Le fixture sono costruite da
+codice con posizioni fisse, parametri espliciti e una versione dichiarata
+(`FIXTURE_VERSION`).
+
+### 18.2 Controllo positivo
+
+Template `A-B-B-A` (catena di quattro particelle) e nove siti di monomeri
+`A-B-B-A` allineati. A ogni passo il copiatore, esterno al motore:
+
+1. cerca una struttura con la firma del template;
+2. verifica che il sito immediatamente a destra contenga quattro monomeri liberi
+   nella sequenza `A-B-B-A`;
+3. li lega in catena.
+
+La copia è una struttura nuova, senza particelle in comune con il template, a
+distanza 1. Le copie diventano a loro volta template: la discendenza cresce di
+una generazione per passo, fino all'esaurimento dei monomeri.
+
+Il motore è usato per stato, legami, firme e tracciamento; nessuna regola del
+motore conosce il copiatore. Movimento e chimica spontanea sono disattivati nella
+fixture: la sola dinamica è l'assemblaggio template-diretto.
+
+### 18.3 Controlli negativi
+
+| ID | Condizione | Cosa produce |
+|---|---|---|
+| N1 | particelle immobili, nessuna reazione | nessuna struttura |
+| N2 | aggregazione casuale, 4 specie, formazione 0,3 | strutture per crescita, nessuna copia |
+| N3 | reazioni reversibili, rottura 0,05 | strutture effimere |
+| stress 1 | una sola specie, firme molto ripetute | catene per crescita |
+| stress 2 | formazione al massimo tasso | catene assemblate in pochi passi |
+
+### 18.4 Criterio del rilevatore (preregistrato)
+
+Una **copia candidata** richiede tutte le condizioni:
+
+1. nascita di una struttura con firma **esatta** già presente in un'altra
+   struttura attiva;
+2. distanza di Manhattan fra le due ≤ `radius` (default 2, toroidale);
+3. almeno `min_size` particelle (default 4: sotto questa soglia una struttura è
+   indistinguibile da un'associazione casuale);
+4. persistenza ≥ `persist_steps` passi (default 10).
+
+Un run è classificato `replication` se ha almeno `min_copies` copie persistenti
+(default 5) **e** almeno una catena di seconda generazione (una copia nata vicino
+a una copia, non solo al template).
+
+Il criterio usa la firma per confrontare e l'identità delle particelle per la
+discendenza: non deduce mai una linea da una somiglianza.
+
+### 18.5 Esito atteso e limiti
+
+| Condizione | Atteso |
+|---|---|
+| positivo | `replication`, copie persistenti e generazioni multiple |
+| negativi | `not_replication`, nessuna copia candidata |
+
+Il criterio riconosce l'**assemblaggio simultaneo di una struttura completa
+accanto a una simile**, non la replicazione in generale: un replicatore che
+crescesse per accrezione verrebbe tracciato come crescita, non come copia. È un
+limite dichiarato, da affrontare in M6–M7 con criteri di discendenza.
+
+Nessun risultato di M5 dice qualcosa sulla comparsa spontanea di replicatori
+nell'universo di scoperta: il copiatore è programmato, isolato e usato solo per
+calibrare il rilevatore.
+
+---
+
+## 19. Glossario
 
 - **Passo**: dissipazione, iniezione, rottura, movimento, risoluzione, formazione.
 - **Legame**: relazione locale reversibile con energia immagazzinata.

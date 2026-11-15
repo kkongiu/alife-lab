@@ -1,0 +1,220 @@
+{
+  "fixture_version": "m5-fixtures-1",
+  "criteria": {
+    "radius": 2,
+    "persist_steps": 10,
+    "min_size": 4,
+    "min_copies": 5,
+    "min_generation": 2
+  },
+  "fixtures": [
+    {
+      "name": "positivo-template",
+      "expected": "replication",
+      "steps": 40,
+      "structures": 10,
+      "births": 10,
+      "copies_made_by_fixture": 9,
+      "detector": {
+        "criteria": {
+          "radius": 2,
+          "persist_steps": 10,
+          "min_size": 4,
+          "min_copies": 5,
+          "min_generation": 2
+        },
+        "candidates": 9,
+        "persistent": 9,
+        "unresolved": 0,
+        "max_generation": 9,
+        "generations": {
+          "1": 1,
+          "2": 1,
+          "3": 1,
+          "4": 1,
+          "5": 1,
+          "6": 1,
+          "7": 1,
+          "8": 1,
+          "9": 1
+        },
+        "classified": "replication",
+        "examples": [
+          {
+            "step": 1,
+            "generation": 1,
+            "child": 1,
+            "parent": 0,
+            "distance": 1,
+            "persistent": true
+          },
+          {
+            "step": 2,
+            "generation": 2,
+            "child": 2,
+            "parent": 1,
+            "distance": 1,
+            "persistent": true
+          },
+          {
+            "step": 3,
+            "generation": 3,
+            "child": 3,
+            "parent": 2,
+            "distance": 1,
+            "persistent": true
+          },
+          {
+            "step": 4,
+            "generation": 4,
+            "child": 4,
+            "parent": 3,
+            "distance": 1,
+            "persistent": true
+          },
+          {
+            "step": 5,
+            "generation": 5,
+            "child": 5,
+            "parent": 4,
+            "distance": 1,
+            "persistent": true
+          }
+        ]
+      },
+      "ok": true,
+      "world_hash": "7911dd2099ba92e7de87ef32461869592725b32faed698025821629a1c3129c6"
+    },
+    {
+      "name": "N1-immobile",
+      "expected": "not_replication",
+      "steps": 100,
+      "structures": 0,
+      "births": 0,
+      "copies_made_by_fixture": 0,
+      "detector": {
+        "criteria": {
+          "radius": 2,
+          "persist_steps": 10,
+          "min_size": 4,
+          "min_copies": 5,
+          "min_generation": 2
+        },
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "generations": {},
+        "classified": "not_replication",
+        "examples": []
+      },
+      "ok": true,
+      "world_hash": "ade9f05f008a42e052a1e55d26048f328ff270cc5a374843ce954145fb0d6a96"
+    },
+    {
+      "name": "N2-aggregazione-casuale",
+      "expected": "not_replication",
+      "steps": 1000,
+      "structures": 112,
+      "births": 151,
+      "copies_made_by_fixture": 0,
+      "detector": {
+        "criteria": {
+          "radius": 2,
+          "persist_steps": 10,
+          "min_size": 4,
+          "min_copies": 5,
+          "min_generation": 2
+        },
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "generations": {},
+        "classified": "not_replication",
+        "examples": []
+      },
+      "ok": true,
+      "world_hash": "aa6b5ff4ed675d6b3f4b896f4f6313b8317f9407bd639df83f1d18ed34c1b08a"
+    },
+    {
+      "name": "N3-reazioni-reversibili",
+      "expected": "not_replication",
+      "steps": 1000,
+      "structures": 87,
+      "births": 1681,
+      "copies_made_by_fixture": 0,
+      "detector": {
+        "criteria": {
+          "radius": 2,
+          "persist_steps": 10,
+          "min_size": 4,
+          "min_copies": 5,
+          "min_generation": 2
+        },
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "generations": {},
+        "classified": "not_replication",
+        "examples": []
+      },
+      "ok": true,
+      "world_hash": "43340245b5f6c3d3871ae4863cd29e073d821d9c60ff3351eda8d2801683efe9"
+    },
+    {
+      "name": "stress-specie-unica",
+      "expected": "not_replication",
+      "steps": 1000,
+      "structures": 62,
+      "births": 87,
+      "copies_made_by_fixture": 0,
+      "detector": {
+        "criteria": {
+          "radius": 2,
+          "persist_steps": 10,
+          "min_size": 4,
+          "min_copies": 5,
+          "min_generation": 2
+        },
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "generations": {},
+        "classified": "not_replication",
+        "examples": []
+      },
+      "ok": true,
+      "world_hash": "b4a3896621ad7545899bec91214c5f7aaa2fc4e5e6e6a6b5c2fc99109e38ead0"
+    },
+    {
+      "name": "stress-formazione-massima",
+      "expected": "not_replication",
+      "steps": 1000,
+      "structures": 63,
+      "births": 77,
+      "copies_made_by_fixture": 0,
+      "detector": {
+        "criteria": {
+          "radius": 2,
+          "persist_steps": 10,
+          "min_size": 4,
+          "min_copies": 5,
+          "min_generation": 2
+        },
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "generations": {},
+        "classified": "not_replication",
+        "examples": []
+      },
+      "ok": true,
+      "world_hash": "c5076be28abbc741b04b5939fa854b254251e025a506eb0ae25cd3538ed1be70"
+    }
+  ],
+  "ok": true
+}

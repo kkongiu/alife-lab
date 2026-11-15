@@ -3,9 +3,9 @@
 Universo computazionale minimo, deterministico e headless, nel quale osservare —
 senza imporle — eventuali proprietà emergenti.
 
-Stato: **M4 — osservabilità** (in attesa di approvazione), dopo M1, M2 e M3
-approvati. Firme canoniche delle strutture, tracciamento nel tempo, eventi e
-metriche di persistenza, con ambiguità dichiarata.
+Stato: **M5 — controlli positivi e negativi** (in attesa di approvazione), dopo
+M1, M2, M3 e M4 approvati. Fixture isolate, un copiatore noto per calibrare il
+rilevatore, tre controlli negativi più due casi di stress.
 
 **M3 non contiene vita, né la cerca.** Non ci sono organismi, genomi, replicatori,
 reti neurali, funzioni di fitness. Ci sono particelle che si spostano, legami
@@ -22,6 +22,8 @@ Documenti:
   confronto chiuso / alimentato / senza alimentazione.
 - [`reports/M4_observability.md`](reports/M4_observability.md) — firme,
   tracciamento, persistenza, ambiguità.
+- [`reports/M5_controls.md`](reports/M5_controls.md) — controllo positivo,
+  negativi, sensibilità e falsi positivi.
 - [`reports/tests/index.md`](reports/tests/index.md) — risultati dei test, con un
   file per ogni caso e un'evidenza misurata per ogni requisito.
 - [`docs/M3_flussi_energetici.md`](docs/M3_flussi_energetici.md) — specifica
@@ -69,6 +71,9 @@ python3 -m venv .venv
 
 # ispezione senza evolvere
 .venv/bin/alife inspect --checkpoint runs/m3_baseline/checkpoint.json
+
+# controlli M5: positivo noto, negativi e rilevatore preregistrato
+.venv/bin/python tools/run_controls.py
 ```
 
 Senza installazione: `PYTHONPATH=src .venv/bin/python -m alife …`.
@@ -111,6 +116,9 @@ Opzioni: `--seed` sovrascrive il seed (nuovo hash di configurazione),
   firma canonica — esatta per gli alberi, impronta dichiarata per i cicli — e
   viene tracciata per identità, con eventi di nascita, crescita, scissione,
   fusione, morte e metriche di persistenza.
+- **Controlli isolati** (`alife.controls`): un copiatore template-diretto, tre
+  negativi e due casi di stress, usati per calibrare un rilevatore con criteri
+  preregistrati. Il motore non li importa.
 
 Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 
@@ -120,9 +128,10 @@ Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 .venv/bin/python -m pytest
 ```
 
-156 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
+164 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
 (identità energetica, dissipazione, sorgenti, costi, determinismo, migrazione),
-l'osservabilità M4 (firme, ambiguità, eventi, persistenza), più CLI e metriche.
+l'osservabilità M4 (firme, ambiguità, eventi, persistenza), i controlli M5
+(isolamento, positivo, negativi, riproducibilità), più CLI e metriche.
 
 ### Risultati per ogni test
 
@@ -134,8 +143,8 @@ Genera `reports/tests/`:
 
 - `index.md` — indice con esito di tutti i casi;
 - `cases/*.md` — **un file per ogni caso di test**;
-- `evidence/M1-0N_*.md`, `M2-0N_*.md`, `M3-0N_*.md` — **un file per ogni
-  requisito**, con le misure reali dello scenario;
+- `evidence/M1-0N_*.md` … `M5-0N_*.md` — **un file per ogni requisito**, con
+  le misure reali dello scenario;
 - `results.json`, `junit.xml`, `pytest.log`.
 
 ## Benchmark
@@ -174,12 +183,14 @@ alife/
 │   ├── dynamics.py      # proposta, conflitti, applicazione, passo
 │   ├── world.py         # universo, flussi, ledger, invarianti, hash
 │   ├── structures.py    # componenti, firme canoniche, tracciamento
+│   ├── replication.py   # rilevatore di copie con criteri preregistrati
+│   ├── controls/        # fixture isolate: positivo, negativi, stress
 │   ├── persistence.py   # checkpoint v3 + migrazione v1/v2
 │   ├── events.py        # events.jsonl
 │   ├── metrics.py       # serie temporali, riepilogo, memoria
 │   └── cli.py           # run / resume / inspect
 ├── tests/
-├── tools/               # benchmark.py, test_report.py
+├── tools/               # benchmark.py, test_report.py, run_controls.py
 └── runs/
 ```
 
@@ -190,7 +201,9 @@ possono raggiungere le sorgenti. Le sorgenti sono puntiformi: metà dell'energia
 iniettata trabocca senza essere raccolta. Non esistono ancora nascita o morte di
 particelle né ereditarietà. Il tracciamento usa l'identità delle particelle: le
 linee dopo scissione o fusione seguono una regola di attribuzione, non una
-discendenza biologica. I numeri di `reports/` sono misure, non promesse.
+discendenza biologica. Il controllo positivo di M5 è un copiatore programmato e
+isolato: calibra il rilevatore, non dimostra replicazione spontanea. I numeri di
+`reports/` sono misure, non promesse.
 
 ## Nota scientifica
 

@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_cli.py::test_resume_matches_continuous_run`
 - Stato: **PASSED**
-- Durata: 0.5010 s
+- Durata: 0.5210 s
 - Modulo: `tests/test_cli.py`
 - Requisito: M1-07 — Equivalenza tra esecuzione continua e interrotta/ripresa
 - Comando: `.venv/bin/python -m pytest "tests/test_cli.py::test_resume_matches_continuous_run"`

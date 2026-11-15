@@ -2,7 +2,7 @@
 
 - Requisito: docx S4 — registrare nascita, trasformazione, scissione, scomparsa
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:15:23+00:00
+- Eseguito: 2026-11-15T11:11:42+00:00
 - Test pytest associati: 5 (5 superati)
 
 ## Scenario
