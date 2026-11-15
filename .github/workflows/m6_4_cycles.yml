@@ -1,0 +1,43 @@
+name: M6.4 spontaneous cyclic topology audit
+
+on:
+  push:
+    branches:
+      - analysis/m6-4-spontaneous-cycles-exact-signatures
+    paths:
+      - 'campaigns/m6_4_cycles/**'
+      - 'tools/m6_4_cycles.py'
+      - 'tests/test_m6_4_cycles.py'
+      - '.github/workflows/m6_4_cycles.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_4_cycles/**'
+      - 'tools/m6_4_cycles.py'
+      - 'tests/test_m6_4_cycles.py'
+      - '.github/workflows/m6_4_cycles.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  natural-cycles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Run all regressions including cyclic counterexample
+        run: python -m pytest -q
+      - name: Execute preregistered 24 natural-world survey
+        run: python -m tools.m6_4_cycles
+      - name: Archive all ring episodes and negative runs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-4-natural-cycles
+          path: campaigns/m6_4_cycles/results.json
+          if-no-files-found: warn
