@@ -20,10 +20,16 @@ def _synthetic_ring():
             {"name":"S1","count":2,"move_probability":0.0,
              "energy":20,"max_bonds":2},
         ],
-        chemistry={"enabled":False},
+        chemistry={
+            "enabled": True, "bond_cost":2,
+            "formation_probability":0.0,"break_probability":0.0,
+            "allowed_pairs":[["S0","S0"],["S0","S1"],["S1","S1"]],
+            "catalysis":[],
+        },
     )
     w=world_with(
         cfg,[(0,0),(1,0),(1,1),(0,1)],[0,0,1,1],
+        energy=[16,16,16,16],
         bonds=[(0,1,4),(1,2,4),(2,3,4),(3,0,4)],
     )
     w.check()
