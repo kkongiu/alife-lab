@@ -260,9 +260,9 @@ def sample_density(density,p):
                 data["precursor_seed"]=seed
                 forks.append(data)
                 selected.append(data)
-                if len(forks)>=p["sampling"]["first_distinct_four_ring_material_sets_per_world"]:
+                if len(forks)>=2  # frozen protocol: first two distinct material sets per world:
                     break
-            if len(forks)>=p["sampling"]["first_distinct_four_ring_material_sets_per_world"]:
+            if len(forks)>=2  # frozen protocol: first two distinct material sets per world:
                 break
         worlds.append({
             "density":density,"seed":seed,
