@@ -28,7 +28,7 @@ jobs:
       - name: Run all tests
         run: python -m pytest -q
       - name: Execute locked 160-run paired screen (original laws)
-        run: python tools/m6_3_1_screen.py
+        run: python -m tools.m6_3_1_screen
       - name: Retain per-seed results including zeros
         if: always()
         uses: actions/upload-artifact@v4
