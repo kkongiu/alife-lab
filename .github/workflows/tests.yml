@@ -35,6 +35,15 @@ jobs:
           name: m6-2e-unfed-6101-particle-trace
           path: campaigns/m6_2e/unfed_6101_trace.json
           if-no-files-found: warn
+      - name: Reconstruct common precursor before step 770
+        run: python tools/trace_unfed6101_ancestry.py
+      - name: Archive material ancestry evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-2e-unfed-6101-ancestry
+          path: campaigns/m6_2e/unfed_6101_ancestry.json
+          if-no-files-found: warn
       - name: Archive audit evidence
         if: always()
         uses: actions/upload-artifact@v4
