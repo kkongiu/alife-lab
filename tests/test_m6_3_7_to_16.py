@@ -68,3 +68,27 @@ def test_zero_event_aggregation_does_not_manufacture_signal():
     assert summary["gate"]["specificity_screen_signal"] is False
     assert summary["gate"]["verdict"]=="underpowered_or_no_specificity"
     assert summary["by_density_and_arm"]["baseline"]["A"]["first_break_censored"]==12
+
+
+def test_A_B_variants_have_identical_exposed_ends_and_initial_reaction_candidates():
+    """Post-hoc rule audit, NOT a changed preregistered outcome threshold.
+
+    Interior S0/S1 differ but have valence 2/2 fully occupied, so
+    A/B expose exactly the same ordered terminal species S0 and S1.
+    The candidate-pair generator initially cannot distinguish them.
+    """
+    from alife.chemistry import _candidate_pairs
+    old=prev_protocol()
+    for density in ("baseline","enriched"):
+        d=density_protocol(old,density)
+        for arm_a,arm_b in (("A","B"),("A_reverse","B_reverse")):
+            left=make_world(8201,arm_a,d)
+            right=make_world(8201,arm_b,d)
+            for i in (0,3):
+                assert left.store.species[i]==right.store.species[i]
+                assert left.store.degree[i]==right.store.degree[i]==1
+            for i in (1,2):
+                assert left.store.degree[i]==right.store.degree[i]==2
+                assert left.max_bonds[left.store.species[i]]==2
+                assert right.max_bonds[right.store.species[i]]==2
+            assert list(_candidate_pairs(left))==list(_candidate_pairs(right))
