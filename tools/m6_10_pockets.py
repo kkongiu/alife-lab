@@ -178,8 +178,8 @@ def study_world(w,steps=600):
 
         for key,ep in list(active.items()):
             new=pocket_now.get(key)
-            interrupted=bool(broken_edges.intersection(ep["edges"]))
-            if new is None or interrupted or new["center"]!=ep["center"]:
+            interrupted=bool(broken_edges.intersection(tuple(map(tuple,ep["edges"]))))
+            if new is None or interrupted or tuple(new["center"])!=tuple(ep["center"]):
                 why=("source_bond_break" if interrupted else
                      "perimeter_lost" if new is None else "geometry_changed")
                 finish(key,t,why)
