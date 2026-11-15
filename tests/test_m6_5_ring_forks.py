@@ -1,8 +1,7 @@
 """M6.5 paired counterfactual: complete clone, energy-conserving ring opening."""
 from copy import deepcopy
 
-from tools.m6_3_0_screen import make_world
-from tools.m6_3_1_screen import density_protocol, protocol as fixture_protocol
+from support import make_energy_config, world_with
 from tools.m6_5_ring_forks import (
     clone_world, followup, open_bond, opening_edges, paired_experiment,
     protocol, ring4_candidates, status, summary,
@@ -10,16 +9,25 @@ from tools.m6_5_ring_forks import (
 
 
 def _synthetic_ring():
-    """A ring built exclusively to verify the intervention invariants."""
-    p=fixture_protocol()
-    world=make_world(8801,"C",density_protocol(p,"baseline"))
-    a,b=0,3
-    for i in (a,b):
-        world.store.energy[i]-=world.formation_cost
-    world.store.add_bond(a,b,2*world.bond_cost)
-    world.dissipated+=2*world.formation_dissipation
-    world.check()
-    return world
+    """Valid square ring assembled ONLY for a controlled invariant test.
+
+    Unlike the straight M6.3 fixture, ids 0 and 3 are grid-neighbors.
+    """
+    cfg=make_energy_config(
+        species=[
+            {"name":"S0","count":2,"move_probability":0.0,
+             "energy":20,"max_bonds":2},
+            {"name":"S1","count":2,"move_probability":0.0,
+             "energy":20,"max_bonds":2},
+        ],
+        chemistry={"enabled":False},
+    )
+    w=world_with(
+        cfg,[(0,0),(1,0),(1,1),(0,1)],[0,0,1,1],
+        bonds=[(0,1,4),(1,2,4),(2,3,4),(3,0,4)],
+    )
+    w.check()
+    return w
 
 
 def test_protocol_locked_before_runner():
