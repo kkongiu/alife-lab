@@ -1,0 +1,171 @@
+{
+  "schema": "alife-m6-3-7-to-16-heldout-v1",
+  "status": "frozen-before-runner-and-data-inspection",
+  "date": "2026-11-15",
+  "origin": "M6.3-6 motivates uninterrupted core bond lifespan, growth and valence, exposure, and variant specificity on new held-out seeds",
+  "note": "One new preregistered campaign with ten scientific analyses; NOT ten independent campaigns",
+  "sample": {
+    "seed_list": [
+      8201,
+      8202,
+      8203,
+      8204,
+      8205,
+      8206,
+      8207,
+      8208,
+      8209,
+      8210,
+      8211,
+      8212
+    ],
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "arms": [
+      "A",
+      "B",
+      "A_reverse",
+      "B_reverse",
+      "C"
+    ],
+    "steps": 450,
+    "expected_worlds": 120,
+    "fixture": "campaigns/m6_3_1/protocol.json",
+    "density_counts": {
+      "baseline": {
+        "S0": 80,
+        "S1": 80,
+        "S2": 24,
+        "S3": 16
+      },
+      "enriched": {
+        "S0": 108,
+        "S1": 108,
+        "S2": 28,
+        "S3": 20
+      }
+    },
+    "construction": "reuse the existing synthetic M6.3-1 bonded fixture, changing only seeds; same initial background per seed/density across arms; original M6 chemistry/energy/movement and RNG unchanged"
+  },
+  "steps_plan": [
+    {
+      "id": "M6.3-7",
+      "task": "freeze protocol, verify initial matched worlds and invariants"
+    },
+    {
+      "id": "M6.3-8",
+      "task": "measure first event-time original bond break and censoring"
+    },
+    {
+      "id": "M6.3-9",
+      "task": "trace original edge rupture, reformation and continuity"
+    },
+    {
+      "id": "M6.3-10",
+      "task": "classify first growth and outsider prior bonding status"
+    },
+    {
+      "id": "M6.3-11",
+      "task": "measure available core valence and energy-qualified slots"
+    },
+    {
+      "id": "M6.3-12",
+      "task": "measure compatible free S0/S1 neighbors and eligible pairs"
+    },
+    {
+      "id": "M6.3-13",
+      "task": "compare added-bond species and available substrates, with geometry controls"
+    },
+    {
+      "id": "M6.3-14",
+      "task": "count disjoint A/B/C exact new motifs by source phase and near distance"
+    },
+    {
+      "id": "M6.3-15",
+      "task": "verify all worlds, initial paired backgrounds, energy, RNG and independent replays"
+    },
+    {
+      "id": "M6.3-16",
+      "task": "publish complete data, result of prespecified gates and scientific decision"
+    }
+  ],
+  "definitions": {
+    "source_ids": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source_edges": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "pure": "original three edges present and exactly the four source particles in one bonded aggregate",
+    "retained": "three original edges present (may have broken and reformed)",
+    "unbroken": "zero prior bond breaking events for any original edge; a previously broken edge reformed does NOT qualify",
+    "first_break": "first original-edge BondEvent(kind=break) with post_step=event.step+1, right-censored at 450 if none",
+    "reformed": "original-edge BondEvent(kind=form) after prior break of the same bond",
+    "growth": "source component gains outsider; attachment event classified by outsider pre-step degree as free or bonded (could react earlier in same step)",
+    "eligible": "post-step source-to-free adjacent pairs passing species, valence and energy constraints, a potential opportunity rather than observed pre-formation candidate count",
+    "new_motif": "first observation per exact signature and sorted four physical IDs, excluding any history of shared bonded component with source atoms",
+    "near": "toroidal Manhattan distance <=2 from original scaffold cells at first observation",
+    "phases": [
+      "pure",
+      "grown_with_original_edges",
+      "original_edges_missing"
+    ]
+  },
+  "analysis": {
+    "primary": "Time to first actual BondEvent break of any of the three original edges, separately by density and arm, including right-censoring; never conflate state occupancy with uninterrupted bond survival.",
+    "secondary": [
+      "break/reformation event counts",
+      "time original edges restored after earlier break",
+      "first attachment type: previously free monomer or bonded cluster",
+      "source valence and energy-qualified open slots per phase",
+      "free S0/S1 neighbors and eligible attachment pairs per phase",
+      "species of accepted source-outside bonds and local exposure",
+      "strict material-independent A/B/C four-node motifs near by phase and source motif"
+    ],
+    "comparison": "Report paired seed descriptive raw values for A,B,reverse and C per density, without p-values or causal inheritance inference.",
+    "signal_gate": "Only flag a *screen signal* if EACH A,B,A_reverse,B_reverse arm in EACH density yields >=8 strict near A/B new motifs while original core edges retained, AND at least 9 of 12 seeds per arm have source-matched motif dominance, including reverse orientations, and no comparable C preference; else underpowered_or_no_specificity.",
+    "saturation_gate": "Label valence bottleneck in this fixture only if at least 80% of post-growth source ticks have no energy-qualified open valence slots; not a universal impossibility.",
+    "limitations": "The probe is artificially assembled; background and RNG divergence confound causal inference; density and species proportions both change slightly; this is a new seed set selected after the preceding exploratory campaigns, not a proof of evolution or ancestry.",
+    "no_changes": "No engine, chemistry, RNG, config source, detector, existing protocol, or master modifications. No M7 promotion."
+  },
+  "integrity": {
+    "event_step": "BondEvent.step=t occurs between observed steps t and t+1",
+    "read_only": true,
+    "observer_rng_draws_unchanged": true,
+    "initial_and_final_world_check": true,
+    "expected_worlds": 120,
+    "preselected_replays": [
+      [
+        "baseline",
+        8201,
+        "A"
+      ],
+      [
+        "enriched",
+        8201,
+        "A"
+      ]
+    ],
+    "fixed_replay_comparison": "Independently rebuilt world must match final full hash, rng fingerprint and draws, energy, formations and breaks exactly",
+    "stop_on_failure": true,
+    "no_adaptive_seeds_or_thresholds": true,
+    "raw_json": "campaigns/m6_3_7_to_16/results.json",
+    "final_report": "reports/M6_3_16_decision.md"
+  }
+}
