@@ -166,12 +166,12 @@ Ogni caso ha il proprio file in `reports/tests/cases/`; indice in
 
 ## 12. Verdetti
 
-**M4: GO.** Le firme sono corrette e verificate su fixture note; l'ambiguità è
-misurata e dichiarata; il tracciamento non perturba la simulazione e produce un
-registro completo di nascite, crescite, scissioni, fusioni, trasformazioni e
-morti. Il risultato utile per M5 è un numero: **2 323 linee per 131 firme**, cioè
-molte più identità che forme — il punto di partenza per distinguere una
-ricorrenza da una copia.
+**M4: GO — validato il 2026-11-15.** Le firme sono corrette e verificate su
+fixture note; l'ambiguità è misurata e dichiarata; il tracciamento non perturba
+la simulazione e produce un registro completo di nascite, crescite, scissioni,
+fusioni, trasformazioni e morti. Il risultato utile per M5 è un numero: **2 323
+linee per 131 firme**, cioè molte più identità che forme — il punto di partenza
+per distinguere una ricorrenza da una copia.
 
 **M5 non è stata iniziata.** Controlli positivi e negativi richiedono
 approvazione esplicita.
