@@ -1,0 +1,38 @@
+name: M6.3-0 structural variant diagnostic
+
+on:
+  pull_request:
+    paths:
+      - 'campaigns/m6_3_0/**'
+      - 'tools/m6_3_0_screen.py'
+      - 'tests/test_m6_3_0_screen.py'
+      - '.github/workflows/m6_3_0_screen.yml'
+  push:
+    branches:
+      - exp/m6-3-0-variant-specificity-screen
+
+permissions:
+  contents: read
+
+jobs:
+  m6-3-0-screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact project and test requirements
+        run: python -m pip install -e '.[dev]'
+      - name: Run full regression suite
+        run: python -m pytest -q
+      - name: Execute frozen A/B screening protocol (unchanged M6 laws)
+        run: python tools/m6_3_0_screen.py
+      - name: Archive full per-arm evidence (including zero runs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-3-0-variant-specificity-data
+          path: campaigns/m6_3_0/results.json
+          if-no-files-found: warn
