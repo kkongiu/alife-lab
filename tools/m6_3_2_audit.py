@@ -285,7 +285,7 @@ def analyse_one(world,p,arm,target_signatures):
     # A run that never leaves its pure state is right-censored, not an error.
     if first_loss_details is not None:
         assert first_loss_details["mode"]!="other",first_loss_details
-    assert tick_totals["pure_ticks"]+tick_totals["core_grown_ticks"]+tick_totals["core_missing_ticks"]==450
+    assert tick_totals["pure_ticks"]+tick_totals["core_grown_ticks"]+tick_totals["core_missing_ticks"]==p["integrity"]["expected_steps"]
     return {
         "seed":world.config.seed,"arm":arm,
         "first_loss_tick":first_loss,
