@@ -147,6 +147,7 @@ class ReadOnlyEventCollector:
 
     def __init__(self, world: World) -> None:
         self.world = world
+        self.present_watch_ids = tuple(i for i in WATCH_IDS if i in world.store.ids)
         self.counts: dict[int, Counter] = {}
         self.selected: dict[int, list[dict]] = {}
 
@@ -158,10 +159,11 @@ class ReadOnlyEventCollector:
         s = self.world.store
         endpoints = (event.id_a, event.id_b)
         positions = (_xy(s, endpoints[0]), _xy(s, endpoints[1]))
-        incident = any(identifier in WATCH_IDS for identifier in endpoints)
+        incident = any(identifier in self.present_watch_ids for identifier in endpoints)
         nearest = min(
-            _distance_positions(pos, _xy(s, watched), s.width, s.height, self.world.periodic)
-            for pos in positions for watched in WATCH_IDS
+            (_distance_positions(pos, _xy(s, watched), s.width, s.height, self.world.periodic)
+             for pos in positions for watched in self.present_watch_ids),
+            default=s.width + s.height + 1,
         )
         if not (incident or nearest <= LOCAL_RADIUS):
             return
