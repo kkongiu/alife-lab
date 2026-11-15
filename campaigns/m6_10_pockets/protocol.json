@@ -1,0 +1,109 @@
+{
+  "schema": "alife-m6-10-spontaneous-lattice-pockets-v1",
+  "status": "frozen-before-code-and-results",
+  "date": "2026-11-15",
+  "question": "Can unchanged M6 spontaneously produce an 8-particle bonded ring occupying the exact perimeter of a 3×3 lattice block, and thereby passively trap a native free particle in the center?",
+  "sample": {
+    "source": "Original M6 natural zero-bond start, 24x24 periodic grid, species baseline/enriched as in M6.4, no synthetic ring",
+    "seeds": [
+      9801,
+      9802,
+      9803,
+      9804,
+      9805,
+      9806,
+      9807,
+      9808,
+      9809,
+      9810,
+      9811,
+      9812,
+      9813,
+      9814,
+      9815,
+      9816,
+      9817,
+      9818,
+      9819,
+      9820,
+      9821,
+      9822,
+      9823,
+      9824,
+      9825,
+      9826,
+      9827,
+      9828,
+      9829,
+      9830,
+      9831,
+      9832,
+      9833,
+      9834,
+      9835,
+      9836,
+      9837,
+      9838,
+      9839,
+      9840,
+      9841,
+      9842,
+      9843,
+      9844,
+      9845,
+      9846,
+      9847,
+      9848,
+      9849,
+      9850
+    ],
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "expected_worlds": 100,
+    "horizon_ticks": 600
+  },
+  "geometry": {
+    "ring": "Connected native component with exactly 8 material IDs, 8 native bonds and degree 2 for all; the occupied coordinates are precisely the 8 perimeter sites of a periodic 3x3 block; center is unique.",
+    "center": "At the first post-tick observation of this ring episode, one unbonded native particle (degree 0) of nonzero move_probability may occupy its center. No manual placement.",
+    "other": "Record other simple 8-cycles and >=10 cycles but do not classify them as a 3x3 pocket."
+  },
+  "episodes": {
+    "start": "First observed native material+edge 8-ring forming the exact 3x3 border.",
+    "stop": "First native original-edge break BondEvent even if reformed within same tick, or a changed/missing ring or geometry at a snapshot.",
+    "duration": "Consecutive observed post-step ticks; t600 right-censored.",
+    "resident": "Track original center particle persistent ID, degree and position while all original 8 ring IDs remain in their original border sites. If resident leaves with border intact, raise an invariant violation."
+  },
+  "measurement": {
+    "primary": "Number of distinct native 3x3 perimeter ring episodes and source worlds, with native central monomer at episode start and uninterrupted enclosure for >=30 ticks.",
+    "secondary": "Other 8-member rings, >=10 rings, exact ring signature and native source edges/IDs, duration censored, resident species and IDs, all null worlds, physical hashes and RNG, replay checks."
+  },
+  "decision": {
+    "replicated": "If >=2 distinct worlds each contain an 8-ring trapping a native degree-0 center particle with nonzero movement probability for >=30 observed ticks, label replicated_natural_geometric_trapping_without_biological_membrane.",
+    "single": "If exactly one world meets this duration criterion, label one_exploratory_geometric_trap_case.",
+    "other": "If qualifying rings exist but not >=30-tick trapped resident, label geometric_pocket_without_long_lived_trapping.",
+    "null": "If no qualifying 3x3 ring exists, label not_observed_under_preregistered_sample.",
+    "no_pvalues": true,
+    "no_genetic_or_life_or_biological_membrane_claim": true
+  },
+  "integrity": {
+    "native_physics_unchanged": true,
+    "no_source_changes": true,
+    "no_master_changes": true,
+    "sham_replays": [
+      [
+        "baseline",
+        9801
+      ],
+      [
+        "enriched",
+        9801
+      ]
+    ],
+    "compare_hash_rng_energy_dissipated_bond_counters": true,
+    "full_regressions": true,
+    "output": "campaigns/m6_10_pockets/results.json",
+    "report": "reports/M6_10_natural_pockets.md"
+  }
+}
