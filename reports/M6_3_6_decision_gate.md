@@ -35,4 +35,4 @@ Solo dopo questi dati sarà sensato valutare separatamente:
 
 Entrambe cambierebbero le leggi e **richiedono un razionale teorico distinto e approvazione esplicita**. Non introdurre un `copy` hardcoded, non cambiare soglie retroattivamente, non chiamare l'evento `unfed-6101` organismo o autoreplicatore.
 
-**Verdetto generale:** `physical-growth-bottleneck-identifed; causal-information-transfer-not-demonstrated`. L'audit è un **GO strumentale**, non un GO biologico/M7.
+**Verdetto generale:** `physical-growth-bottleneck-identified; causal-information-transfer-not-demonstrated`. L'audit è un **GO strumentale**, non un GO biologico/M7.
