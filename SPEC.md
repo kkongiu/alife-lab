@@ -1,6 +1,6 @@
-# SPEC — Modello computazionale (milestone M0–M5)
+# SPEC — Modello computazionale (milestone M0–M6)
 
-Versione: 5.0 (M5) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
+Versione: 6.0 (M6) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
 
 Questa specifica descrive un universo deterministico, misurabile e — da M3 —
 aperto, con un livello di osservabilità separato dal motore (M4). Deve essere
@@ -23,6 +23,9 @@ Il sistema realizzato copre:
   tempo, eventi e metriche di persistenza, con ambiguità dichiarata.
 - **M5 — controlli**: fixture isolate, un controllo positivo con copiatura nota,
   controlli negativi e rilevatore preregistrato.
+- **M6 — campagne**: preregistrazione di seed e configurazioni, confronto fra
+  ambienti chiusi, non alimentati e alimentati, registrazione anche dei run
+  nulli, stato di analisi ripristinabile.
 
 Non esistono: organismi, genomi, DNA, replicatori, reti neurali, funzioni di
 fitness, meccanismi di copia.
@@ -780,7 +783,76 @@ calibrare il rilevatore.
 
 ---
 
-## 19. Glossario
+## 19. Campagne (M6)
+
+Una campagna è un insieme di run dichiarato **prima** di essere eseguito. La
+regola è semplice: se una decisione viene presa dopo aver visto un risultato,
+non fa parte della campagna.
+
+### 19.1 Preregistrazione
+
+`campaigns/<id>/manifest.json` contiene:
+
+- seed, numero di passi, numero di run e condizioni;
+- una configurazione completa per ogni run, con il proprio hash;
+- i parametri del rilevatore;
+- la lista delle metriche raccolte;
+- la regola di decisione e il controllo sui negativi;
+- versione del codice e commit al momento della registrazione.
+
+`tools/preregister_m6.py` genera manifest e configurazioni. Il manifest è
+versionato prima dei run; l'esecutore rifiuta ogni configurazione il cui hash
+non corrisponde. Modificare una configurazione dopo la registrazione invalida la
+campagna: serve un nuovo identificativo.
+
+### 19.2 Condizioni
+
+La campagna M6 usa cinque condizioni con la stessa chimica:
+
+| Condizione | Sorgenti | Costi e decadimento | Energia |
+|---|---|---|---|
+| `closed` | no | no | conservata |
+| `unfed` | no | sì | decrescente |
+| `fed-low` | 9 × 1 quanto/passo | sì | flusso basso |
+| `fed-mid` | 9 × 2 quanti/passo | sì | flusso medio |
+| `fed-high` | 9 × 4 quanti/passo | sì | flusso alto |
+
+Il confronto è a tre punti: `closed` vs `unfed` isola i costi, `unfed` vs
+`fed-*` isola il flusso. Non si attribuisce a una sola variabile la differenza
+fra `closed` e `fed`.
+
+### 19.3 Stato di analisi
+
+Tracker e rilevatore hanno uno stato che influisce sui risultati (strutture
+attive, vite, candidati, verifiche di persistenza). Viene salvato in
+`analysis.json` accanto al checkpoint e ripristinato dalla ripresa. Il file
+contiene il passo a cui si riferisce: un ripristino su un passo diverso è
+rifiutato. La ripresa con analisi riproduce esattamente il run continuo.
+
+### 19.4 Registrazione dei risultati
+
+`tools/run_campaign.py` esegue i run mancanti e scrive
+`campaigns/<id>/results.json` con **tutti** i run: metriche, hash, esito del
+rilevatore e decisione. I run in cui non compare alcuna copia sono registrati
+come tali, non omessi. I run completati vengono saltati in una riesecuzione,
+salvo `--force`.
+
+### 19.5 Decisione
+
+La regola è fissata nel manifest:
+
+- una condizione è candidata se almeno 3 seed su 5 sono classificati
+  `replication` e la mediana delle copie persistenti è ≥ 5;
+- se `closed` o `unfed` risultano `replication`, il criterio è invalido e la
+  campagna è `REVISE`;
+- altrimenti il risultato è **negativo** e va pubblicato come tale.
+
+Un singolo seed non è evidenza. La campagna non dimostra replicazione: misura
+quanto spesso il rilevatore la segnala.
+
+---
+
+## 20. Glossario
 
 - **Passo**: dissipazione, iniezione, rottura, movimento, risoluzione, formazione.
 - **Legame**: relazione locale reversibile con energia immagazzinata.

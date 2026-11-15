@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 — legami reversibili, soglie energetiche
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:25:10+00:00
+- Eseguito: 2026-11-15T11:55:42+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -32,6 +32,6 @@ Due particelle S0 adiacenti, formation_probability = 1 e break_probability = 1.
 
 ## Test pytest associati
 
-- `tests/test_chemistry.py::test_bond_forms_between_adjacent_allowed_particles` → **PASSED** (0.0000 s)
-- `tests/test_chemistry.py::test_breaking_returns_energy` → **PASSED** (0.0000 s)
-- `tests/test_chemistry.py::test_no_bond_without_enough_energy` → **PASSED** (0.0000 s)
+- `tests/test_chemistry.py::test_bond_forms_between_adjacent_allowed_particles` → **PASSED** (0.0010 s)
+- `tests/test_chemistry.py::test_breaking_returns_energy` → **PASSED** (0.0010 s)
+- `tests/test_chemistry.py::test_no_bond_without_enough_energy` → **PASSED** (0.0010 s)

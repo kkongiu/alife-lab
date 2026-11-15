@@ -427,6 +427,54 @@ class Tracker:
         if len(self.examples[kind]) < SIGNATURE_EXAMPLE_LIMIT:
             self.examples[kind].append(payload)
 
+    # -- persistenza dello stato -----------------------------------------
+    def to_dict(self) -> dict:
+        """Stato completo del tracker, serializzabile in JSON."""
+        return {
+            "next_structure_id": self.next_structure_id,
+            "next_lineage_id": self.next_lineage_id,
+            "steps_tracked": self.steps_tracked,
+            "last_step": self.last_step,
+            "events": dict(self.events),
+            "completed_lifetimes": list(self.completed_lifetimes),
+            "max_lifetime": self.max_lifetime,
+            "seen_keys": sorted(self.seen_keys),
+            "exact_signatures": self.exact_signatures,
+            "fuzzy_signatures": self.fuzzy_signatures,
+            "ambiguous_steps": self.ambiguous_steps,
+            "ambiguous_structures": self.ambiguous_structures,
+            "examples": {kind: list(entries) for kind, entries in self.examples.items()},
+            "active": [
+                _structure_to_dict(tracked)
+                for tracked in sorted(self.active.values(), key=lambda item: item.structure_id)
+            ],
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict, out_dir: str | Path | None = None) -> "Tracker":
+        tracker = cls(out_dir=out_dir)
+        tracker.next_structure_id = int(data["next_structure_id"])
+        tracker.next_lineage_id = int(data["next_lineage_id"])
+        tracker.steps_tracked = int(data["steps_tracked"])
+        tracker.last_step = int(data["last_step"])
+        tracker.events = Counter(data.get("events", {}))
+        tracker.completed_lifetimes = [int(value) for value in data.get("completed_lifetimes", [])]
+        tracker.max_lifetime = int(data.get("max_lifetime", 0))
+        tracker.seen_keys = set(data.get("seen_keys", []))
+        tracker.exact_signatures = int(data.get("exact_signatures", 0))
+        tracker.fuzzy_signatures = int(data.get("fuzzy_signatures", 0))
+        tracker.ambiguous_steps = int(data.get("ambiguous_steps", 0))
+        tracker.ambiguous_structures = int(data.get("ambiguous_structures", 0))
+        tracker.examples = defaultdict(list)
+        for kind, entries in data.get("examples", {}).items():
+            tracker.examples[kind] = list(entries)
+        tracker.active = {
+            int(entry["structure_id"]): _structure_from_dict(entry)
+            for entry in data.get("active", [])
+        }
+        tracker.last_births = []
+        return tracker
+
     # -- riepilogo -------------------------------------------------------
     def summary(self) -> dict:
         lifetimes = list(self.completed_lifetimes)
@@ -477,3 +525,51 @@ def _bucket(lifetime: int) -> int:
         if lifetime <= bound:
             return bound
     return LIFETIME_BUCKETS[-1]
+
+
+def _signature_to_dict(sig: Signature) -> dict:
+    return {
+        "key": sig.key,
+        "size": sig.size,
+        "bonds": sig.bonds,
+        "composition": [[name, count] for name, count in sig.composition],
+        "exact": sig.exact,
+    }
+
+
+def _signature_from_dict(data: dict) -> Signature:
+    return Signature(
+        key=str(data["key"]),
+        size=int(data["size"]),
+        bonds=int(data["bonds"]),
+        composition=tuple((str(name), int(count)) for name, count in data["composition"]),
+        exact=bool(data["exact"]),
+    )
+
+
+def _structure_to_dict(tracked: TrackedStructure) -> dict:
+    return {
+        "structure_id": tracked.structure_id,
+        "lineage_id": tracked.lineage_id,
+        "born_step": tracked.born_step,
+        "last_step": tracked.last_step,
+        "size": tracked.size,
+        "max_size": tracked.max_size,
+        "signature": _signature_to_dict(tracked.signature),
+        "particles": sorted(tracked.particles),
+        "parents": list(tracked.parents),
+    }
+
+
+def _structure_from_dict(data: dict) -> TrackedStructure:
+    return TrackedStructure(
+        structure_id=int(data["structure_id"]),
+        lineage_id=int(data["lineage_id"]),
+        born_step=int(data["born_step"]),
+        last_step=int(data["last_step"]),
+        size=int(data["size"]),
+        max_size=int(data["max_size"]),
+        signature=_signature_from_dict(data["signature"]),
+        particles=frozenset(int(value) for value in data["particles"]),
+        parents=tuple(int(value) for value in data.get("parents", [])),
+    )

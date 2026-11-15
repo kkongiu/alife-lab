@@ -187,3 +187,32 @@ def test_run_with_tracking(tmp_path) -> None:
     assert len(records) == 21
     assert records[0]["step"] == 0
     assert records[-1]["step"] == 20
+
+
+# --- M6: ripristino dello stato di analisi --------------------------------
+
+
+def test_resume_restores_analysis_state(tmp_path) -> None:
+    first = tmp_path / "m6a"
+    result = _cli(
+        ["run", "--config", str(M3_QUICK), "--steps", "5", "--out", str(first), "--track"],
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+    assert (first / "analysis.json").is_file()
+
+    result = _cli(
+        ["resume", "--checkpoint", str(first / "checkpoint.json"), "--steps", "5", "--track"],
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+
+    summary = json.loads((first / "resume" / "summary.json").read_text())
+    manifest = json.loads((first / "resume" / "manifest.json").read_text())
+    assert manifest["analysis_restored"] is True
+    assert summary["structures"]["last_step"] == 10
+    assert summary["structures"]["steps_tracked"] == 11  # 0..5 + 6..10
+    assert "replication" in summary
+
+    # il secondo run produce il proprio analysis.json, ripristinabile a sua volta
+    assert (first / "resume" / "analysis.json").is_file()

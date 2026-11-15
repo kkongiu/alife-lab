@@ -53,6 +53,7 @@ from support import (  # noqa: E402  (helper condivisi con la suite)
     world_with,
 )
 from alife.structures import Tracker, components, signature  # noqa: E402
+from alife.analysis import Analysis  # noqa: E402
 from alife.controls import (  # noqa: E402
     FIXTURE_VERSION,
     TemplateCopier,
@@ -410,6 +411,37 @@ REQUIRED = [
         "tests": [
             "tests/test_controls.py::test_positive_control_is_reproducible",
             "tests/test_controls.py::test_fixture_version_is_declared",
+        ],
+    },
+    {
+        "id": "M6-01",
+        "title": "Preregistrazione integra: seed, config, hash",
+        "contract": "docx S6 — seed e griglie fissati prima dei run",
+        "slug": "preregistrazione",
+        "tests": [
+            "tests/test_campaign.py::test_manifest_is_preregistered",
+            "tests/test_campaign.py::test_manifest_configs_match_their_hashes",
+            "tests/test_campaign.py::test_manifest_records_the_decision_rule",
+        ],
+    },
+    {
+        "id": "M6-02",
+        "title": "Stato di tracker e rilevatore ripristinabile",
+        "contract": "M6 — salvare e ripristinare anche l'analisi",
+        "slug": "analisi_ripristinabile",
+        "tests": [
+            "tests/test_analysis.py::test_roundtrip_preserves_state",
+            "tests/test_analysis.py::test_resume_matches_continuous_run",
+            "tests/test_analysis.py::test_restore_requires_matching_step",
+        ],
+    },
+    {
+        "id": "M6-03",
+        "title": "Campagna completa, run nulli inclusi",
+        "contract": "docx S6 — registrare anche i risultati nulli",
+        "slug": "campagna_completa",
+        "tests": [
+            "tests/test_campaign.py::test_campaign_results_are_complete",
         ],
     },
 ]
@@ -1590,6 +1622,104 @@ def evidence_m5_04(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
     )
 
 
+def evidence_m6_01(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    manifest = json.loads((ROOT / "campaigns" / "m6" / "manifest.json").read_text())
+    runs = manifest["runs"]
+    configs_ok = all(
+        load_config(ROOT / "campaigns" / "m6" / run["config"]).hash() == run["config_hash"]
+        for run in runs
+    )
+    return (
+        "Manifest preregistrato: condizioni, seed, passi, configurazioni e hash "
+        "fissati prima dei run.",
+        [
+            ("versionato il", manifest["preregistered_utc"]),
+            ("condizioni", ", ".join(manifest["conditions"])),
+            ("seed", ", ".join(str(seed) for seed in manifest["seeds"])),
+            ("passi per run", str(manifest["steps"])),
+            ("run dichiarati", str(len(runs))),
+            ("hash di configurazione distinti", str(len({run["config_hash"] for run in runs}))),
+            ("criterio", manifest["decision_rule"]["candidate_condition"]),
+        ],
+        [
+            ("25 run dichiarati", len(runs) == 25),
+            ("5 condizioni × 5 seed", len({run["condition"] for run in runs}) == 5),
+            ("ogni configurazione corrisponde al suo hash", configs_ok),
+            ("gli hash sono distinti", len({run["config_hash"] for run in runs}) == 25),
+            ("la regola di decisione è registrata", "candidate_condition" in manifest["decision_rule"]),
+        ],
+    )
+
+
+def evidence_m6_02(tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = load_config(M3_QUICK)
+
+    continuous_world = World.create(config)
+    continuous = Analysis()
+    continuous.observe(continuous_world)
+    continuous_world.advance(40, observer=continuous.observe)
+
+    split_world = World.create(config)
+    split = Analysis()
+    split.observe(split_world)
+    split_world.advance(20, observer=split.observe)
+    path = split.save(tmp / "M6-02_analysis.json")
+    split.close()
+
+    resumed = Analysis.load(path)
+    resumed.check_step(split_world.step)
+    split_world.advance(20, observer=resumed.observe)
+
+    return (
+        "Salvataggio e ripristino di tracker e rilevatore: run continuo di 40 "
+        "passi contro run interrotto a 20 e ripreso.",
+        [
+            ("passo salvato", str(20)),
+            ("hash completo continuo", continuous_world.state_hash_full()[:32] + "…"),
+            ("hash completo ripreso", split_world.state_hash_full()[:32] + "…"),
+            ("strutture attive", str(len(resumed.tracker.active))),
+            ("riepiloghi strutture identici", str(resumed.tracker.summary() == continuous.tracker.summary())),
+            ("riepiloghi rilevatore identici", str(resumed.detector.summary() == continuous.detector.summary())),
+        ],
+        [
+            ("mondo identico", split_world.state_hash_full() == continuous_world.state_hash_full()),
+            ("tracker identico", resumed.tracker.summary() == continuous.tracker.summary()),
+            ("rilevatore identico", resumed.detector.summary() == continuous.detector.summary()),
+        ],
+    )
+
+
+def evidence_m6_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    results = json.loads((ROOT / "campaigns" / "m6" / "results.json").read_text())
+    runs = results["runs"]
+    null_runs = sum(1 for run in runs if run["replication"]["persistent"] == 0)
+    classified = sum(1 for run in runs if run["replication"]["classified"] == "replication")
+    table = "; ".join(
+        f"{name}: {block['classified_replication']}/{block['runs']} replication, "
+        f"{block['median_persistent_copies']} copie mediane"
+        for name, block in results["conditions"].items()
+    )
+    return (
+        "Risultati della campagna: tutti i run registrati, compresi quelli in cui "
+        "non è stata osservata alcuna copia.",
+        [
+            ("run registrati", str(len(runs))),
+            ("run con zero copie persistenti", str(null_runs)),
+            ("run classificati replication", str(classified)),
+            ("condizioni", table),
+            ("motore invariato dalla preregistrazione", str(results.get("engine_unchanged_since_preregistration"))),
+            ("verdetto", results["decision"]["verdict"]),
+        ],
+        [
+            ("25 run registrati", len(runs) == 25),
+            ("tutte le cinque condizioni presenti", len(results["conditions"]) == 5),
+            ("i run nulli sono inclusi", null_runs > 0),
+            ("nessun run mancante", all(run["steps"] == 3000 for run in runs)),
+            ("verdetto definito", results["decision"]["verdict"] in {"no_evidence", "candidate_for_s7", "revise_controls"}),
+        ],
+    )
+
+
 BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-01": evidence_01,
     "M1-02": evidence_02,
@@ -1624,6 +1754,9 @@ BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M5-02": evidence_m5_02,
     "M5-03": evidence_m5_03,
     "M5-04": evidence_m5_04,
+    "M6-01": evidence_m6_01,
+    "M6-02": evidence_m6_02,
+    "M6-03": evidence_m6_03,
 }
 
 

@@ -48,16 +48,49 @@ def verify_configs(manifest: dict) -> None:
             raise SystemExit(f"seed incoerente in {run['config']}")
 
 
-def engine_unchanged(commit: str | None) -> bool | None:
+SIMULATION_PATHS = (
+    "src/alife/config.py",
+    "src/alife/rng.py",
+    "src/alife/particles.py",
+    "src/alife/chemistry.py",
+    "src/alife/dynamics.py",
+    "src/alife/world.py",
+    "src/alife/persistence.py",
+)
+ANALYSIS_PATHS = (
+    "src/alife/structures.py",
+    "src/alife/replication.py",
+    "src/alife/analysis.py",
+    "src/alife/cli.py",
+)
+
+
+def _unchanged(commit: str | None, paths: tuple[str, ...]) -> bool | None:
     if not commit:
         return None
-    result = subprocess.run(
-        ["git", "-C", str(ROOT), "diff", "--quiet", commit, "--", "src/alife"],
+    diff = subprocess.run(
+        ["git", "-C", str(ROOT), "diff", "--quiet", commit, "--", *paths],
         capture_output=True,
         text=True,
         check=False,
     )
-    return result.returncode == 0
+    status = subprocess.run(
+        ["git", "-C", str(ROOT), "status", "--porcelain", "--", *paths],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return diff.returncode == 0 and not status.stdout.strip()
+
+
+def engine_unchanged(commit: str | None) -> bool | None:
+    """Il codice che determina la simulazione è identico alla preregistrazione?"""
+    return _unchanged(commit, SIMULATION_PATHS)
+
+
+def analysis_unchanged(commit: str | None) -> bool | None:
+    """Il livello di analisi è identico alla preregistrazione?"""
+    return _unchanged(commit, ANALYSIS_PATHS)
 
 
 def run_one(run: dict, steps: int) -> dict[str, Any]:
@@ -212,6 +245,9 @@ def main() -> int:
         "preregistration_commit": manifest.get("git_commit"),
         "run_commit": git_commit(ROOT),
         "engine_unchanged_since_preregistration": engine_unchanged(
+            manifest.get("git_commit")
+        ),
+        "analysis_unchanged_since_preregistration": analysis_unchanged(
             manifest.get("git_commit")
         ),
         "versions": runtime_versions(),

@@ -2,7 +2,7 @@
 
 - Requisito: docx S5 — il benchmark positivo è riconosciuto
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:25:11+00:00
+- Eseguito: 2026-11-15T11:55:43+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario
@@ -33,4 +33,4 @@ Controllo positivo: template A-B-B-A con nove siti di monomeri; a ogni passo il 
 
 ## Test pytest associati
 
-- `tests/test_controls.py::test_positive_control_is_detected` → **PASSED** (0.0310 s)
+- `tests/test_controls.py::test_positive_control_is_detected` → **PASSED** (0.0490 s)

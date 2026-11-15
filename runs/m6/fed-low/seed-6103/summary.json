@@ -1,0 +1,377 @@
+{
+  "steps": 3000,
+  "moves_total": 939927,
+  "moves_per_step": 313.309,
+  "particles": {
+    "S0": 500,
+    "S1": 400,
+    "S2": 300,
+    "S3": 200
+  },
+  "particles_total": 1400,
+  "occupancy": 0.085449,
+  "grid": {
+    "width": 128,
+    "height": 128,
+    "cells": 16384,
+    "boundary": "periodic"
+  },
+  "energy": {
+    "total": 19479,
+    "internal": 19479,
+    "initial": 16100,
+    "particles": 18622,
+    "bonds": 692,
+    "sources": 165,
+    "injected": 27000,
+    "dissipated": 10181,
+    "unabsorbed": 13440,
+    "in": 27000,
+    "out": 23621,
+    "delta": 3379,
+    "identity_delta": 0
+  },
+  "chemistry": {
+    "enabled": true,
+    "bond_cost": 2,
+    "bonds": 185,
+    "bond_energy": 692,
+    "bonded_particles": 328,
+    "free_particles": 1072,
+    "aggregates": 144,
+    "largest_aggregate": 4,
+    "mean_aggregate_size": 2.2778,
+    "size_distribution": {
+      "2": 110,
+      "3": 28,
+      "4": 6
+    },
+    "formed_total": 2681,
+    "broken_total": 2496
+  },
+  "duration_s": 32.065909,
+  "steps_per_second": 93.557,
+  "peak_memory_bytes": 47624192,
+  "baseline_memory_bytes": 41091072,
+  "simulation_memory_bytes": 6533120,
+  "state_hash": "5c0c329b2da74776c64791a49a2c03a36b039595dea22a7db7b93f2f60e0b85b",
+  "state_hash_full": "e479ef61e899bc0f51499a19b52686ef7bc79743432710b1a9baf86a309f9e97",
+  "seed": 6103,
+  "config_hash": "5291e4993b3fb346d1f22adfa8f3426bf6001a08fbc0f4d6541c94aca166368c",
+  "config_schema_version": 3,
+  "metrics_records": 31,
+  "invariants": "ok",
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "structures": {
+    "steps_tracked": 3001,
+    "last_step": 3000,
+    "active_structures": 144,
+    "lineages": 1474,
+    "events": {
+      "birth": 980,
+      "death": 908,
+      "growth": 1341,
+      "merge": 211,
+      "persist": 754213,
+      "shrink": 1157,
+      "split": 563,
+      "transform": 145
+    },
+    "lifetime": {
+      "completed": 1610,
+      "mean": 432.503,
+      "max": 2988,
+      "histogram": {
+        "1": 24,
+        "2": 12,
+        "5": 48,
+        "10": 111,
+        "20": 124,
+        "50": 169,
+        "100": 141,
+        "200": 184,
+        "500": 343,
+        "1000": 270,
+        "2000": 165,
+        "5000": 19
+      }
+    },
+    "signatures": {
+      "distinct": 109,
+      "exact_observations": 749677,
+      "fuzzy_observations": 8933,
+      "ambiguous_steps": 1301,
+      "ambiguous_structures": 6049
+    },
+    "size_distribution": {
+      "2": 110,
+      "3": 28,
+      "4": 6
+    },
+    "examples": {
+      "birth": [
+        {
+          "kind": "birth",
+          "step": 1,
+          "structure": 0,
+          "lineage": 0,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S1:(S2:))"
+        },
+        {
+          "kind": "birth",
+          "step": 2,
+          "structure": 1,
+          "lineage": 1,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S0:))"
+        },
+        {
+          "kind": "birth",
+          "step": 2,
+          "structure": 2,
+          "lineage": 2,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S1:))"
+        }
+      ],
+      "death": [
+        {
+          "kind": "death",
+          "step": 16,
+          "structure": 73,
+          "lineage": 73,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S1:(S2:))"
+        },
+        {
+          "kind": "death",
+          "step": 17,
+          "structure": 54,
+          "lineage": 54,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S1:(S2:))"
+        },
+        {
+          "kind": "death",
+          "step": 19,
+          "structure": 74,
+          "lineage": 74,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S1:))"
+        }
+      ],
+      "growth": [
+        {
+          "kind": "growth",
+          "step": 4,
+          "structure": 7,
+          "lineage": 7,
+          "parents": [],
+          "size": 3,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S1:)))"
+        },
+        {
+          "kind": "growth",
+          "step": 7,
+          "structure": 29,
+          "lineage": 29,
+          "parents": [],
+          "size": 3,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S0:)))"
+        },
+        {
+          "kind": "growth",
+          "step": 10,
+          "structure": 10,
+          "lineage": 10,
+          "parents": [],
+          "size": 3,
+          "exact": true,
+          "signature": "T:(S1:(S1:(S2:)))"
+        }
+      ],
+      "merge": [
+        {
+          "kind": "merge",
+          "step": 17,
+          "structure": 91,
+          "lineage": 91,
+          "parents": [
+            23,
+            34
+          ],
+          "size": 4,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S1:)),(S1:))"
+        },
+        {
+          "kind": "merge",
+          "step": 23,
+          "structure": 122,
+          "lineage": 122,
+          "parents": [
+            6,
+            43
+          ],
+          "size": 4,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S1:(S2:))))"
+        },
+        {
+          "kind": "merge",
+          "step": 26,
+          "structure": 130,
+          "lineage": 130,
+          "parents": [
+            29,
+            55
+          ],
+          "size": 6,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S0:(S1:(S0:(S0:))))))"
+        }
+      ],
+      "shrink": [
+        {
+          "kind": "shrink",
+          "step": 11,
+          "structure": 29,
+          "lineage": 29,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S0:))"
+        },
+        {
+          "kind": "shrink",
+          "step": 31,
+          "structure": 95,
+          "lineage": 95,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S0:))"
+        },
+        {
+          "kind": "shrink",
+          "step": 38,
+          "structure": 127,
+          "lineage": 127,
+          "parents": [],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S1:))"
+        }
+      ],
+      "split": [
+        {
+          "kind": "split",
+          "step": 43,
+          "structure": 183,
+          "lineage": 130,
+          "parents": [
+            130
+          ],
+          "size": 3,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S1:)))"
+        },
+        {
+          "kind": "split",
+          "step": 43,
+          "structure": 184,
+          "lineage": 183,
+          "parents": [
+            130
+          ],
+          "size": 3,
+          "exact": true,
+          "signature": "T:(S0:(S0:(S0:)))"
+        },
+        {
+          "kind": "split",
+          "step": 44,
+          "structure": 190,
+          "lineage": 41,
+          "parents": [
+            41
+          ],
+          "size": 2,
+          "exact": true,
+          "signature": "T:(S0:(S1:))"
+        }
+      ],
+      "transform": [
+        {
+          "kind": "transform",
+          "step": 42,
+          "structure": 99,
+          "lineage": 99,
+          "parents": [],
+          "size": 4,
+          "exact": false,
+          "signature": "F:29e741479208d9ab2e2c0c346587c098136b265b3182e748582bf7572eef2f77"
+        },
+        {
+          "kind": "transform",
+          "step": 70,
+          "structure": 186,
+          "lineage": 185,
+          "parents": [],
+          "size": 4,
+          "exact": false,
+          "signature": "F:29e741479208d9ab2e2c0c346587c098136b265b3182e748582bf7572eef2f77"
+        },
+        {
+          "kind": "transform",
+          "step": 82,
+          "structure": 69,
+          "lineage": 69,
+          "parents": [],
+          "size": 4,
+          "exact": false,
+          "signature": "F:29e741479208d9ab2e2c0c346587c098136b265b3182e748582bf7572eef2f77"
+        }
+      ]
+    }
+  },
+  "replication": {
+    "criteria": {
+      "radius": 2,
+      "persist_steps": 10,
+      "min_size": 4,
+      "min_copies": 5,
+      "min_generation": 2
+    },
+    "candidates": 0,
+    "persistent": 0,
+    "unresolved": 0,
+    "max_generation": 0,
+    "generations": {},
+    "max_generation_all": 0,
+    "generations_all": {},
+    "classified": "not_replication",
+    "examples": []
+  }
+}

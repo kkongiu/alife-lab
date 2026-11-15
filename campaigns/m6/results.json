@@ -1,0 +1,1051 @@
+{
+  "campaign": "m6",
+  "manifest_version": 1,
+  "preregistered_utc": "2026-11-15T11:38:33+00:00",
+  "preregistration_commit": "96bb8dc5968ee592d41a90593057147ddd191794",
+  "run_commit": "aac956236b5cac33971926c16426fe7a1dbfa23d",
+  "engine_unchanged_since_preregistration": true,
+  "analysis_unchanged_since_preregistration": false,
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "steps": 3000,
+  "runs": [
+    {
+      "id": "closed-6101",
+      "condition": "closed",
+      "seed": 6101,
+      "config_hash": "9bdfa469e6ee87fe58708932f7d8d4580d5bf12974c825973850a497cfab7537",
+      "steps": 3000,
+      "duration_s": 39.287533,
+      "steps_per_second": 76.36,
+      "energy": {
+        "internal": 16100,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 0,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 291,
+        "births": 999,
+        "deaths": 680,
+        "splits": 1411,
+        "merges": 736,
+        "transforms": 648,
+        "lifetime_mean": 271.223,
+        "lifetime_max": 3000,
+        "distinct_signatures": 205,
+        "ambiguous_steps": 2869,
+        "ambiguous_structures": 35205
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "feb49be372b6daea4215e109f811405d54627e2de09ecf4de8c51af7eab4816a"
+    },
+    {
+      "id": "closed-6102",
+      "condition": "closed",
+      "seed": 6102,
+      "config_hash": "d96c77cb2c7ac84c69a0ee705c9f68f5a434e44f57ebb0a99b8c5a7c3c05be72",
+      "steps": 3000,
+      "duration_s": 49.555781,
+      "steps_per_second": 60.538,
+      "energy": {
+        "internal": 16100,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 0,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 288,
+        "births": 975,
+        "deaths": 673,
+        "splits": 1440,
+        "merges": 736,
+        "transforms": 869,
+        "lifetime_mean": 277.453,
+        "lifetime_max": 3000,
+        "distinct_signatures": 193,
+        "ambiguous_steps": 2849,
+        "ambiguous_structures": 53301
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "4b44130f71a376f56204372f235ac7c9cbe4b8b2d5de535cfecf83cf462b5883"
+    },
+    {
+      "id": "closed-6103",
+      "condition": "closed",
+      "seed": 6103,
+      "config_hash": "210525a3f32ae16040a6f4996bb6b53778520f5de66b4c1c6a34fa6a1486de94",
+      "steps": 3000,
+      "duration_s": 41.228715,
+      "steps_per_second": 72.765,
+      "energy": {
+        "internal": 16100,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 0,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 273,
+        "births": 951,
+        "deaths": 655,
+        "splits": 1396,
+        "merges": 722,
+        "transforms": 774,
+        "lifetime_mean": 282.306,
+        "lifetime_max": 2999,
+        "distinct_signatures": 182,
+        "ambiguous_steps": 2931,
+        "ambiguous_structures": 43853
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "8e091752db75e8ad54f443639b7016c93f6e28b9ee0f673b4c9ae33df23180f9"
+    },
+    {
+      "id": "closed-6104",
+      "condition": "closed",
+      "seed": 6104,
+      "config_hash": "547ea06a26df654ffe2e1bb252a9a14596374180ed9b77e6a81ef191dd679f45",
+      "steps": 3000,
+      "duration_s": 43.843448,
+      "steps_per_second": 68.425,
+      "energy": {
+        "internal": 16100,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 0,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 284,
+        "births": 909,
+        "deaths": 602,
+        "splits": 1624,
+        "merges": 838,
+        "transforms": 833,
+        "lifetime_mean": 247.621,
+        "lifetime_max": 2991,
+        "distinct_signatures": 236,
+        "ambiguous_steps": 2802,
+        "ambiguous_structures": 47010
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "26868e25b70aeb4529d25d83956a8a70537bbeb05550d6c97d499b204cb1112e"
+    },
+    {
+      "id": "closed-6105",
+      "condition": "closed",
+      "seed": 6105,
+      "config_hash": "15190acd11cfa7d0231ca83f454d19e6c19b52a54bebda4a79cf78786bcc9884",
+      "steps": 3000,
+      "duration_s": 42.535612,
+      "steps_per_second": 70.529,
+      "energy": {
+        "internal": 16100,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 0,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 270,
+        "births": 885,
+        "deaths": 608,
+        "splits": 1669,
+        "merges": 846,
+        "transforms": 766,
+        "lifetime_mean": 243.996,
+        "lifetime_max": 2992,
+        "distinct_signatures": 260,
+        "ambiguous_steps": 2773,
+        "ambiguous_structures": 45588
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "d5c80b40c03ec67bdd27817886f3c6128febda2a7d396c7ff662a3a489d370db"
+    },
+    {
+      "id": "unfed-6101",
+      "condition": "unfed",
+      "seed": 6101,
+      "config_hash": "9d4a0dddcd861363d0813b5a011a9d1b1f31849ff2e05a4f278459c4b81f3882",
+      "steps": 3000,
+      "duration_s": 30.241261,
+      "steps_per_second": 99.202,
+      "energy": {
+        "internal": 6327,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 9773,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 132,
+        "births": 950,
+        "deaths": 881,
+        "splits": 520,
+        "merges": 197,
+        "transforms": 126,
+        "lifetime_mean": 442.453,
+        "lifetime_max": 2997,
+        "distinct_signatures": 107,
+        "ambiguous_steps": 1418,
+        "ambiguous_structures": 5073
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "34dc7c81454bc8a2b7ed84972d14f19f155f8fd942afe19514fa1f12b57cff97"
+    },
+    {
+      "id": "unfed-6102",
+      "condition": "unfed",
+      "seed": 6102,
+      "config_hash": "8571e7e56adae3a8b689110f7215d6d3c81c9c335b62297e5944e29272fd1c2e",
+      "steps": 3000,
+      "duration_s": 32.412395,
+      "steps_per_second": 92.557,
+      "energy": {
+        "internal": 6302,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 9798,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 129,
+        "births": 1024,
+        "deaths": 960,
+        "splits": 474,
+        "merges": 172,
+        "transforms": 105,
+        "lifetime_mean": 455.121,
+        "lifetime_max": 2998,
+        "distinct_signatures": 108,
+        "ambiguous_steps": 948,
+        "ambiguous_structures": 5175
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "b187344c6f645473ea5754a103d6b621d9caedab972d21aeab4d4156c034e5c8"
+    },
+    {
+      "id": "unfed-6103",
+      "condition": "unfed",
+      "seed": 6103,
+      "config_hash": "5098ef649709cd1bdb2426ccb4083e8e8e4dbb57bbd8da49fd84364d9dd8cc00",
+      "steps": 3000,
+      "duration_s": 33.124329,
+      "steps_per_second": 90.568,
+      "energy": {
+        "internal": 6347,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 9753,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 128,
+        "births": 980,
+        "deaths": 926,
+        "splits": 559,
+        "merges": 206,
+        "transforms": 100,
+        "lifetime_mean": 429.865,
+        "lifetime_max": 2996,
+        "distinct_signatures": 116,
+        "ambiguous_steps": 770,
+        "ambiguous_structures": 3125
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "992b7f335797ec3ce8b62c0b36644935093f1c2c14f1ccc403e1108c00184893"
+    },
+    {
+      "id": "unfed-6104",
+      "condition": "unfed",
+      "seed": 6104,
+      "config_hash": "7d313e9733644c8327b7d4c4507f57b1e01489bcd4763745751bb90a90f51a46",
+      "steps": 3000,
+      "duration_s": 29.321034,
+      "steps_per_second": 102.316,
+      "energy": {
+        "internal": 6259,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 9841,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 122,
+        "births": 937,
+        "deaths": 897,
+        "splits": 597,
+        "merges": 218,
+        "transforms": 114,
+        "lifetime_mean": 416.258,
+        "lifetime_max": 2999,
+        "distinct_signatures": 127,
+        "ambiguous_steps": 795,
+        "ambiguous_structures": 4590
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "6718d7e380047381c1482350711beeda2a59c54122def1c1df1301505c12fa6a"
+    },
+    {
+      "id": "unfed-6105",
+      "condition": "unfed",
+      "seed": 6105,
+      "config_hash": "b2291ea99f0f2fd79d670e528ff5283b8cd99bbf33abbe0d49e4100d2da24525",
+      "steps": 3000,
+      "duration_s": 30.429277,
+      "steps_per_second": 98.589,
+      "energy": {
+        "internal": 6315,
+        "initial": 16100,
+        "injected": 0,
+        "dissipated": 9785,
+        "unabsorbed": 0,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 132,
+        "births": 974,
+        "deaths": 927,
+        "splits": 565,
+        "merges": 198,
+        "transforms": 137,
+        "lifetime_mean": 426.859,
+        "lifetime_max": 2994,
+        "distinct_signatures": 97,
+        "ambiguous_steps": 1301,
+        "ambiguous_structures": 7084
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "47f3fc69c9ab7b49084ce946e0f169375f484475fc9ff2c044815c53a45d67f3"
+    },
+    {
+      "id": "fed-low-6101",
+      "condition": "fed-low",
+      "seed": 6101,
+      "config_hash": "d94e5a9abfff02e62d66af66e32a82d66b6835c6610bf6001927bf7cf38ad252",
+      "steps": 3000,
+      "duration_s": 28.643703,
+      "steps_per_second": 104.735,
+      "energy": {
+        "internal": 16836,
+        "initial": 16100,
+        "injected": 27000,
+        "dissipated": 9943,
+        "unabsorbed": 16321,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 159,
+        "births": 987,
+        "deaths": 913,
+        "splits": 607,
+        "merges": 219,
+        "transforms": 79,
+        "lifetime_mean": 412.236,
+        "lifetime_max": 3000,
+        "distinct_signatures": 127,
+        "ambiguous_steps": 715,
+        "ambiguous_structures": 2512
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "e30ee974a16066ec4a2a6fed4be5e595d8589f0b0b58af08083f1a51f5c9f3fb"
+    },
+    {
+      "id": "fed-low-6102",
+      "condition": "fed-low",
+      "seed": 6102,
+      "config_hash": "ad62d42ba2549413d92216625cabd8edd23fb0ceeb2b0a80a910cea67cfc4dd6",
+      "steps": 3000,
+      "duration_s": 33.468774,
+      "steps_per_second": 89.636,
+      "energy": {
+        "internal": 15431,
+        "initial": 16100,
+        "injected": 27000,
+        "dissipated": 10234,
+        "unabsorbed": 17435,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 145,
+        "births": 1044,
+        "deaths": 963,
+        "splits": 506,
+        "merges": 190,
+        "transforms": 141,
+        "lifetime_mean": 444.087,
+        "lifetime_max": 2963,
+        "distinct_signatures": 97,
+        "ambiguous_steps": 1354,
+        "ambiguous_structures": 9791
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "8b0732d6292cfdcfc785b2f53a8a714aea7c0536b355ca9714944e0c58f17507"
+    },
+    {
+      "id": "fed-low-6103",
+      "condition": "fed-low",
+      "seed": 6103,
+      "config_hash": "5291e4993b3fb346d1f22adfa8f3426bf6001a08fbc0f4d6541c94aca166368c",
+      "steps": 3000,
+      "duration_s": 32.065909,
+      "steps_per_second": 93.557,
+      "energy": {
+        "internal": 19479,
+        "initial": 16100,
+        "injected": 27000,
+        "dissipated": 10181,
+        "unabsorbed": 13440,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 144,
+        "births": 980,
+        "deaths": 908,
+        "splits": 563,
+        "merges": 211,
+        "transforms": 145,
+        "lifetime_mean": 432.503,
+        "lifetime_max": 2988,
+        "distinct_signatures": 109,
+        "ambiguous_steps": 1301,
+        "ambiguous_structures": 6049
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "e479ef61e899bc0f51499a19b52686ef7bc79743432710b1a9baf86a309f9e97"
+    },
+    {
+      "id": "fed-low-6104",
+      "condition": "fed-low",
+      "seed": 6104,
+      "config_hash": "328cc9b8d7034bb560f75df0035b7b56e6371787e34d0cbbde333d2803863800",
+      "steps": 3000,
+      "duration_s": 31.864056,
+      "steps_per_second": 94.15,
+      "energy": {
+        "internal": 17499,
+        "initial": 16100,
+        "injected": 27000,
+        "dissipated": 9924,
+        "unabsorbed": 15677,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 160,
+        "births": 958,
+        "deaths": 872,
+        "splits": 580,
+        "merges": 218,
+        "transforms": 107,
+        "lifetime_mean": 427.294,
+        "lifetime_max": 2977,
+        "distinct_signatures": 126,
+        "ambiguous_steps": 863,
+        "ambiguous_structures": 4726
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "3167eb6839c69f795f0bb3f13f0e1525f799940053966d01780194c04b06eacd"
+    },
+    {
+      "id": "fed-low-6105",
+      "condition": "fed-low",
+      "seed": 6105,
+      "config_hash": "57b21499bfb80a0c30632fc668e433bb49c2e914544ee318800f61fe6046380c",
+      "steps": 3000,
+      "duration_s": 31.615331,
+      "steps_per_second": 94.891,
+      "energy": {
+        "internal": 15948,
+        "initial": 16100,
+        "injected": 27000,
+        "dissipated": 10072,
+        "unabsorbed": 17080,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 156,
+        "births": 1001,
+        "deaths": 923,
+        "splits": 591,
+        "merges": 218,
+        "transforms": 126,
+        "lifetime_mean": 420.376,
+        "lifetime_max": 3000,
+        "distinct_signatures": 106,
+        "ambiguous_steps": 1476,
+        "ambiguous_structures": 6707
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "46a6af8a812141b1cdf7e2deefab1de8d39bdcbef4f7ca361883e7050ea5e0f7"
+    },
+    {
+      "id": "fed-mid-6101",
+      "condition": "fed-mid",
+      "seed": 6101,
+      "config_hash": "0da05785daf3611b8689bc02a6d12701fc0454bb5cabf7a2b6f7ebffba241118",
+      "steps": 3000,
+      "duration_s": 33.413756,
+      "steps_per_second": 89.783,
+      "energy": {
+        "internal": 21442,
+        "initial": 16100,
+        "injected": 54000,
+        "dissipated": 9978,
+        "unabsorbed": 38680,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 151,
+        "births": 973,
+        "deaths": 893,
+        "splits": 603,
+        "merges": 231,
+        "transforms": 79,
+        "lifetime_mean": 415.519,
+        "lifetime_max": 2981,
+        "distinct_signatures": 127,
+        "ambiguous_steps": 715,
+        "ambiguous_structures": 2512
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "07fe1ad238885b2243b038d86dc15ab0188ee79aa2e9296d4f32c8aecc52fd43"
+    },
+    {
+      "id": "fed-mid-6102",
+      "condition": "fed-mid",
+      "seed": 6102,
+      "config_hash": "cef4caf073401576b289f561225d808538edd9d536171309c85ad33e683d0932",
+      "steps": 3000,
+      "duration_s": 39.641639,
+      "steps_per_second": 75.678,
+      "energy": {
+        "internal": 17534,
+        "initial": 16100,
+        "injected": 54000,
+        "dissipated": 10182,
+        "unabsorbed": 42384,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 142,
+        "births": 1017,
+        "deaths": 936,
+        "splits": 506,
+        "merges": 193,
+        "transforms": 141,
+        "lifetime_mean": 449.205,
+        "lifetime_max": 2892,
+        "distinct_signatures": 97,
+        "ambiguous_steps": 1354,
+        "ambiguous_structures": 9791
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "7859bb481fbc24987a127f1f19637d1f907296f477e83f5286cc851d15a4c948"
+    },
+    {
+      "id": "fed-mid-6103",
+      "condition": "fed-mid",
+      "seed": 6103,
+      "config_hash": "78855401d13842d2b63760a9ee3a833888db61367274c72efede9287e6c61eea",
+      "steps": 3000,
+      "duration_s": 34.153558,
+      "steps_per_second": 87.839,
+      "energy": {
+        "internal": 27496,
+        "initial": 16100,
+        "injected": 54000,
+        "dissipated": 10176,
+        "unabsorbed": 32428,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 136,
+        "births": 972,
+        "deaths": 906,
+        "splits": 561,
+        "merges": 212,
+        "transforms": 144,
+        "lifetime_mean": 432.976,
+        "lifetime_max": 2996,
+        "distinct_signatures": 109,
+        "ambiguous_steps": 1301,
+        "ambiguous_structures": 6049
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "618dbe2fdd6925553407cc54382bc333537073f51f6b39e003198f8393a140bb"
+    },
+    {
+      "id": "fed-mid-6104",
+      "condition": "fed-mid",
+      "seed": 6104,
+      "config_hash": "d02f1f885ec851d2f59852475291a1ccc3bd81defe3a93627ddc8c178c1fdcac",
+      "steps": 3000,
+      "duration_s": 31.494366,
+      "steps_per_second": 95.255,
+      "energy": {
+        "internal": 23490,
+        "initial": 16100,
+        "injected": 54000,
+        "dissipated": 9950,
+        "unabsorbed": 36660,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 152,
+        "births": 964,
+        "deaths": 886,
+        "splits": 582,
+        "merges": 219,
+        "transforms": 101,
+        "lifetime_mean": 425.025,
+        "lifetime_max": 2994,
+        "distinct_signatures": 126,
+        "ambiguous_steps": 863,
+        "ambiguous_structures": 4726
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "f4e1f7b4c65926c702550d3aba5cfc679d2b90db5955eca29fccef307b69144d"
+    },
+    {
+      "id": "fed-mid-6105",
+      "condition": "fed-mid",
+      "seed": 6105,
+      "config_hash": "e086cad192bdd315ac3741da70cc085a2b97982ee55ea0de6a84f82be1becb06",
+      "steps": 3000,
+      "duration_s": 30.202617,
+      "steps_per_second": 99.329,
+      "energy": {
+        "internal": 19489,
+        "initial": 16100,
+        "injected": 54000,
+        "dissipated": 10021,
+        "unabsorbed": 40590,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 150,
+        "births": 1004,
+        "deaths": 925,
+        "splits": 563,
+        "merges": 211,
+        "transforms": 132,
+        "lifetime_mean": 425.263,
+        "lifetime_max": 2990,
+        "distinct_signatures": 107,
+        "ambiguous_steps": 1286,
+        "ambiguous_structures": 6327
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "1fffa7f69a1bcea04f9950f3930c3c198fe5ddf4d882307cb6da157481f64b20"
+    },
+    {
+      "id": "fed-high-6101",
+      "condition": "fed-high",
+      "seed": 6101,
+      "config_hash": "9bb46cba33d0be7e3f549f8ede185b63fc0d7fb568cccfc4b09d08a40d4a6553",
+      "steps": 3000,
+      "duration_s": 32.350391,
+      "steps_per_second": 92.735,
+      "energy": {
+        "internal": 30130,
+        "initial": 16100,
+        "injected": 108000,
+        "dissipated": 9978,
+        "unabsorbed": 83992,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 151,
+        "births": 973,
+        "deaths": 893,
+        "splits": 603,
+        "merges": 231,
+        "transforms": 79,
+        "lifetime_mean": 415.519,
+        "lifetime_max": 2981,
+        "distinct_signatures": 127,
+        "ambiguous_steps": 715,
+        "ambiguous_structures": 2512
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "f879b1b5906bebdaa249c5033f75126a2a6fd9221d283451335777ae3003f49e"
+    },
+    {
+      "id": "fed-high-6102",
+      "condition": "fed-high",
+      "seed": 6102,
+      "config_hash": "c3eff895d7406e31db4fd7e73ed846c83f631fe1385db1f2839095f6008209dd",
+      "steps": 3000,
+      "duration_s": 33.51291,
+      "steps_per_second": 89.518,
+      "energy": {
+        "internal": 28554,
+        "initial": 16100,
+        "injected": 108000,
+        "dissipated": 10318,
+        "unabsorbed": 85228,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 148,
+        "births": 1088,
+        "deaths": 998,
+        "splits": 506,
+        "merges": 195,
+        "transforms": 129,
+        "lifetime_mean": 426.606,
+        "lifetime_max": 3000,
+        "distinct_signatures": 95,
+        "ambiguous_steps": 1144,
+        "ambiguous_structures": 6976
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "c9ca7a3fe67f63e8cca36022d6af13730936d101582b4efd7aef7b7249f47e0b"
+    },
+    {
+      "id": "fed-high-6103",
+      "condition": "fed-high",
+      "seed": 6103,
+      "config_hash": "a5c68acd0774983272483da18fcdefcb07c252c4a20f8a549c01c8af2609a5d3",
+      "steps": 3000,
+      "duration_s": 40.877574,
+      "steps_per_second": 73.39,
+      "energy": {
+        "internal": 42028,
+        "initial": 16100,
+        "injected": 108000,
+        "dissipated": 10216,
+        "unabsorbed": 71856,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 149,
+        "births": 992,
+        "deaths": 912,
+        "splits": 561,
+        "merges": 213,
+        "transforms": 144,
+        "lifetime_mean": 428.21,
+        "lifetime_max": 2996,
+        "distinct_signatures": 109,
+        "ambiguous_steps": 1301,
+        "ambiguous_structures": 6049
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "4918b79078fd64019f221fca16fd8d9db4ab6114f6df2f78473409cc5f67e1bf"
+    },
+    {
+      "id": "fed-high-6104",
+      "condition": "fed-high",
+      "seed": 6104,
+      "config_hash": "911bd926a0654cc5f43f9285c1facdfb7958b5db1b2960daba69267babe8f9c6",
+      "steps": 3000,
+      "duration_s": 34.443756,
+      "steps_per_second": 87.099,
+      "energy": {
+        "internal": 33952,
+        "initial": 16100,
+        "injected": 108000,
+        "dissipated": 9950,
+        "unabsorbed": 80198,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 152,
+        "births": 964,
+        "deaths": 886,
+        "splits": 582,
+        "merges": 219,
+        "transforms": 101,
+        "lifetime_mean": 425.025,
+        "lifetime_max": 2994,
+        "distinct_signatures": 126,
+        "ambiguous_steps": 863,
+        "ambiguous_structures": 4726
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "9ef9db9b96f3198e17f4868aad61fecdae9ac5a70544b639176830e49c9938ba"
+    },
+    {
+      "id": "fed-high-6105",
+      "condition": "fed-high",
+      "seed": 6105,
+      "config_hash": "955119ba73929d5bf148a7ba1ca8967ffbbc0e2a9a1219967aedf18d5b4d3f24",
+      "steps": 3000,
+      "duration_s": 33.736404,
+      "steps_per_second": 88.925,
+      "energy": {
+        "internal": 24305,
+        "initial": 16100,
+        "injected": 108000,
+        "dissipated": 10021,
+        "unabsorbed": 89774,
+        "identity_delta": 0
+      },
+      "structures": {
+        "active": 150,
+        "births": 1004,
+        "deaths": 925,
+        "splits": 563,
+        "merges": 211,
+        "transforms": 132,
+        "lifetime_mean": 425.263,
+        "lifetime_max": 2990,
+        "distinct_signatures": 107,
+        "ambiguous_steps": 1286,
+        "ambiguous_structures": 6327
+      },
+      "replication": {
+        "candidates": 0,
+        "persistent": 0,
+        "unresolved": 0,
+        "max_generation": 0,
+        "max_generation_all": 0,
+        "classified": "not_replication"
+      },
+      "state_hash_full": "f9605a1a6b0a3e42b212f90cb4a8ff613bab891aa0c7461f8d2c4718942eb9e4"
+    }
+  ],
+  "conditions": {
+    "closed": {
+      "runs": 5,
+      "classified_replication": 0,
+      "median_persistent_copies": 0,
+      "max_generation": 0,
+      "median_structures": 284,
+      "median_lifetime_mean": 271.223,
+      "median_ambiguous_steps": 2849,
+      "candidate": false
+    },
+    "fed-high": {
+      "runs": 5,
+      "classified_replication": 0,
+      "median_persistent_copies": 0,
+      "max_generation": 0,
+      "median_structures": 150,
+      "median_lifetime_mean": 425.263,
+      "median_ambiguous_steps": 1144,
+      "candidate": false
+    },
+    "fed-low": {
+      "runs": 5,
+      "classified_replication": 0,
+      "median_persistent_copies": 0,
+      "max_generation": 0,
+      "median_structures": 156,
+      "median_lifetime_mean": 427.294,
+      "median_ambiguous_steps": 1301,
+      "candidate": false
+    },
+    "fed-mid": {
+      "runs": 5,
+      "classified_replication": 0,
+      "median_persistent_copies": 0,
+      "max_generation": 0,
+      "median_structures": 150,
+      "median_lifetime_mean": 425.263,
+      "median_ambiguous_steps": 1286,
+      "candidate": false
+    },
+    "unfed": {
+      "runs": 5,
+      "classified_replication": 0,
+      "median_persistent_copies": 0,
+      "max_generation": 0,
+      "median_structures": 129,
+      "median_lifetime_mean": 429.865,
+      "median_ambiguous_steps": 948,
+      "candidate": false
+    }
+  },
+  "decision": {
+    "controls_ok": true,
+    "candidate_conditions": [],
+    "verdict": "no_evidence"
+  }
+}

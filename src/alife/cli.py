@@ -14,12 +14,12 @@ from pathlib import Path
 from typing import Any, Sequence
 
 from . import __version__
+from .analysis import Analysis, AnalysisError
 from .config import Config, ConfigError, load_config
 from .events import EventLog
 from .metrics import MetricsRecorder, git_commit, runtime_versions
 from .particles import InvariantError
 from .persistence import CheckpointError, load_checkpoint, save_checkpoint
-from .structures import Tracker
 from .world import World
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -59,6 +59,8 @@ def _execute(
     extra_manifest: dict[str, Any] | None = None,
     events: bool = False,
     track: bool = False,
+    analysis: Analysis | None = None,
+    analysis_restored: bool = False,
 ) -> dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
     _write_json(out_dir / "config.resolved.json", world.config.to_dict())
@@ -67,28 +69,30 @@ def _execute(
     sink = EventLog(out_dir / "events.jsonl") if events else None
     if sink is not None:
         world.event_sink = sink
-    tracker = Tracker(out_dir) if track else None
+    if analysis is None and track:
+        analysis = Analysis(out_dir)
 
     def observer(current: World) -> None:
         recorder.observe(current)
-        if tracker is not None:
-            tracker.observe(current)
+        if analysis is not None:
+            analysis.observe(current)
 
     try:
         recorder = MetricsRecorder(out_dir, metrics_every)
         try:
             recorder.observe(world)
-            if tracker is not None:
-                tracker.observe(world)
+            if analysis is not None and not analysis_restored:
+                analysis.observe(world)
             world.advance(steps, observer=observer)
             summary = recorder.summary(world)
-            if tracker is not None:
-                summary["structures"] = tracker.summary()
+            if analysis is not None:
+                summary.update(analysis.summary())
+                analysis.save(out_dir / "analysis.json")
         finally:
             recorder.close()
     finally:
-        if tracker is not None:
-            tracker.close()
+        if analysis is not None:
+            analysis.close()
         if sink is not None:
             sink.close()
             world.event_sink = None
@@ -151,6 +155,20 @@ def _cmd_resume(args: argparse.Namespace) -> int:
     initial_step = world.step
     out_dir = Path(args.out) if args.out else checkpoint_path.parent / "resume"
     every = args.metrics_every or world.config.metrics.every
+
+    analysis = None
+    analysis_restored = False
+    if args.track:
+        analysis_path = (
+            Path(args.analysis)
+            if args.analysis
+            else checkpoint_path.parent / "analysis.json"
+        )
+        if analysis_path.exists():
+            analysis = Analysis.load(analysis_path, out_dir)
+            analysis.check_step(world.step)
+            analysis_restored = True
+
     summary = _execute(
         world,
         args.steps,
@@ -160,9 +178,12 @@ def _cmd_resume(args: argparse.Namespace) -> int:
         {
             "resumed_from": str(checkpoint_path.resolve()),
             "initial_step": initial_step,
+            "analysis_restored": analysis_restored,
         },
         events=args.events,
         track=args.track,
+        analysis=analysis,
+        analysis_restored=analysis_restored,
     )
     _report(summary, out_dir, f"resume (da passo {initial_step})")
     return 0
@@ -227,6 +248,11 @@ def build_parser() -> argparse.ArgumentParser:
     resume.add_argument("--metrics-every", type=int, default=None)
     resume.add_argument("--events", action="store_true", help="scrive events.jsonl")
     resume.add_argument("--track", action="store_true", help="traccia strutture ed eventi")
+    resume.add_argument(
+        "--analysis",
+        default=None,
+        help="analysis.json da ripristinare (default: accanto al checkpoint)",
+    )
     resume.set_defaults(handler=_cmd_resume)
 
     inspect = subparsers.add_parser("inspect", help="ispeziona un checkpoint senza evolvere")
@@ -245,7 +271,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("--metrics-every deve essere >= 1")
     try:
         return int(args.handler(args))
-    except (ConfigError, CheckpointError, InvariantError) as exc:
+    except (ConfigError, CheckpointError, AnalysisError, InvariantError) as exc:
         print(f"errore: {exc}", file=sys.stderr)
         return 2
     except OSError as exc:

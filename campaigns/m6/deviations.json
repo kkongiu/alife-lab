@@ -1,0 +1,34 @@
+{
+  "campaign": "m6",
+  "registered_commit": "96bb8dc5968ee592d41a90593057147ddd191794",
+  "run_commit": "aac956236b5cac33971926c16426fe7a1dbfa23d",
+  "simulation_unchanged_since_preregistration": true,
+  "analysis_changed_since_preregistration": true,
+  "changed_paths": [
+    "src/alife/cli.py",
+    "src/alife/structures.py",
+    "src/alife/replication.py",
+    "src/alife/analysis.py (nuovo)"
+  ],
+  "verification": {
+    "method": "worktree al commit preregistrato, stesse configurazioni, senza tracking",
+    "runs": [
+      {
+        "id": "closed-6101",
+        "world_hash": "feb49be372b6daea4215e109f811405d54627e2de09ecf4de8c51af7eab4816a",
+        "match": true
+      },
+      {
+        "id": "unfed-6101",
+        "world_hash": "34dc7c81454bc8a2b7ed84972d14f19f155f8fd942afe19514fa1f12b57cff97",
+        "match": true
+      },
+      {
+        "id": "fed-mid-6101",
+        "world_hash": "07fe1ad238885b2243b038d86dc15ab0188ee79aa2e9296d4f32c8aecc52fd43",
+        "match": true
+      }
+    ]
+  },
+  "conclusion": "Le modifiche riguardano la persistenza dello stato di analisi e la CLI. Nessun modulo della simulazione \u00e8 cambiato e i tre seed verificati riproducono esattamente gli hash del mondo registrati nella campagna."
+}

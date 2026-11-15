@@ -1,0 +1,23 @@
+{
+  "tool": "alife",
+  "tool_version": "0.1.0",
+  "command": "campaign",
+  "argv": [],
+  "cwd": "/home/kongiu/Documenti/Alife",
+  "python_executable": "/home/kongiu/Documenti/Alife/.venv/bin/python",
+  "created_utc": "2026-11-15T11:49:47+00:00",
+  "seed": 6104,
+  "config_hash": "d02f1f885ec851d2f59852475291a1ccc3bd81defe3a93627ddc8c178c1fdcac",
+  "config_schema_version": 3,
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "git_commit": "aac956236b5cac33971926c16426fe7a1dbfa23d",
+  "campaign": "m6",
+  "run": "fed-mid-6104",
+  "condition": "fed-mid"
+}

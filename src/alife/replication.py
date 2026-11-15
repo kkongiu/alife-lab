@@ -147,6 +147,69 @@ class ReplicationDetector:
             chain += 1
             current = parent
 
+
+    # -- persistenza dello stato -----------------------------------------
+    def to_dict(self) -> dict:
+        index_of = {id(candidate): position for position, candidate in enumerate(self.candidates)}
+        return {
+            "radius": self.radius,
+            "persist_steps": self.persist_steps,
+            "min_size": self.min_size,
+            "min_copies": self.min_copies,
+            "min_generation": self.min_generation,
+            "candidates": [
+                {
+                    "step": candidate.step,
+                    "signature": candidate.signature,
+                    "child": candidate.child,
+                    "parent": candidate.parent,
+                    "generation": candidate.generation,
+                    "distance": candidate.distance,
+                    "persistent": candidate.persistent,
+                }
+                for candidate in self.candidates
+            ],
+            "pending": [
+                [due, index_of[id(candidate)]] for due, candidate in self.pending
+            ],
+            "generation": {str(key): value for key, value in self.generation.items()},
+            "by_child": {
+                str(key): index_of[id(value)] for key, value in self.by_child.items()
+            },
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "ReplicationDetector":
+        detector = cls(
+            radius=int(data.get("radius", 2)),
+            persist_steps=int(data.get("persist_steps", 10)),
+            min_size=int(data.get("min_size", 4)),
+            min_copies=int(data.get("min_copies", 5)),
+            min_generation=int(data.get("min_generation", 2)),
+        )
+        detector.candidates = [
+            CopyCandidate(
+                step=int(entry["step"]),
+                signature=str(entry["signature"]),
+                child=int(entry["child"]),
+                parent=int(entry["parent"]),
+                generation=int(entry["generation"]),
+                distance=int(entry["distance"]),
+                persistent=entry.get("persistent"),
+            )
+            for entry in data.get("candidates", [])
+        ]
+        detector.pending = [
+            (int(due), detector.candidates[index])
+            for due, index in data.get("pending", [])
+        ]
+        detector.generation = {int(key): int(value) for key, value in data.get("generation", {}).items()}
+        detector.by_child = {
+            int(key): detector.candidates[index]
+            for key, index in data.get("by_child", {}).items()
+        }
+        return detector
+
     def summary(self) -> dict:
         persistent = [candidate for candidate in self.candidates if candidate.persistent]
         unresolved = [candidate for candidate in self.candidates if candidate.persistent is None]

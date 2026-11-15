@@ -3,9 +3,9 @@
 Universo computazionale minimo, deterministico e headless, nel quale osservare —
 senza imporle — eventuali proprietà emergenti.
 
-Stato: **M5 — controlli positivi e negativi** (in attesa di approvazione), dopo
-M1, M2, M3 e M4 approvati. Fixture isolate, un copiatore noto per calibrare il
-rilevatore, tre controlli negativi più due casi di stress.
+Stato: **M6 — campagna esplorativa multi-universo** (in attesa di approvazione),
+dopo M1–M5 approvati. Preregistrazione, cinque condizioni, stato di analisi
+ripristinabile e registrazione di tutti i run, compresi quelli nulli.
 
 **M3 non contiene vita, né la cerca.** Non ci sono organismi, genomi, replicatori,
 reti neurali, funzioni di fitness. Ci sono particelle che si spostano, legami
@@ -24,6 +24,8 @@ Documenti:
   tracciamento, persistenza, ambiguità.
 - [`reports/M5_controls.md`](reports/M5_controls.md) — controllo positivo,
   negativi, sensibilità e falsi positivi.
+- [`reports/M6_campaign.md`](reports/M6_campaign.md) — campagna preregistrata,
+  confronto fra condizioni, risultati anche nulli.
 - [`reports/tests/index.md`](reports/tests/index.md) — risultati dei test, con un
   file per ogni caso e un'evidenza misurata per ogni requisito.
 - [`docs/M3_flussi_energetici.md`](docs/M3_flussi_energetici.md) — specifica
@@ -74,6 +76,10 @@ python3 -m venv .venv
 
 # controlli M5: positivo noto, negativi e rilevatore preregistrato
 .venv/bin/python tools/run_controls.py
+
+# campagna M6: preregistrazione (una volta) e esecuzione dei run mancanti
+.venv/bin/python tools/preregister_m6.py
+.venv/bin/python tools/run_campaign.py
 ```
 
 Senza installazione: `PYTHONPATH=src .venv/bin/python -m alife …`.
@@ -90,6 +96,7 @@ Opzioni: `--seed` sovrascrive il seed (nuovo hash di configurazione),
 | `metrics.jsonl` | serie temporale: particelle, legami, aggregati, energia, ledger, hash |
 | `summary.json` | riepilogo finale: passi/s, memoria, distribuzione aggregati, identità energetica |
 | `checkpoint.json` | stato completo: particelle, energia, legami, sorgenti, ledger, RNG |
+| `analysis.json` | solo con `--track`: stato di tracker e rilevatore, ripristinabile |
 | `events.jsonl` | solo con `--events`: formazioni e rotture, con passo, ID, energia, catalisi |
 | `structures.jsonl` | solo con `--track`: un record per passo sulle strutture |
 | `lineage.jsonl` | solo con `--track`: un record per evento (nascita, crescita, scissione, fusione, morte) |
@@ -128,10 +135,12 @@ Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 .venv/bin/python -m pytest
 ```
 
-166 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
+176 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
 (identità energetica, dissipazione, sorgenti, costi, determinismo, migrazione),
 l'osservabilità M4 (firme, ambiguità, eventi, persistenza), i controlli M5
-(isolamento, positivo, negativi, riproducibilità), più CLI e metriche.
+(isolamento, positivo, negativi, riproducibilità), la campagna M6
+(preregistrazione, stato di analisi ripristinabile, copertura dei run), più CLI
+e metriche.
 
 ### Risultati per ogni test
 
@@ -184,13 +193,15 @@ alife/
 │   ├── world.py         # universo, flussi, ledger, invarianti, hash
 │   ├── structures.py    # componenti, firme canoniche, tracciamento
 │   ├── replication.py   # rilevatore di copie con criteri preregistrati
+│   ├── analysis.py      # tracker + rilevatore, stato ripristinabile
 │   ├── controls/        # fixture isolate: positivo, negativi, stress
 │   ├── persistence.py   # checkpoint v3 + migrazione v1/v2
 │   ├── events.py        # events.jsonl
 │   ├── metrics.py       # serie temporali, riepilogo, memoria
 │   └── cli.py           # run / resume / inspect
 ├── tests/
-├── tools/               # benchmark.py, test_report.py, run_controls.py
+├── tools/               # benchmark, test_report, run_controls, campagne
+├── campaigns/m6/        # preregistrazione, configurazioni, risultati
 └── runs/
 ```
 
@@ -202,8 +213,9 @@ iniettata trabocca senza essere raccolta. Non esistono ancora nascita o morte di
 particelle né ereditarietà. Il tracciamento usa l'identità delle particelle: le
 linee dopo scissione o fusione seguono una regola di attribuzione, non una
 discendenza biologica. Il controllo positivo di M5 è un copiatore programmato e
-isolato: calibra il rilevatore, non dimostra replicazione spontanea. I numeri di
-`reports/` sono misure, non promesse.
+isolato: calibra il rilevatore, non dimostra replicazione spontanea. La campagna
+M6 usa cinque seed per condizione: è un primo confronto, non uno studio con
+potenza statistica. I numeri di `reports/` sono misure, non promesse.
 
 ## Nota scientifica
 

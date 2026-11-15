@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 8
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:25:10+00:00
+- Eseguito: 2026-11-15T11:55:42+00:00
 - Test pytest associati: 12 (12 superati)
 
 ## Scenario
