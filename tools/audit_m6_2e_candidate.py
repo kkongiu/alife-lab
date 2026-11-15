@@ -54,7 +54,6 @@ def main() -> None:
     tracker = Tracker()
     detector = ProgressiveDetector(**manifest["criteria"])
     matches = []
-    followups = []
     observed_matches = set()
 
     def observe(current):
@@ -78,17 +77,17 @@ def main() -> None:
                     "child_at_match": _snapshot(current, child),
                     "continuous_form_checks": [],
                 })
-            for match in matches:
-                if match["matched_step"] <= current.step <= match["matched_step"] + detector.persist_steps:
-                    child = tracker.active.get(match["child_id"])
-                    match["continuous_form_checks"].append({
-                        "step": current.step,
-                        "alive": child is not None,
-                        "matches_target": child is not None
-                        and child.signature.exact
-                        and child.signature.key == match["target_signature"],
-                        "signature": child.signature.key if child is not None else None,
-                    })
+        for match in matches:
+            if match["matched_step"] <= current.step <= match["matched_step"] + detector.persist_steps:
+                child = tracker.active.get(match["child_id"])
+                match["continuous_form_checks"].append({
+                    "step": current.step,
+                    "alive": child is not None,
+                    "matches_target": child is not None
+                    and child.signature.exact
+                    and child.signature.key == match["target_signature"],
+                    "signature": child.signature.key if child is not None else None,
+                })
 
     observe(world)
     world.advance(3000, observer=observe)
@@ -119,7 +118,7 @@ def main() -> None:
     }
     output = M62 / "unfed_6101_audit.json"
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(report, indent=2))
+    print(json.dumps({\n        "run": RUN_ID,\n        "world_hash_matches_m6": report["world_hash_matches_m6"],\n        "summary": {key: detector.summary()[key] for key in ("candidates", "matched", "persistent", "classified")},\n        "matches": [{\n            "birth_step": m["birth_step"],\n            "matched_step": m["matched_step"],\n            "child_id": m["child_id"],\n            "template_id": m["template_id"],\n            "signature": m["target_signature"],\n            "persistent": m["persistent_with_corrected_detector"],\n            "continuous_checks": len(m["continuous_form_checks"]),\n            "shared_particle_ids_at_match": m.get("shared_particle_ids_at_match"),\n        } for m in matches],\n    }, indent=2))
     if not report["world_hash_matches_m6"]:
         raise SystemExit("ERROR: world diverged from preregistered M6")
 
