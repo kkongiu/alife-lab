@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 — catalisi basata su proprietà locali
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:04:41+00:00
+- Eseguito: 2026-11-15T07:15:22+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -30,4 +30,4 @@ Stessa configurazione e stesso seed; probabilità base 1e-9, fattore catalitico 
 ## Test pytest associati
 
 - `tests/test_chemistry.py::test_catalysis_multiplies_only_when_adjacent` → **PASSED** (0.0010 s)
-- `tests/test_chemistry.py::test_catalysis_config_changes_chemistry` → **PASSED** (0.2250 s)
+- `tests/test_chemistry.py::test_catalysis_config_changes_chemistry` → **PASSED** (0.2010 s)

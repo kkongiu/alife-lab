@@ -1,12 +1,11 @@
-# SPEC — Modello computazionale (milestone M0, M1, M2, M3)
+# SPEC — Modello computazionale (milestone M0, M1, M2, M3, M4)
 
-Versione: 3.0 (M3) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
+Versione: 4.0 (M4) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
 
 Questa specifica descrive un universo deterministico, misurabile e — da M3 —
-aperto: sorgenti, dissipazione e costi rendono il sistema lontano
-dall'equilibrio. Deve essere sufficiente a reimplementare il motore senza
-decisioni implicite. Ogni scelta non imposta dai documenti di progetto è marcata
-come **decisione** ed è motivata.
+aperto, con un livello di osservabilità separato dal motore (M4). Deve essere
+sufficiente a reimplementare il motore senza decisioni implicite. Ogni scelta non
+imposta dai documenti di progetto è marcata come **decisione** ed è motivata.
 
 ---
 
@@ -20,6 +19,8 @@ Il sistema realizzato copre:
   costo energetico esplicito, soglie, decadimento e catalisi locale.
 - **M3 — non-equilibrio**: sorgenti energetiche localizzate, dissipazione,
   costi di movimento e di reazione, con contabilità intera esatta.
+- **M4 — osservabilità**: firme canoniche delle strutture, tracciamento nel
+  tempo, eventi e metriche di persistenza, con ambiguità dichiarata.
 
 Non esistono: organismi, genomi, DNA, replicatori, reti neurali, funzioni di
 fitness, meccanismi di copia.
@@ -475,6 +476,8 @@ mondo migrato è subito salvabile come schema 3 e conserva il proprio hash.
 | `summary.json` | riepilogo finale |
 | `checkpoint.json` | stato completo riprendibile |
 | `events.jsonl` | **solo con `--events`**: ogni formazione e rottura, con passo, ID, energia, catalisi |
+| `structures.jsonl` | **solo con `--track`**: un record per passo sulle strutture |
+| `lineage.jsonl` | **solo con `--track`**: un record per evento di struttura |
 
 Serie temporale e riepilogo includono: passi, tempo, passi/s, spostamenti,
 particelle per specie, occupazione, energia interna/particelle/legami/serbatoi,
@@ -554,6 +557,19 @@ Test M3 aggiunti:
 | Roundtrip e ripresa con ledger | `test_v3_roundtrip_preserves_ledger`, `test_v3_resume_is_equivalent_with_flows` |
 | Migrazione schema 2 → 3 | `test_v2_checkpoint_is_migrated_to_v3` |
 
+Test M4 aggiunti:
+
+| Regola | Test |
+|---|---|
+| Firma invariante per rietichettatura | `test_chain_signature_is_invariant_under_relabeling` |
+| Composizione e forma distinte | `test_chain_signature_distinguishes_composition`, `test_tree_signature_distinguishes_shape` |
+| Cicli come impronte | `test_cycles_are_fingerprints_not_exact` |
+| Ambiguità dichiarata | `test_fuzzy_collision_is_reported_as_ambiguity`, `test_exact_signature_collision_is_not_ambiguity` |
+| Eventi di tracking | `test_birth_and_death`, `test_growth_and_shrink_keep_identity`, `test_split_creates_two_structures`, `test_merge_creates_one_structure`, `test_transform_same_size_new_topology` |
+| Persistenza | `test_lifetime_counts_steps_alive` |
+| Tracker non invasivo e deterministico | `test_tracking_does_not_change_the_world`, `test_tracker_is_deterministic` |
+| File di eventi e CLI | `test_tracker_writes_jsonl_files`, `test_run_with_tracking` |
+
 ---
 
 ## 15. Limiti dichiarati e decisioni aperte
@@ -602,7 +618,76 @@ isolato per M5.
 
 ---
 
-## 17. Glossario
+## 17. Osservabilità (M4)
+
+L'osservabilità è un **livello di analisi**, non una regola della simulazione:
+non consuma estrazioni casuali, non modifica lo stato e può essere spenta. Il
+motore resta utilizzabile senza.
+
+### 17.1 Strutture e firme
+
+Una struttura è una componente connessa di particelle unite da legami, di
+dimensione ≥ 2. Per ogni struttura si calcola una firma con due livelli:
+
+| Tipo | Quando | Garanzia |
+|---|---|---|
+| **esatta** (`T:…`) | alberi: `legami = particelle − 1` | codice canonico radicato su tutte le radici (AHU): uguale se e solo se le strutture sono isomorfe |
+| **impronta** (`F:…`) | grafi con cicli | raffinamento di Weisfeiler-Lehman: veloce e invariante, **non completo** |
+
+La firma include dimensione, composizione per specie (in ordine di nome), numero
+di legami e topologia. Non include identificativi, posizioni, orientamento né
+sequenze: non esiste alcuna nozione di genoma.
+
+**Ambiguità dichiarata.** Due strutture possono condividere la chiave. Se la
+chiave è esatta, sono isomorfe: stesso tipo, nessuna ambiguità. Se è un'impronta,
+l'uguaglianza non è una prova: la collisione viene contata come
+`ambiguous_structures` e riportata, non nascosta.
+
+### 17.2 Tracciamento
+
+Il tracciamento usa l'**identità delle particelle**, non la firma: una struttura
+continua se condivide particelle con una sola struttura precedente. La firma
+descrive e confronta; non stabilisce discendenze.
+
+| Evento | Condizione |
+|---|---|
+| `birth` | nessuna sovrapposizione con strutture precedenti |
+| `death` | nessuna struttura successiva la contiene |
+| `growth` / `shrink` | continuazione 1:1 con dimensione maggiore / minore |
+| `transform` | continuazione 1:1, stessa dimensione, firma diversa |
+| `split` | una struttura precedente ha più figli |
+| `merge` | una struttura successiva ha più genitori |
+| `persist` | continuazione 1:1 senza cambiamenti |
+
+Per una scissione il figlio più grande eredita la linea; gli altri ne aprono una
+nuova con il genitore registrato. Per una fusione nasce una nuova linea con tutti
+i genitori. Sono regole di attribuzione, non affermazioni biologiche.
+
+### 17.3 Persistenza e artefatti
+
+Con `--track` il run produce:
+
+| File | Contenuto |
+|---|---|
+| `structures.jsonl` | un record per passo: strutture, nascite, morti, scissioni, fusioni, crescite, riduzioni, firme distinte, collisioni, ambiguità, dimensione massima, impronta dell'insieme di firme |
+| `lineage.jsonl` | un record per evento: tipo, passo, struttura, linea, genitori, dimensione, firma |
+| `summary.json` → `structures` | eventi cumulati, linee, distribuzione delle vite, firme distinte, osservazioni esatte/impronte, ambiguità, distribuzione delle dimensioni, esempi |
+
+Il tracker non è serializzato nel checkpoint: è un livello di analisi. Una ripresa
+con `--track` ricomincia il tracciamento dal passo di ripresa; lo stato del mondo
+resta quello del checkpoint.
+
+### 17.4 Limiti
+
+- Le firme dei cicli non sono esatte: la collisione è dichiarata, non risolta.
+- Il tracciamento per identità è esatto, ma le linee dopo scissioni e fusioni
+  dipendono da una regola di attribuzione.
+- Nessuna similarità oltre la firma: non ci sono sequenze da confrontare.
+- L'osservazione ha un costo: componenti e firme a ogni passo.
+
+---
+
+## 18. Glossario
 
 - **Passo**: dissipazione, iniezione, rottura, movimento, risoluzione, formazione.
 - **Legame**: relazione locale reversibile con energia immagazzinata.

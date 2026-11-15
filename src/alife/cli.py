@@ -19,6 +19,7 @@ from .events import EventLog
 from .metrics import MetricsRecorder, git_commit, runtime_versions
 from .particles import InvariantError
 from .persistence import CheckpointError, load_checkpoint, save_checkpoint
+from .structures import Tracker
 from .world import World
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -57,6 +58,7 @@ def _execute(
     command_line: str,
     extra_manifest: dict[str, Any] | None = None,
     events: bool = False,
+    track: bool = False,
 ) -> dict[str, Any]:
     out_dir.mkdir(parents=True, exist_ok=True)
     _write_json(out_dir / "config.resolved.json", world.config.to_dict())
@@ -65,15 +67,28 @@ def _execute(
     sink = EventLog(out_dir / "events.jsonl") if events else None
     if sink is not None:
         world.event_sink = sink
+    tracker = Tracker(out_dir) if track else None
+
+    def observer(current: World) -> None:
+        recorder.observe(current)
+        if tracker is not None:
+            tracker.observe(current)
+
     try:
         recorder = MetricsRecorder(out_dir, metrics_every)
         try:
             recorder.observe(world)
-            world.advance(steps, observer=recorder.observe)
+            if tracker is not None:
+                tracker.observe(world)
+            world.advance(steps, observer=observer)
             summary = recorder.summary(world)
+            if tracker is not None:
+                summary["structures"] = tracker.summary()
         finally:
             recorder.close()
     finally:
+        if tracker is not None:
+            tracker.close()
         if sink is not None:
             sink.close()
             world.event_sink = None
@@ -124,6 +139,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         "run",
         {"config_source": str(Path(args.config).resolve())},
         events=args.events,
+        track=args.track,
     )
     _report(summary, out_dir, "run")
     return 0
@@ -146,6 +162,7 @@ def _cmd_resume(args: argparse.Namespace) -> int:
             "initial_step": initial_step,
         },
         events=args.events,
+        track=args.track,
     )
     _report(summary, out_dir, f"resume (da passo {initial_step})")
     return 0
@@ -196,6 +213,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="scrive events.jsonl con ogni formazione e rottura di legame",
     )
+    run.add_argument(
+        "--track",
+        action="store_true",
+        help="traccia strutture e eventi in structures.jsonl e lineage.jsonl",
+    )
     run.set_defaults(handler=_cmd_run)
 
     resume = subparsers.add_parser("resume", help="riprende da un checkpoint")
@@ -204,6 +226,7 @@ def build_parser() -> argparse.ArgumentParser:
     resume.add_argument("--out", default=None, help="directory di output (default: <ckpt>/resume)")
     resume.add_argument("--metrics-every", type=int, default=None)
     resume.add_argument("--events", action="store_true", help="scrive events.jsonl")
+    resume.add_argument("--track", action="store_true", help="traccia strutture ed eventi")
     resume.set_defaults(handler=_cmd_resume)
 
     inspect = subparsers.add_parser("inspect", help="ispeziona un checkpoint senza evolvere")

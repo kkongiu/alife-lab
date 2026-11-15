@@ -3,9 +3,9 @@
 Universo computazionale minimo, deterministico e headless, nel quale osservare —
 senza imporle — eventuali proprietà emergenti.
 
-Stato: **M3 approvato** (2026-11-15) — flussi energetici, dissipazione e costi,
-dopo M1 (motore fisico) e M2 (chimica e legami reversibili) approvati.
-**M4 non è stata iniziata.**
+Stato: **M4 — osservabilità** (in attesa di approvazione), dopo M1, M2 e M3
+approvati. Firme canoniche delle strutture, tracciamento nel tempo, eventi e
+metriche di persistenza, con ambiguità dichiarata.
 
 **M3 non contiene vita, né la cerca.** Non ci sono organismi, genomi, replicatori,
 reti neurali, funzioni di fitness. Ci sono particelle che si spostano, legami
@@ -20,6 +20,8 @@ Documenti:
 - [`reports/M2_chemistry.md`](reports/M2_chemistry.md) — legami, aggregati, catalisi.
 - [`reports/M3_energy.md`](reports/M3_energy.md) — flussi, dissipazione, costi,
   confronto chiuso / alimentato / senza alimentazione.
+- [`reports/M4_observability.md`](reports/M4_observability.md) — firme,
+  tracciamento, persistenza, ambiguità.
 - [`reports/tests/index.md`](reports/tests/index.md) — risultati dei test, con un
   file per ogni caso e un'evidenza misurata per ogni requisito.
 - [`docs/M3_flussi_energetici.md`](docs/M3_flussi_energetici.md) — specifica
@@ -58,6 +60,10 @@ python3 -m venv .venv
 .venv/bin/alife run --config configs/m2_quick.json \
     --steps 300 --out runs/m2_events --events
 
+# osservabilità: strutture, firme canoniche, eventi e persistenza
+.venv/bin/alife run --config configs/m3_baseline.json \
+    --steps 10000 --out runs/m4_tracked --track --events
+
 # ripresa esatta (stato, energia, legami, ledger, RNG)
 .venv/bin/alife resume --checkpoint runs/m3_baseline/checkpoint.json --steps 5000
 
@@ -80,6 +86,8 @@ Opzioni: `--seed` sovrascrive il seed (nuovo hash di configurazione),
 | `summary.json` | riepilogo finale: passi/s, memoria, distribuzione aggregati, identità energetica |
 | `checkpoint.json` | stato completo: particelle, energia, legami, sorgenti, ledger, RNG |
 | `events.jsonl` | solo con `--events`: formazioni e rotture, con passo, ID, energia, catalisi |
+| `structures.jsonl` | solo con `--track`: un record per passo sulle strutture |
+| `lineage.jsonl` | solo con `--track`: un record per evento (nascita, crescita, scissione, fusione, morte) |
 
 ## Modello in breve
 
@@ -99,6 +107,10 @@ Opzioni: `--seed` sovrascrive il seed (nuovo hash di configurazione),
 - Sistema aperto: l'energia **non** si conserva; si conserva l'identità
   `E = E₀ + injected − dissipated − unabsorbed`, verificata con interi esatti.
 - Tutte le decisioni casuali usano aritmetica intera sui bit grezzi di PCG64.
+- **Osservabilità separata** (`--track`): ogni componente connessa riceve una
+  firma canonica — esatta per gli alberi, impronta dichiarata per i cicli — e
+  viene tracciata per identità, con eventi di nascita, crescita, scissione,
+  fusione, morte e metriche di persistenza.
 
 Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 
@@ -108,9 +120,9 @@ Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 .venv/bin/python -m pytest
 ```
 
-139 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
+156 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
 (identità energetica, dissipazione, sorgenti, costi, determinismo, migrazione),
-più CLI e metriche.
+l'osservabilità M4 (firme, ambiguità, eventi, persistenza), più CLI e metriche.
 
 ### Risultati per ogni test
 
@@ -132,8 +144,8 @@ Genera `reports/tests/`:
 .venv/bin/python tools/benchmark.py --repeats 3
 ```
 
-Misura passi/s e memoria su M1, M2, M3 e più densità, verifica l'equivalenza fra
-run continuo e run ripreso (anche con legami e ledger) e scrive
+Misura passi/s e memoria su M1, M2, M3, M4 e più densità, verifica l'equivalenza
+fra run continuo e run ripreso (anche con legami e ledger) e scrive
 `reports/benchmark.json`.
 
 ## Struttura
@@ -161,6 +173,7 @@ alife/
 │   ├── chemistry.py     # formazione, rottura, catalisi, aggregati
 │   ├── dynamics.py      # proposta, conflitti, applicazione, passo
 │   ├── world.py         # universo, flussi, ledger, invarianti, hash
+│   ├── structures.py    # componenti, firme canoniche, tracciamento
 │   ├── persistence.py   # checkpoint v3 + migrazione v1/v2
 │   ├── events.py        # events.jsonl
 │   ├── metrics.py       # serie temporali, riepilogo, memoria
@@ -175,8 +188,9 @@ alife/
 Le particelle legate sono immobili: gli aggregati non hanno moto rigido e non
 possono raggiungere le sorgenti. Le sorgenti sono puntiformi: metà dell'energia
 iniettata trabocca senza essere raccolta. Non esistono ancora nascita o morte di
-particelle, rilevamento delle strutture, ereditarietà. I numeri di `reports/`
-sono misure, non promesse.
+particelle né ereditarietà. Il tracciamento usa l'identità delle particelle: le
+linee dopo scissione o fusione seguono una regola di attribuzione, non una
+discendenza biologica. I numeri di `reports/` sono misure, non promesse.
 
 ## Nota scientifica
 

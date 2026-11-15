@@ -12,7 +12,7 @@ import pytest
 from alife.config import load_config
 from alife.persistence import load_checkpoint
 from alife.world import World
-from support import M2_QUICK, QUICK, ROOT
+from support import M2_QUICK, M3_QUICK, QUICK, ROOT
 
 
 def _cli(args: list[str], cwd) -> subprocess.CompletedProcess:
@@ -163,3 +163,27 @@ def test_m2_resume_matches_continuous_run(tmp_path) -> None:
     reference.advance(30)
     assert resumed.state_hash_full() == reference.state_hash_full()
     assert resumed.store.bond_records() == reference.store.bond_records()
+
+
+# --- M4: tracciamento delle strutture --------------------------------------
+
+
+def test_run_with_tracking(tmp_path) -> None:
+    out = tmp_path / "m4"
+    result = _cli(
+        ["run", "--config", str(M3_QUICK), "--steps", "20", "--out", str(out), "--track"],
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+
+    for name in ("structures.jsonl", "lineage.jsonl"):
+        assert (out / name).is_file()
+    summary = json.loads((out / "summary.json").read_text())
+    assert "structures" in summary
+    assert summary["structures"]["last_step"] == 20
+    assert summary["structures"]["steps_tracked"] == 21
+
+    records = [json.loads(line) for line in (out / "structures.jsonl").read_text().splitlines()]
+    assert len(records) == 21
+    assert records[0]["step"] == 0
+    assert records[-1]["step"] == 20

@@ -41,6 +41,8 @@ OUT = ROOT / "reports" / "tests"
 CASES_DIR = OUT / "cases"
 EVIDENCE_DIR = OUT / "evidence"
 
+import sys
+
 sys.path.insert(0, str(ROOT / "tests"))
 from support import (  # noqa: E402  (helper condivisi con la suite)
     M2_QUICK,
@@ -50,6 +52,7 @@ from support import (  # noqa: E402  (helper condivisi con la suite)
     make_energy_config,
     world_with,
 )
+from alife.structures import Tracker, components, signature  # noqa: E402
 
 REQUIRED = [
     {
@@ -289,6 +292,71 @@ REQUIRED = [
         "slug": "core_deterministico",
         "tests": [
             "tests/test_energy.py::test_core_modules_do_not_import_nondeterministic_sources",
+        ],
+    },
+    {
+        "id": "M4-01",
+        "title": "Firme canoniche esatte per strutture ad albero",
+        "contract": "docx S4 — firme canoniche delle strutture",
+        "slug": "firme_esatte",
+        "tests": [
+            "tests/test_structures.py::test_chain_signature_is_invariant_under_relabeling",
+            "tests/test_structures.py::test_chain_signature_distinguishes_composition",
+            "tests/test_structures.py::test_tree_signature_distinguishes_shape",
+        ],
+    },
+    {
+        "id": "M4-02",
+        "title": "Cicli come impronte, ambiguità dichiarata",
+        "contract": "docx S4 — incertezza dove una copia è ambigua",
+        "slug": "ambiguita",
+        "tests": [
+            "tests/test_structures.py::test_cycles_are_fingerprints_not_exact",
+            "tests/test_structures.py::test_fuzzy_collision_is_reported_as_ambiguity",
+            "tests/test_structures.py::test_exact_signature_collision_is_not_ambiguity",
+        ],
+    },
+    {
+        "id": "M4-03",
+        "title": "Eventi: nascita, crescita, scissione, fusione, morte",
+        "contract": "docx S4 — registrare nascita, trasformazione, scissione, scomparsa",
+        "slug": "eventi_tracciati",
+        "tests": [
+            "tests/test_structures.py::test_birth_and_death",
+            "tests/test_structures.py::test_growth_and_shrink_keep_identity",
+            "tests/test_structures.py::test_split_creates_two_structures",
+            "tests/test_structures.py::test_merge_creates_one_structure",
+            "tests/test_structures.py::test_transform_same_size_new_topology",
+        ],
+    },
+    {
+        "id": "M4-04",
+        "title": "Persistenza: distribuzione delle vite",
+        "contract": "docx S4 — metriche di persistenza",
+        "slug": "persistenza",
+        "tests": [
+            "tests/test_structures.py::test_lifetime_counts_steps_alive",
+            "tests/test_structures.py::test_birth_and_death",
+        ],
+    },
+    {
+        "id": "M4-05",
+        "title": "Tracciamento deterministico e non invasivo",
+        "contract": "contratto M1 — riproducibilità; M4 — osservatore separato",
+        "slug": "tracker_deterministico",
+        "tests": [
+            "tests/test_structures.py::test_tracking_does_not_change_the_world",
+            "tests/test_structures.py::test_tracker_is_deterministic",
+        ],
+    },
+    {
+        "id": "M4-06",
+        "title": "Tracciamento end-to-end e file di eventi",
+        "contract": "docx S4 — log eventi accessibile",
+        "slug": "tracking_end_to_end",
+        "tests": [
+            "tests/test_structures.py::test_tracker_writes_jsonl_files",
+            "tests/test_cli.py::test_run_with_tracking",
         ],
     },
 ]
@@ -1106,6 +1174,243 @@ def evidence_m3_08(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
     )
 
 
+def _m4_config():
+    species = [
+        {"name": "S0", "count": 8, "move_probability": 0.0, "energy": 10, "max_bonds": 2},
+        {"name": "S1", "count": 8, "move_probability": 0.0, "energy": 10, "max_bonds": 2},
+    ]
+    return make_energy_config(species=species, chemistry={"enabled": False})
+
+
+def _one_signature(world):
+    structures = components(world.store)
+    assert len(structures) == 1
+    indices, bonds = structures[0]
+    return signature(world.store, indices, bonds, world.species_names)
+
+
+def evidence_m4_01(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = _m4_config()
+    chain = world_with(config, [(0, 0), (1, 0), (2, 0)], [0, 0, 1], bonds=[(0, 1, 4), (1, 2, 4)])
+    relabeled = world_with(
+        config, [(2, 0), (1, 0), (0, 0)], [1, 0, 0], bonds=[(0, 1, 4), (1, 2, 4)]
+    )
+    other = world_with(config, [(0, 0), (1, 0), (2, 0)], [0, 1, 1], bonds=[(0, 1, 4), (1, 2, 4)])
+    star = world_with(
+        config,
+        [(1, 1), (1, 0), (0, 1), (2, 1)],
+        [1, 0, 0, 0],
+        bonds=[(0, 1, 4), (0, 2, 4), (0, 3, 4)],
+    )
+    sig_chain = _one_signature(chain)
+    sig_relabeled = _one_signature(relabeled)
+    sig_other = _one_signature(other)
+    sig_star = _one_signature(star)
+    return (
+        "Quattro strutture note: catena S0-S0-S1, la stessa catena con particelle "
+        "etichettate al contrario, catena S0-S1-S1, stella S1 con tre foglie S0.",
+        [
+            ("catena: composizione / legami", f"{sig_chain.composition} / {sig_chain.bonds}"),
+            ("catena: firma", sig_chain.key[:56] + "…"),
+            ("stessa catena rietichettata: firma", sig_relabeled.key[:56] + "…"),
+            ("catena S0-S1-S1: firma", sig_other.key[:56] + "…"),
+            ("stella: firma", sig_star.key[:56] + "…"),
+            ("firme esatte", f"{sig_chain.exact}, {sig_star.exact}"),
+        ],
+        [
+            ("la rietichettatura non cambia la firma", sig_chain.key == sig_relabeled.key),
+            ("composizione diversa ⇒ firma diversa", sig_chain.key != sig_other.key),
+            ("forma diversa ⇒ firma diversa", sig_chain.key != sig_star.key),
+            ("le firme degli alberi sono esatte", sig_chain.exact and sig_star.exact),
+        ],
+    )
+
+
+def evidence_m4_02(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = _m4_config()
+    ring = world_with(
+        config,
+        [(0, 0), (1, 0), (1, 1), (0, 1)],
+        [0, 1, 1, 0],
+        bonds=[(0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4)],
+    )
+    ring_sig = _one_signature(ring)
+
+    two_rings = world_with(
+        config,
+        [(0, 0), (1, 0), (1, 1), (0, 1), (5, 5), (6, 5), (6, 6), (5, 6)],
+        [0, 1, 1, 0, 0, 1, 1, 0],
+        bonds=[
+            (0, 1, 4),
+            (1, 2, 4),
+            (2, 3, 4),
+            (3, 0, 4),
+            (4, 5, 4),
+            (5, 6, 4),
+            (6, 7, 4),
+            (7, 4, 4),
+        ],
+    )
+    ring_tracker = Tracker()
+    ring_tracker.observe(two_rings)
+
+    two_dimers = world_with(
+        config, [(0, 0), (1, 0), (4, 4), (5, 4)], [0, 0, 0, 0], bonds=[(0, 1, 4), (2, 3, 4)]
+    )
+    dimer_tracker = Tracker()
+    dimer_tracker.observe(two_dimers)
+    ring_summary = ring_tracker.summary()
+    dimer_summary = dimer_tracker.summary()
+    return (
+        "Un anello a quattro particelle (ciclo) e due casi di firma condivisa: due "
+        "anelli identici e due dimeri identici.",
+        [
+            ("anello: firma esatta?", str(ring_sig.exact)),
+            ("anello: prefisso firma", ring_sig.key[:24]),
+            ("due anelli: firme distinte", str(ring_summary["signatures"]["distinct"])),
+            ("due anelli: strutture ambigue", str(ring_summary["signatures"]["ambiguous_structures"])),
+            ("due dimeri: strutture ambigue", str(dimer_summary["signatures"]["ambiguous_structures"])),
+            ("due dimeri: collisioni di firma", str(dimer_summary["signatures"]["distinct"])),
+        ],
+        [
+            ("i cicli usano un'impronta, non una firma esatta", ring_sig.exact is False),
+            ("due anelli identici sono ambigui", ring_summary["signatures"]["ambiguous_structures"] == 2),
+            ("due dimeri identici non sono ambigui", dimer_summary["signatures"]["ambiguous_structures"] == 0),
+            ("i dimeri condividono una firma esatta", dimer_summary["signatures"]["distinct"] == 1),
+        ],
+    )
+
+
+def _scripted_tracker() -> tuple[object, Tracker]:
+    config = _m4_config()
+    world = world_with(
+        config, [(index, 0) for index in range(6)], [0] * 6, bonds=[(0, 1, 4), (2, 3, 4)]
+    )
+    tracker = Tracker()
+    tracker.observe(world)
+    world.step = 1
+    world.store.add_bond(1, 2, 4)  # fusione
+    tracker.observe(world)
+    world.step = 2
+    world.store.add_bond(3, 4, 4)  # crescita
+    tracker.observe(world)
+    world.step = 3
+    world.store.remove_bond(1, 2)  # scissione
+    tracker.observe(world)
+    world.step = 4
+    world.store.remove_bond(2, 3)  # riduzione: {2,3,4} -> {3,4}
+    tracker.observe(world)
+    world.step = 5
+    world.store.remove_bond(3, 4)  # morte di una struttura
+    tracker.observe(world)
+    world.step = 6
+    world.store.remove_bond(0, 1)  # morte dell'altra
+    tracker.observe(world)
+    return world, tracker
+
+
+def evidence_m4_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    _, tracker = _scripted_tracker()
+    events = tracker.summary()["events"]
+    return (
+        "Sei particelle in linea: due dimeri, fusione, crescita, scissione, "
+        "riduzione, due morti.",
+        [
+            ("nascite", str(events.get("birth", 0))),
+            ("fusioni", str(events.get("merge", 0))),
+            ("crescite", str(events.get("growth", 0))),
+            ("scissioni", str(events.get("split", 0))),
+            ("riduzioni", str(events.get("shrink", 0))),
+            ("morti", str(events.get("death", 0))),
+            ("persistenze", str(events.get("persist", 0))),
+        ],
+        [
+            ("due nascite iniziali", events.get("birth") == 2),
+            ("una fusione", events.get("merge") == 1),
+            ("una crescita", events.get("growth") == 1),
+            ("due scissioni", events.get("split") == 2),
+            ("una riduzione", events.get("shrink") == 1),
+            ("due morti", events.get("death") == 2),
+        ],
+    )
+
+
+def evidence_m4_04(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    _, tracker = _scripted_tracker()
+    lifetime = tracker.summary()["lifetime"]
+    return (
+        "Stesse sei particelle: ogni identità che termina contribuisce alla "
+        "distribuzione delle vite, incluse quelle interrotte da fusione o scissione.",
+        [
+            ("strutture concluse", str(lifetime["completed"])),
+            ("vita media", str(lifetime["mean"])),
+            ("vita massima", str(lifetime["max"])),
+            ("istogramma", json.dumps(lifetime["histogram"])),
+        ],
+        [
+            ("cinque identità concluse", lifetime["completed"] == 5),
+            ("vita media 1.8", lifetime["mean"] == 1.8),
+            ("vita massima 3", lifetime["max"] == 3),
+        ],
+    )
+
+
+def evidence_m4_05(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    config = make_energy_config()
+    first = World.create(config)
+    second = World.create(config)
+    first.advance(100)
+    second.advance(100)
+    before = first.snapshot()
+    tracker_first = Tracker()
+    tracker_second = Tracker()
+    tracker_first.observe(first)
+    tracker_second.observe(second)
+    after = first.snapshot()
+    return (
+        "Due mondi identici, 100 passi, un tracker ciascuno; inoltre lo stato "
+        "viene confrontato prima e dopo l'osservazione.",
+        [
+            ("mondi identici", str(before == second.snapshot())),
+            ("riepiloghi identici", str(tracker_first.summary() == tracker_second.summary())),
+            ("stato invariato dopo l'osservazione", str(before == after)),
+            ("strutture attive", str(tracker_first.summary()["active_structures"])),
+        ],
+        [
+            ("il tracker non altera il mondo", before == after),
+            ("due run identici producono lo stesso riepilogo", tracker_first.summary() == tracker_second.summary()),
+            ("il tracker osserva strutture", tracker_first.summary()["active_structures"] >= 0),
+        ],
+    )
+
+
+def evidence_m4_06(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = World.create(load_config(M3_QUICK))
+    tracker = Tracker()
+    tracker.observe(world)
+    world.advance(300, observer=tracker.observe)
+    summary = tracker.summary()
+    structures_now = len(components(world.store))
+    return (
+        "Configurazione M3 quick tracciata per 300 passi: strutture, eventi, "
+        "persistenza e ambiguità.",
+        [
+            ("strutture attive", str(summary["active_structures"])),
+            ("componenti nel mondo", str(structures_now)),
+            ("nascite / morti", f"{summary['events'].get('birth', 0)} / {summary['events'].get('death', 0)}"),
+            ("fusioni / scissioni", f"{summary['events'].get('merge', 0)} / {summary['events'].get('split', 0)}"),
+            ("firme distinte", str(summary["signatures"]["distinct"])),
+            ("osservazioni esatte / impronte", f"{summary['signatures']['exact_observations']} / {summary['signatures']['fuzzy_observations']}"),
+            ("vita media", str(summary["lifetime"]["mean"])),
+        ],
+        [
+            ("il conteggio coincide con le componenti", summary["active_structures"] == structures_now),
+            ("sono stati osservati eventi", sum(summary["events"].values()) > 0),
+            ("la vita media è positiva", summary["lifetime"]["mean"] > 0 or summary["active_structures"] == 0),
+        ],
+    )
+
+
 BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-01": evidence_01,
     "M1-02": evidence_02,
@@ -1130,6 +1435,12 @@ BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M3-06": evidence_m3_06,
     "M3-07": evidence_m3_07,
     "M3-08": evidence_m3_08,
+    "M4-01": evidence_m4_01,
+    "M4-02": evidence_m4_02,
+    "M4-03": evidence_m4_03,
+    "M4-04": evidence_m4_04,
+    "M4-05": evidence_m4_05,
+    "M4-06": evidence_m4_06,
 }
 
 

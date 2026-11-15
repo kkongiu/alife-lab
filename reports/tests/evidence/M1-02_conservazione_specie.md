@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 2
 - Esito: **PASS**
-- Eseguito: 2026-11-15T07:04:41+00:00
+- Eseguito: 2026-11-15T07:15:22+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario
@@ -27,4 +27,4 @@ Configurazione 16×16, specie A=12 B=8, seed 102, 150 passi.
 
 ## Test pytest associati
 
-- `tests/test_invariants.py::test_species_quantities_conserved` → **PASSED** (0.0090 s)
+- `tests/test_invariants.py::test_species_quantities_conserved` → **PASSED** (0.0060 s)

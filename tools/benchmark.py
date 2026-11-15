@@ -20,6 +20,7 @@ from typing import Any
 from alife.config import Config, load_config
 from alife.metrics import peak_memory_bytes, process_baseline_memory, runtime_versions
 from alife.persistence import load_checkpoint, save_checkpoint
+from alife.structures import Tracker
 from alife.world import World
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,12 +49,17 @@ def _density_config(density: float, seed: int = 424242) -> Config:
     ).validate()
 
 
-def _single_run(name: str, config: Config, steps: int) -> dict[str, Any]:
+def _single_run(name: str, config: Config, steps: int, track: bool = False) -> dict[str, Any]:
     world = World.create(config)
     world.advance(WARMUP)  # riscaldamento non conteggiato
+    tracker = Tracker() if track else None
     moves_before = world.moves_total
     started = time.perf_counter()
-    world.advance(steps)
+    if tracker is not None:
+        tracker.observe(world)
+        world.advance(steps, observer=tracker.observe)
+    else:
+        world.advance(steps)
     elapsed = time.perf_counter() - started
     moves = world.moves_total - moves_before
     return {
@@ -66,8 +72,10 @@ def _single_run(name: str, config: Config, steps: int) -> dict[str, Any]:
     }
 
 
-def measure(name: str, config: Config, steps: int, repeats: int) -> dict[str, Any]:
-    runs = [_single_run(name, config, steps) for _ in range(repeats)]
+def measure(
+    name: str, config: Config, steps: int, repeats: int, track: bool = False
+) -> dict[str, Any]:
+    runs = [_single_run(name, config, steps, track) for _ in range(repeats)]
     steps_per_second = [run["steps_per_second"] for run in runs]
     seconds = [run["seconds"] for run in runs]
     peak = max(run["peak_memory_bytes"] for run in runs)
@@ -79,6 +87,7 @@ def measure(name: str, config: Config, steps: int, repeats: int) -> dict[str, An
         "occupancy": round(runs[0]["particles"] / config.grid.cells, 4),
         "steps_per_run": steps,
         "repeats": repeats,
+        "tracking": track,
         "seconds_median": round(statistics.median(seconds), 4),
         "steps_per_second_median": round(statistics.median(steps_per_second), 2),
         "steps_per_second_min": round(min(steps_per_second), 2),
@@ -133,16 +142,20 @@ def main() -> int:
 
     # Passi diversi per caso: il costo per passo cresce con la densità.
     cases = [
-        ("quick (32x32)", load_config(ROOT / "configs" / "quick.json"), 1000),
-        ("baseline (128x128, 6 specie)", load_config(ROOT / "configs" / "baseline.json"), 500),
-        ("m2 chimica (128x128)", load_config(ROOT / "configs" / "m2_baseline.json"), 300),
-        ("m3 flussi (128x128)", load_config(ROOT / "configs" / "m3_baseline.json"), 300),
-        ("densita 2.5%", _density_config(0.025), 500),
-        ("densita 25%", _density_config(0.25), 200),
-        ("densita 50%", _density_config(0.50), 100),
+        ("quick (32x32)", load_config(ROOT / "configs" / "quick.json"), 1000, False),
+        ("baseline (128x128, 6 specie)", load_config(ROOT / "configs" / "baseline.json"), 500, False),
+        ("m2 chimica (128x128)", load_config(ROOT / "configs" / "m2_baseline.json"), 300, False),
+        ("m3 flussi (128x128)", load_config(ROOT / "configs" / "m3_baseline.json"), 300, False),
+        ("m4 tracking (128x128)", load_config(ROOT / "configs" / "m3_baseline.json"), 300, True),
+        ("densita 2.5%", _density_config(0.025), 500, False),
+        ("densita 25%", _density_config(0.25), 200, False),
+        ("densita 50%", _density_config(0.50), 100, False),
     ]
 
-    results = [measure(name, config, steps, args.repeats) for name, config, steps in cases]
+    results = [
+        measure(name, config, steps, args.repeats, track)
+        for name, config, steps, track in cases
+    ]
     equivalence_result = equivalence(ROOT / "configs" / "baseline.json", 2000)
     equivalence_m2 = equivalence(ROOT / "configs" / "m2_quick.json", 400, full=True)
     equivalence_m3 = equivalence(ROOT / "configs" / "m3_quick.json", 400, full=True)

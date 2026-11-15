@@ -8,7 +8,7 @@
     "machine": "x86_64",
     "processor": "n/d"
   },
-  "baseline_memory_bytes": 40906752,
+  "baseline_memory_bytes": 40927232,
   "cases": [
     {
       "case": "quick (32x32)",
@@ -17,13 +17,14 @@
       "occupancy": 0.0879,
       "steps_per_run": 1000,
       "repeats": 3,
-      "seconds_median": 0.231,
-      "steps_per_second_median": 4328.36,
-      "steps_per_second_min": 3624.79,
-      "steps_per_second_max": 4443.15,
-      "moves_per_second_median": 145597.29,
-      "peak_memory_bytes": 44552192,
-      "simulation_memory_bytes": 3645440
+      "tracking": false,
+      "seconds_median": 0.1888,
+      "steps_per_second_median": 5296.27,
+      "steps_per_second_min": 4680.65,
+      "steps_per_second_max": 5415.27,
+      "moves_per_second_median": 178155.9,
+      "peak_memory_bytes": 44720128,
+      "simulation_memory_bytes": 3792896
     },
     {
       "case": "baseline (128x128, 6 specie)",
@@ -32,13 +33,14 @@
       "occupancy": 0.1,
       "steps_per_run": 500,
       "repeats": 3,
-      "seconds_median": 2.6324,
-      "steps_per_second_median": 189.94,
-      "steps_per_second_min": 185.1,
-      "steps_per_second_max": 196.11,
-      "moves_per_second_median": 151337.43,
-      "peak_memory_bytes": 45944832,
-      "simulation_memory_bytes": 5038080
+      "tracking": false,
+      "seconds_median": 1.9931,
+      "steps_per_second_median": 250.86,
+      "steps_per_second_min": 248.99,
+      "steps_per_second_max": 253.0,
+      "moves_per_second_median": 199877.58,
+      "peak_memory_bytes": 46092288,
+      "simulation_memory_bytes": 5165056
     },
     {
       "case": "m2 chimica (128x128)",
@@ -47,13 +49,14 @@
       "occupancy": 0.0854,
       "steps_per_run": 300,
       "repeats": 3,
-      "seconds_median": 1.4074,
-      "steps_per_second_median": 213.16,
-      "steps_per_second_min": 212.08,
-      "steps_per_second_max": 223.54,
-      "moves_per_second_median": 67140.95,
-      "peak_memory_bytes": 45944832,
-      "simulation_memory_bytes": 5038080
+      "tracking": false,
+      "seconds_median": 1.044,
+      "steps_per_second_median": 287.37,
+      "steps_per_second_min": 281.45,
+      "steps_per_second_max": 288.72,
+      "moves_per_second_median": 90513.62,
+      "peak_memory_bytes": 46092288,
+      "simulation_memory_bytes": 5165056
     },
     {
       "case": "m3 flussi (128x128)",
@@ -62,13 +65,30 @@
       "occupancy": 0.0854,
       "steps_per_run": 300,
       "repeats": 3,
-      "seconds_median": 1.5927,
-      "steps_per_second_median": 188.36,
-      "steps_per_second_min": 187.48,
-      "steps_per_second_max": 203.52,
-      "moves_per_second_median": 59287.14,
-      "peak_memory_bytes": 45948928,
-      "simulation_memory_bytes": 5042176
+      "tracking": false,
+      "seconds_median": 1.1698,
+      "steps_per_second_median": 256.45,
+      "steps_per_second_min": 253.32,
+      "steps_per_second_max": 258.05,
+      "moves_per_second_median": 80719.35,
+      "peak_memory_bytes": 46092288,
+      "simulation_memory_bytes": 5165056
+    },
+    {
+      "case": "m4 tracking (128x128)",
+      "particles": 1400,
+      "cells": 16384,
+      "occupancy": 0.0854,
+      "steps_per_run": 300,
+      "repeats": 3,
+      "tracking": true,
+      "seconds_median": 3.1264,
+      "steps_per_second_median": 95.96,
+      "steps_per_second_min": 94.57,
+      "steps_per_second_max": 96.18,
+      "moves_per_second_median": 30202.79,
+      "peak_memory_bytes": 46665728,
+      "simulation_memory_bytes": 5738496
     },
     {
       "case": "densita 2.5%",
@@ -77,13 +97,14 @@
       "occupancy": 0.025,
       "steps_per_run": 500,
       "repeats": 3,
-      "seconds_median": 0.571,
-      "steps_per_second_median": 875.6,
-      "steps_per_second_min": 858.0,
-      "steps_per_second_max": 892.94,
-      "moves_per_second_median": 176623.83,
-      "peak_memory_bytes": 45948928,
-      "simulation_memory_bytes": 5042176
+      "tracking": false,
+      "seconds_median": 0.4518,
+      "steps_per_second_median": 1106.63,
+      "steps_per_second_min": 1104.4,
+      "steps_per_second_max": 1111.71,
+      "moves_per_second_median": 223227.57,
+      "peak_memory_bytes": 46665728,
+      "simulation_memory_bytes": 5738496
     },
     {
       "case": "densita 25%",
@@ -92,13 +113,14 @@
       "occupancy": 0.25,
       "steps_per_run": 200,
       "repeats": 3,
-      "seconds_median": 3.7497,
-      "steps_per_second_median": 53.34,
-      "steps_per_second_min": 53.17,
-      "steps_per_second_max": 57.46,
-      "moves_per_second_median": 88724.34,
-      "peak_memory_bytes": 46571520,
-      "simulation_memory_bytes": 5664768
+      "tracking": false,
+      "seconds_median": 2.9052,
+      "steps_per_second_median": 68.84,
+      "steps_per_second_min": 67.63,
+      "steps_per_second_max": 69.34,
+      "moves_per_second_median": 114514.3,
+      "peak_memory_bytes": 47091712,
+      "simulation_memory_bytes": 6164480
     },
     {
       "case": "densita 50%",
@@ -107,13 +129,14 @@
       "occupancy": 0.5,
       "steps_per_run": 100,
       "repeats": 3,
-      "seconds_median": 15.317,
-      "steps_per_second_median": 6.53,
-      "steps_per_second_min": 6.52,
-      "steps_per_second_max": 6.81,
-      "moves_per_second_median": 16315.1,
-      "peak_memory_bytes": 48529408,
-      "simulation_memory_bytes": 7622656
+      "tracking": false,
+      "seconds_median": 12.693,
+      "steps_per_second_median": 7.88,
+      "steps_per_second_min": 7.45,
+      "steps_per_second_max": 7.88,
+      "moves_per_second_median": 19687.84,
+      "peak_memory_bytes": 48828416,
+      "simulation_memory_bytes": 7901184
     }
   ],
   "equivalence": {
