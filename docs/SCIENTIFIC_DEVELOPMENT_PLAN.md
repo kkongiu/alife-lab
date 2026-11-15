@@ -105,6 +105,10 @@ del resto del mondo.
 - Conservare il risultato della [PR #3](https://github.com/kkongiu/alife-lab/pull/3)
   come **esplorativo post-hoc**, non usare i suoi 3/4 tentativi come
   campione indipendente o evidenza statistica.
+- L'intervento PR #3 avviene al passo **791**, mentre la struttura template
+  esisteva già dal passo **771**: spostarla al 791 **non esclude** eventuali
+  influenze causali esercitate **prima** dell'intervento. Progettare un confronto
+  anche rispetto a possibili effetti di precondizionamento locale antecedente.
 - **Prima di nuovi interventi:** versionare manifest di preregistrazione con
   ipotesi, tempi, lista completa degli interventi, *criteri di validità
   fissati prima degli esiti*, controlli e regola decisionale. Non scegliere
