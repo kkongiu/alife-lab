@@ -1,6 +1,6 @@
-# SPEC — Modello computazionale (milestone M0–M6)
+# SPEC — Modello computazionale (milestone M0–M6.2)
 
-Versione: 6.0 (M6) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
+Versione: 6.1 (M6.2-E) · Data: 2026-11-15 · Riferimenti: `alife.md`, `Progetto_Vita_Artificiale_Roadmap_Milestone.docx`
 
 Questa specifica descrive un universo deterministico, misurabile e — da M3 —
 aperto, con un livello di osservabilità separato dal motore (M4). Deve essere
@@ -852,7 +852,55 @@ quanto spesso il rilevatore la segnala.
 
 ---
 
-## 20. Glossario
+## 20. Rilevatore v2 (M6.2-E)
+
+Il rilevatore v1 richiede che una struttura **nasca completa** accanto a una
+simile. In M6 il 99% delle nascite è dimerico e le strutture crescono per
+accrezione: il v1 è cieco a un replicatore che si assembla gradualmente. Il v2
+corregge questo punto cieco senza modificare il v1, che resta la versione usata
+dalle campagne M5 e M6.
+
+### 20.1 Criterio
+
+Una **copia progressiva** richiede:
+
+1. una nascita (di qualsiasi dimensione) entro `radius` celle da un template con
+   firma esatta di dimensione ≥ `min_size`, nato in un passo precedente;
+2. il raggiungimento della **stessa firma del template** entro `window` passi,
+   mentre il template è ancora attivo;
+3. la persistenza della copia per `persist_steps` passi dopo il raggiungimento;
+4. per la classificazione: almeno `min_copies` copie persistenti e una catena di
+   generazioni costruita solo con copie persistenti.
+
+Parametri preregistrati per M6.2-E: `radius = 2`, `window = 150`,
+`persist_steps = 10`, `min_size = 4`, `min_copies = 5`, `min_generation = 2`.
+
+Il caso v1 (nascita già completa) è incluso: è una copia progressiva con
+finestra zero.
+
+### 20.2 Validazione
+
+Il v2 deve conservare il comportamento del v1 sui controlli M5: il positivo
+template-diretto resta `replication` (9 copie persistenti, 9 generazioni); i
+cinque negativi restano `not_replication`, anche quando producono candidate
+(scartate per mancato raggiungimento della firma, morte o scadenza della
+finestra).
+
+### 20.3 Ri-analisi di M6
+
+I 25 run M6 vengono rieseguiti con le stesse configurazioni e seed; l'hash
+completo del mondo deve coincidere con quello registrato in M6, così l'analisi
+riguarda gli stessi percorsi e non run nuovi. v1 e v2 sono applicati in
+parallelo. I criteri e gli hash attesi sono fissati in
+`campaigns/m6_2e/manifest.json` prima dell'esecuzione.
+
+Limite dichiarato: la prossimità a un template e il raggiungimento della firma
+sono condizioni necessarie, non una prova che il template abbia causato la
+copia. Il v2 riduce un punto cieco; non dimostra la replicazione.
+
+---
+
+## 21. Glossario
 
 - **Passo**: dissipazione, iniezione, rottura, movimento, risoluzione, formazione.
 - **Legame**: relazione locale reversibile con energia immagazzinata.

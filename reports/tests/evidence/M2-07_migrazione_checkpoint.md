@@ -2,7 +2,7 @@
 
 - Requisito: prerequisito M2 — identificativi persistenti
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:42+00:00
+- Eseguito: 2026-11-15T13:21:09+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -32,4 +32,4 @@ Checkpoint schema 1 (M1) costruito da un mondo M1 e ricaricato con il codice M2.
 ## Test pytest associati
 
 - `tests/test_checkpoint.py::test_v1_checkpoint_is_migrated` → **PASSED** (0.0020 s)
-- `tests/test_config.py::test_v1_hash_is_unchanged` → **PASSED** (0.0010 s)
+- `tests/test_config.py::test_v1_hash_is_unchanged` → **PASSED** (0.0000 s)

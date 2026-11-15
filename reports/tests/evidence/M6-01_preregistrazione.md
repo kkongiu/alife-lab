@@ -2,7 +2,7 @@
 
 - Requisito: docx S6 — seed e griglie fissati prima dei run
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:49+00:00
+- Eseguito: 2026-11-15T13:21:15+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -33,6 +33,6 @@ Manifest preregistrato: condizioni, seed, passi, configurazioni e hash fissati p
 
 ## Test pytest associati
 
-- `tests/test_campaign.py::test_manifest_is_preregistered` → **PASSED** (0.0010 s)
-- `tests/test_campaign.py::test_manifest_configs_match_their_hashes` → **PASSED** (0.0090 s)
+- `tests/test_campaign.py::test_manifest_is_preregistered` → **PASSED** (0.0000 s)
+- `tests/test_campaign.py::test_manifest_configs_match_their_hashes` → **PASSED** (0.0080 s)
 - `tests/test_campaign.py::test_manifest_records_the_decision_rule` → **PASSED** (0.0000 s)

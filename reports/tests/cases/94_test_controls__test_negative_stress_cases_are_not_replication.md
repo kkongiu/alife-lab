@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_controls.py::test_negative_stress_cases_are_not_replication`
 - Stato: **PASSED**
-- Durata: 2.0710 s
+- Durata: 1.8380 s
 - Modulo: `tests/test_controls.py`
 - Requisito: M5-02 — Controlli negativi non classificati (falsi positivi)
 - Comando: `.venv/bin/python -m pytest "tests/test_controls.py::test_negative_stress_cases_are_not_replication"`

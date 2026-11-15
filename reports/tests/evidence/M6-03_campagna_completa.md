@@ -2,7 +2,7 @@
 
 - Requisito: docx S6 — registrare anche i risultati nulli
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:49+00:00
+- Eseguito: 2026-11-15T13:21:15+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario

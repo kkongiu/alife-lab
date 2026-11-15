@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_energy.py::test_open_run_is_deterministic`
 - Stato: **PASSED**
-- Durata: 0.0660 s
+- Durata: 0.0860 s
 - Modulo: `tests/test_energy.py`
 - Requisito: M3-06 — Determinismo con flussi e budget RNG
 - Comando: `.venv/bin/python -m pytest "tests/test_energy.py::test_open_run_is_deterministic"`

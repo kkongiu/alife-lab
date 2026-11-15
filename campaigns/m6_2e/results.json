@@ -1,0 +1,701 @@
+{
+  "campaign": "m6.2-e",
+  "preregistered_utc": "2026-11-15T13:03:24+00:00",
+  "preregistration_commit": "44b66b57d32f1d53586b24dcd903fda583eb0e39",
+  "run_commit": "e6bd8c6a0626c2d597119d21e20ef3787f7042b2",
+  "detector_version": "v2",
+  "criteria": {
+    "radius": 2,
+    "window": 150,
+    "persist_steps": 10,
+    "min_size": 4,
+    "min_copies": 5,
+    "min_generation": 2
+  },
+  "source_campaign": "m6",
+  "runs": [
+    {
+      "id": "closed-6101",
+      "condition": "closed",
+      "seed": 6101,
+      "world_hash_match": true,
+      "world_hash": "feb49be372b6daea4215e109f811405d54627e2de09ecf4de8c51af7eab4816a",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 67,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 25,
+          "template_dead": 15,
+          "window_expired": 24
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "closed-6102",
+      "condition": "closed",
+      "seed": 6102,
+      "world_hash_match": true,
+      "world_hash": "4b44130f71a376f56204372f235ac7c9cbe4b8b2d5de535cfecf83cf462b5883",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 62,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 20,
+          "template_dead": 17,
+          "window_expired": 24
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "closed-6103",
+      "condition": "closed",
+      "seed": 6103,
+      "world_hash_match": true,
+      "world_hash": "8e091752db75e8ad54f443639b7016c93f6e28b9ee0f673b4c9ae33df23180f9",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 64,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 20,
+          "template_dead": 19,
+          "window_expired": 25
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "closed-6104",
+      "condition": "closed",
+      "seed": 6104,
+      "world_hash_match": true,
+      "world_hash": "26868e25b70aeb4529d25d83956a8a70537bbeb05550d6c97d499b204cb1112e",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 66,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 24,
+          "template_dead": 20,
+          "window_expired": 21
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "closed-6105",
+      "condition": "closed",
+      "seed": 6105,
+      "world_hash_match": true,
+      "world_hash": "d5c80b40c03ec67bdd27817886f3c6128febda2a7d396c7ff662a3a489d370db",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 66,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 19,
+          "template_dead": 24,
+          "window_expired": 22
+        },
+        "ambiguous_births": 1,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "unfed-6101",
+      "condition": "unfed",
+      "seed": 6101,
+      "world_hash_match": true,
+      "world_hash": "34dc7c81454bc8a2b7ed84972d14f19f155f8fd942afe19514fa1f12b57cff97",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 32,
+        "matched": 1,
+        "persistent": 1,
+        "max_generation": 1,
+        "discarded": {
+          "dead_before_match": 13,
+          "template_dead": 4,
+          "window_expired": 14
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "unfed-6102",
+      "condition": "unfed",
+      "seed": 6102,
+      "world_hash_match": true,
+      "world_hash": "b187344c6f645473ea5754a103d6b621d9caedab972d21aeab4d4156c034e5c8",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 35,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 10,
+          "template_dead": 9,
+          "window_expired": 16
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "unfed-6103",
+      "condition": "unfed",
+      "seed": 6103,
+      "world_hash_match": true,
+      "world_hash": "992b7f335797ec3ce8b62c0b36644935093f1c2c14f1ccc403e1108c00184893",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 42,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 13,
+          "template_dead": 9,
+          "window_expired": 20
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "unfed-6104",
+      "condition": "unfed",
+      "seed": 6104,
+      "world_hash_match": true,
+      "world_hash": "6718d7e380047381c1482350711beeda2a59c54122def1c1df1301505c12fa6a",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 30,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 13,
+          "template_dead": 5,
+          "window_expired": 12
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "unfed-6105",
+      "condition": "unfed",
+      "seed": 6105,
+      "world_hash_match": true,
+      "world_hash": "47f3fc69c9ab7b49084ce946e0f169375f484475fc9ff2c044815c53a45d67f3",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 39,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 9,
+          "template_dead": 7,
+          "window_expired": 23
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-low-6101",
+      "condition": "fed-low",
+      "seed": 6101,
+      "world_hash_match": true,
+      "world_hash": "e30ee974a16066ec4a2a6fed4be5e595d8589f0b0b58af08083f1a51f5c9f3fb",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 43,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 16,
+          "template_dead": 12,
+          "window_expired": 15
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-low-6102",
+      "condition": "fed-low",
+      "seed": 6102,
+      "world_hash_match": true,
+      "world_hash": "8b0732d6292cfdcfc785b2f53a8a714aea7c0536b355ca9714944e0c58f17507",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 35,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 5,
+          "template_dead": 17,
+          "window_expired": 13
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-low-6103",
+      "condition": "fed-low",
+      "seed": 6103,
+      "world_hash_match": true,
+      "world_hash": "e479ef61e899bc0f51499a19b52686ef7bc79743432710b1a9baf86a309f9e97",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 32,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 7,
+          "template_dead": 8,
+          "window_expired": 16
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-low-6104",
+      "condition": "fed-low",
+      "seed": 6104,
+      "world_hash_match": true,
+      "world_hash": "3167eb6839c69f795f0bb3f13f0e1525f799940053966d01780194c04b06eacd",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 36,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 10,
+          "template_dead": 8,
+          "window_expired": 17
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-low-6105",
+      "condition": "fed-low",
+      "seed": 6105,
+      "world_hash_match": true,
+      "world_hash": "46a6af8a812141b1cdf7e2deefab1de8d39bdcbef4f7ca361883e7050ea5e0f7",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 40,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 12,
+          "template_dead": 8,
+          "window_expired": 20
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-mid-6101",
+      "condition": "fed-mid",
+      "seed": 6101,
+      "world_hash_match": true,
+      "world_hash": "07fe1ad238885b2243b038d86dc15ab0188ee79aa2e9296d4f32c8aecc52fd43",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 40,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 15,
+          "template_dead": 11,
+          "window_expired": 13
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-mid-6102",
+      "condition": "fed-mid",
+      "seed": 6102,
+      "world_hash_match": true,
+      "world_hash": "7859bb481fbc24987a127f1f19637d1f907296f477e83f5286cc851d15a4c948",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 37,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 7,
+          "template_dead": 17,
+          "window_expired": 13
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-mid-6103",
+      "condition": "fed-mid",
+      "seed": 6103,
+      "world_hash_match": true,
+      "world_hash": "618dbe2fdd6925553407cc54382bc333537073f51f6b39e003198f8393a140bb",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 31,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 7,
+          "template_dead": 8,
+          "window_expired": 16
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-mid-6104",
+      "condition": "fed-mid",
+      "seed": 6104,
+      "world_hash_match": true,
+      "world_hash": "f4e1f7b4c65926c702550d3aba5cfc679d2b90db5955eca29fccef307b69144d",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 35,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 10,
+          "template_dead": 8,
+          "window_expired": 17
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-mid-6105",
+      "condition": "fed-mid",
+      "seed": 6105,
+      "world_hash_match": true,
+      "world_hash": "1fffa7f69a1bcea04f9950f3930c3c198fe5ddf4d882307cb6da157481f64b20",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 37,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 12,
+          "template_dead": 7,
+          "window_expired": 18
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-high-6101",
+      "condition": "fed-high",
+      "seed": 6101,
+      "world_hash_match": true,
+      "world_hash": "f879b1b5906bebdaa249c5033f75126a2a6fd9221d283451335777ae3003f49e",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 40,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 15,
+          "template_dead": 11,
+          "window_expired": 13
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-high-6102",
+      "condition": "fed-high",
+      "seed": 6102,
+      "world_hash_match": true,
+      "world_hash": "c9ca7a3fe67f63e8cca36022d6af13730936d101582b4efd7aef7b7249f47e0b",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 38,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 7,
+          "template_dead": 16,
+          "window_expired": 15
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-high-6103",
+      "condition": "fed-high",
+      "seed": 6103,
+      "world_hash_match": true,
+      "world_hash": "4918b79078fd64019f221fca16fd8d9db4ab6114f6df2f78473409cc5f67e1bf",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 32,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 7,
+          "template_dead": 9,
+          "window_expired": 16
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-high-6104",
+      "condition": "fed-high",
+      "seed": 6104,
+      "world_hash_match": true,
+      "world_hash": "9ef9db9b96f3198e17f4868aad61fecdae9ac5a70544b639176830e49c9938ba",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 35,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 10,
+          "template_dead": 8,
+          "window_expired": 17
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    },
+    {
+      "id": "fed-high-6105",
+      "condition": "fed-high",
+      "seed": 6105,
+      "world_hash_match": true,
+      "world_hash": "f9605a1a6b0a3e42b212f90cb4a8ff613bab891aa0c7461f8d2c4718942eb9e4",
+      "v1": {
+        "candidates": 0,
+        "persistent": 0,
+        "classified": "not_replication"
+      },
+      "v2": {
+        "candidates": 37,
+        "matched": 0,
+        "persistent": 0,
+        "max_generation": 0,
+        "discarded": {
+          "dead_before_match": 12,
+          "template_dead": 7,
+          "window_expired": 18
+        },
+        "ambiguous_births": 0,
+        "classified": "not_replication"
+      }
+    }
+  ],
+  "conditions": {
+    "closed": {
+      "runs": 5,
+      "v1_classified": 0,
+      "v2_classified": 0,
+      "median_candidates": 66,
+      "median_matched": 0,
+      "median_persistent": 0,
+      "max_generation": 0,
+      "candidate": false
+    },
+    "fed-high": {
+      "runs": 5,
+      "v1_classified": 0,
+      "v2_classified": 0,
+      "median_candidates": 37,
+      "median_matched": 0,
+      "median_persistent": 0,
+      "max_generation": 0,
+      "candidate": false
+    },
+    "fed-low": {
+      "runs": 5,
+      "v1_classified": 0,
+      "v2_classified": 0,
+      "median_candidates": 36,
+      "median_matched": 0,
+      "median_persistent": 0,
+      "max_generation": 0,
+      "candidate": false
+    },
+    "fed-mid": {
+      "runs": 5,
+      "v1_classified": 0,
+      "v2_classified": 0,
+      "median_candidates": 37,
+      "median_matched": 0,
+      "median_persistent": 0,
+      "max_generation": 0,
+      "candidate": false
+    },
+    "unfed": {
+      "runs": 5,
+      "v1_classified": 0,
+      "v2_classified": 0,
+      "median_candidates": 35,
+      "median_matched": 0,
+      "median_persistent": 0,
+      "max_generation": 1,
+      "candidate": false
+    }
+  },
+  "decision": {
+    "controls_ok": true,
+    "candidate_conditions": [],
+    "verdict": "no_evidence"
+  },
+  "all_world_hashes_match": true
+}

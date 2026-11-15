@@ -3,21 +3,23 @@ platform linux -- Python 3.14.9, pytest-9.2.0, pluggy-1.7.0
 rootdir: /home/kongiu/Documenti/Alife
 configfile: pyproject.toml
 testpaths: tests
-collected 176 items
+collected 186 items
 
 tests/test_analysis.py .....                                             [  2%]
-tests/test_campaign.py ....                                              [  5%]
-tests/test_checkpoint.py ........................                        [ 18%]
-tests/test_chemistry.py .............                                    [ 26%]
-tests/test_cli.py ...........                                            [ 32%]
-tests/test_config.py ...............................                     [ 50%]
-tests/test_controls.py ..........                                        [ 55%]
-tests/test_dynamics.py ............                                      [ 62%]
-tests/test_energy.py .....................                               [ 74%]
-tests/test_invariants.py ....................                            [ 85%]
-tests/test_metrics.py ...                                                [ 87%]
-tests/test_reproducibility.py ......                                     [ 90%]
+tests/test_campaign.py ....                                              [  4%]
+tests/test_checkpoint.py ........................                        [ 17%]
+tests/test_chemistry.py .............                                    [ 24%]
+tests/test_cli.py ...........                                            [ 30%]
+tests/test_config.py ...............................                     [ 47%]
+tests/test_controls.py ..........                                        [ 52%]
+tests/test_dynamics.py ............                                      [ 59%]
+tests/test_energy.py .....................                               [ 70%]
+tests/test_invariants.py ....................                            [ 81%]
+tests/test_m6_2e.py ...                                                  [ 82%]
+tests/test_metrics.py ...                                                [ 84%]
+tests/test_replication_v2.py .......                                     [ 88%]
+tests/test_reproducibility.py ......                                     [ 91%]
 tests/test_structures.py ................                                [100%]
 
 --- generated xml file: /home/kongiu/Documenti/Alife/reports/tests/junit.xml ---
-============================= 176 passed in 21.41s =============================
+============================= 186 passed in 22.09s =============================

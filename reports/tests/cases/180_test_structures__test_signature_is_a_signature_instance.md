@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_structures.py::test_signature_is_a_signature_instance`
 - Stato: **PASSED**
-- Durata: 0.0010 s
+- Durata: 0.0000 s
 - Modulo: `tests/test_structures.py`
 - Requisito: test aggiuntivo (non obbligatorio dal contratto)
 - Comando: `.venv/bin/python -m pytest "tests/test_structures.py::test_signature_is_a_signature_instance"`

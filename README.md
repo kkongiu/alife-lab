@@ -3,9 +3,9 @@
 Universo computazionale minimo, deterministico e headless, nel quale osservare —
 senza imporle — eventuali proprietà emergenti.
 
-Stato: **M6.1 — diagnosi della capacità evolutiva** (in attesa di approvazione),
-dopo M1–M6 approvati. Nessuna legge del motore è stata modificata: audit,
-sonde diagnostiche isolate e protocollo per le versioni future.
+Stato: **M6.2-E — rilevatore v2 per copie progressive** (in attesa di
+approvazione), dopo M1–M6 approvati. Nessuna nuova legge: analisi affiancata v1/v2
+sugli stessi 25 run M6, con criteri preregistrati.
 
 **M3 non contiene vita, né la cerca.** Non ci sono organismi, genomi, replicatori,
 reti neurali, funzioni di fitness. Ci sono particelle che si spostano, legami
@@ -28,6 +28,8 @@ Documenti:
   confronto fra condizioni, risultati anche nulli.
 - [`reports/M6_1_diagnosis.md`](reports/M6_1_diagnosis.md) — audit delle leggi,
   sonde diagnostiche, proposte di evoluzione, protocollo di validazione.
+- [`reports/M6_2E_detector.md`](reports/M6_2E_detector.md) — rilevatore v2 e
+  ri-analisi dei 25 run M6.
 - [`reports/tests/index.md`](reports/tests/index.md) — risultati dei test, con un
   file per ogni caso e un'evidenza misurata per ogni requisito.
 - [`docs/M3_flussi_energetici.md`](docs/M3_flussi_energetici.md) — specifica
@@ -137,12 +139,13 @@ Dettagli, invarianti e formati: [`SPEC.md`](SPEC.md).
 .venv/bin/python -m pytest
 ```
 
-176 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
+186 test: gli 8 obbligatori di M1, le regole della chimica M2, i flussi M3
 (identità energetica, dissipazione, sorgenti, costi, determinismo, migrazione),
 l'osservabilità M4 (firme, ambiguità, eventi, persistenza), i controlli M5
 (isolamento, positivo, negativi, riproducibilità), la campagna M6
-(preregistrazione, stato di analisi ripristinabile, copertura dei run), più CLI
-e metriche.
+(preregistrazione, stato di analisi ripristinabile, copertura dei run), il
+rilevatore v2 M6.2-E (copie progressive, validazione, ri-analisi), più CLI e
+metriche.
 
 ### Risultati per ogni test
 
@@ -194,7 +197,8 @@ alife/
 │   ├── dynamics.py      # proposta, conflitti, applicazione, passo
 │   ├── world.py         # universo, flussi, ledger, invarianti, hash
 │   ├── structures.py    # componenti, firme canoniche, tracciamento
-│   ├── replication.py   # rilevatore di copie con criteri preregistrati
+│   ├── replication.py   # rilevatore v1: nascite complete
+│   ├── replication_v2.py # rilevatore v2: copie progressive
 │   ├── analysis.py      # tracker + rilevatore, stato ripristinabile
 │   ├── controls/        # fixture isolate: positivo, negativi, stress
 │   ├── persistence.py   # checkpoint v3 + migrazione v1/v2
@@ -203,7 +207,7 @@ alife/
 │   └── cli.py           # run / resume / inspect
 ├── tests/
 ├── tools/               # benchmark, test_report, run_controls, campagne
-├── campaigns/m6/        # preregistrazione, configurazioni, risultati
+├── campaigns/           # preregistrazioni e risultati (m6, m6_2e, diagnostica)
 └── runs/
 ```
 

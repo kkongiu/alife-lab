@@ -2,7 +2,7 @@
 
 - Requisito: docx S2 — reazioni locali e generali
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:42+00:00
+- Eseguito: 2026-11-15T13:21:08+00:00
 - Test pytest associati: 6 (6 superati)
 
 ## Scenario
@@ -29,9 +29,9 @@ Configurazione M2 quick, 300 passi: verifica delle regole locali sui legami form
 
 ## Test pytest associati
 
-- `tests/test_chemistry.py::test_no_bond_for_non_allowed_species` → **PASSED** (0.0010 s)
-- `tests/test_chemistry.py::test_no_bond_when_species_cannot_bond` → **PASSED** (0.0010 s)
-- `tests/test_chemistry.py::test_max_bonds_is_respected` → **PASSED** (0.0010 s)
+- `tests/test_chemistry.py::test_no_bond_for_non_allowed_species` → **PASSED** (0.0000 s)
+- `tests/test_chemistry.py::test_no_bond_when_species_cannot_bond` → **PASSED** (0.0000 s)
+- `tests/test_chemistry.py::test_max_bonds_is_respected` → **PASSED** (0.0000 s)
 - `tests/test_chemistry.py::test_chains_grow_to_max_bonds` → **PASSED** (0.0000 s)
-- `tests/test_invariants.py::test_validate_detects_non_adjacent_bond` → **PASSED** (0.0010 s)
+- `tests/test_invariants.py::test_validate_detects_non_adjacent_bond` → **PASSED** (0.0020 s)
 - `tests/test_invariants.py::test_validate_detects_bond_beyond_max_bonds` → **PASSED** (0.0010 s)

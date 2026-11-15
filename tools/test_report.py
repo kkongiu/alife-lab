@@ -65,6 +65,7 @@ from alife.controls import (  # noqa: E402
     positive_world,
 )
 from alife.replication import ReplicationDetector  # noqa: E402
+from alife.replication_v2 import DETECTOR_VERSION, ProgressiveDetector  # noqa: E402
 
 REQUIRED = [
     {
@@ -442,6 +443,47 @@ REQUIRED = [
         "slug": "campagna_completa",
         "tests": [
             "tests/test_campaign.py::test_campaign_results_are_complete",
+        ],
+    },
+    {
+        "id": "M6.2-01",
+        "title": "Rilevatore v2: copie che si formano progressivamente",
+        "contract": "M6.2-E — correggere il punto cieco dell'accrezione",
+        "slug": "rilevatore_v2",
+        "tests": [
+            "tests/test_replication_v2.py::test_progressive_assembly_is_detected",
+            "tests/test_replication_v2.py::test_default_threshold_requires_two_generations",
+            "tests/test_replication_v2.py::test_detector_version_is_declared",
+        ],
+    },
+    {
+        "id": "M6.2-02",
+        "title": "v2 validato sui controlli M5",
+        "contract": "M5 — positivo riconosciuto, negativi rifiutati",
+        "slug": "v2_controlli",
+        "tests": [
+            "tests/test_replication_v2.py::test_positive_control_is_detected",
+            "tests/test_replication_v2.py::test_negative_controls_are_not_replication",
+            "tests/test_replication_v2.py::test_simultaneous_identical_structures_are_not_copies",
+        ],
+    },
+    {
+        "id": "M6.2-03",
+        "title": "Ri-analisi dei 25 run M6 con v1 e v2",
+        "contract": "M6.2-E — stessi percorsi, nessuna nuova legge",
+        "slug": "rianalisi_m6",
+        "tests": [
+            "tests/test_m6_2e.py::test_reanalysis_is_complete_and_matches_m6_worlds",
+        ],
+    },
+    {
+        "id": "M6.2-04",
+        "title": "Preregistrazione della ri-analisi v2",
+        "contract": "M6 — criteri e hash fissati prima dell'esecuzione",
+        "slug": "preregistrazione_v2",
+        "tests": [
+            "tests/test_m6_2e.py::test_manifest_freezes_v2_criteria",
+            "tests/test_m6_2e.py::test_manifest_references_identical_m6_runs",
         ],
     },
 ]
@@ -1720,6 +1762,169 @@ def evidence_m6_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
     )
 
 
+def _progressive_world():
+    config = make_energy_config(
+        width=16,
+        height=8,
+        species=[
+            {"name": "S0", "count": 8, "move_probability": 0.0, "energy": 10, "max_bonds": 2},
+            {"name": "S1", "count": 8, "move_probability": 0.0, "energy": 10, "max_bonds": 2},
+        ],
+        chemistry={"enabled": False},
+    )
+    positions = [(x, 0) for x in range(4)] + [(x, 2) for x in range(4)]
+    species = [0, 1, 1, 0, 0, 1, 1, 0]
+    return world_with(config, positions, species, bonds=[(0, 1, 0), (1, 2, 0), (2, 3, 0)])
+
+
+def evidence_m6_2e_01(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetector(min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    world.step = 3
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    for step in range(4, 14):
+        world.step = step
+        tracker.observe(world)
+        detector.observe(world, tracker)
+    summary = detector.summary()
+    return (
+        "Template A-B-B-A e un dimero che cresce per accrezione fino a raggiungere "
+        "la stessa firma: il caso che il v1 non può vedere.",
+        [
+            ("versione", DETECTOR_VERSION),
+            ("candidate", str(summary["candidates"])),
+            ("raggiunte", str(summary["matched"])),
+            ("persistenti", str(summary["persistent"])),
+            ("generazione massima", str(summary["max_generation"])),
+            ("scartate", json.dumps(summary["discarded"])),
+        ],
+        [
+            ("una copia progressiva rilevata", summary["candidates"] == 1),
+            ("firma raggiunta", summary["matched"] == 1),
+            ("persistenza verificata", summary["persistent"] == 1),
+            ("il v1 non poteva vederla (nascita dimerica)", summary["matched"] == 1),
+        ],
+    )
+
+
+def evidence_m6_2e_02(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    world = positive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetector()
+    copier = TemplateCopier.for_world(world)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    for _ in range(40):
+        copier.step(world)
+        world.advance(1)
+        tracker.observe(world)
+        detector.observe(world, tracker)
+    positive = detector.summary()
+
+    negatives = []
+    for name, builder, steps in (
+        ("N1 immobile", negative_immobile, 100),
+        ("N2 aggregazione", negative_random_aggregation, 300),
+        ("N3 reversibili", negative_reversible, 300),
+        ("stress specie unica", negative_single_species, 300),
+        ("stress formazione massima", negative_burst, 300),
+    ):
+        test_world = builder()
+        test_tracker = Tracker()
+        test_detector = ProgressiveDetector()
+        test_tracker.observe(test_world)
+        test_detector.observe(test_world, test_tracker)
+        for _ in range(steps):
+            test_world.advance(1)
+            test_tracker.observe(test_world)
+            test_detector.observe(test_world, test_tracker)
+        negatives.append((name, test_detector.summary()))
+
+    return (
+        "Validazione del v2 sui controlli M5: il positivo deve restare "
+        "riconosciuto, i cinque negativi devono restare rifiutati.",
+        [
+            ("positivo: persistenti / generazione", f"{positive['persistent']} / {positive['max_generation']}"),
+            ("positivo: classificazione", positive["classified"]),
+        ]
+        + [
+            (f"{name}: candidate / persistenti / esito", f"{summary['candidates']} / {summary['persistent']} / {summary['classified']}")
+            for name, summary in negatives
+        ],
+        [
+            ("positivo riconosciuto", positive["classified"] == "replication" and positive["persistent"] == 9),
+            ("negativi rifiutati", all(summary["classified"] == "not_replication" for _, summary in negatives)),
+            ("nessuna copia persistente nei negativi", all(summary["persistent"] == 0 for _, summary in negatives)),
+        ],
+    )
+
+
+def evidence_m6_2e_03(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    results = json.loads((ROOT / "campaigns" / "m6_2e" / "results.json").read_text())
+    runs = results["runs"]
+    v1_candidates = sum(run["v1"]["candidates"] for run in runs)
+    v2_candidates = sum(run["v2"]["candidates"] for run in runs)
+    v2_matched = sum(run["v2"]["matched"] for run in runs)
+    v2_persistent = sum(run["v2"]["persistent"] for run in runs)
+    return (
+        "Ri-analisi dei 25 run M6 con v1 e v2 affiancati, sugli stessi percorsi "
+        "(hash del mondo verificato).",
+        [
+            ("run", str(len(runs))),
+            ("hash del mondo identici a M6", str(results["all_world_hashes_match"])),
+            ("candidate v1 (totale)", str(v1_candidates)),
+            ("candidate v2 (totale)", str(v2_candidates)),
+            ("copie v2 che raggiungono la firma", str(v2_matched)),
+            ("copie v2 persistenti", str(v2_persistent)),
+            ("verdetto", results["decision"]["verdict"]),
+        ],
+        [
+            ("25 run ri-analizzati", len(runs) == 25),
+            ("stessi percorsi di M6", results["all_world_hashes_match"] is True),
+            ("v1 resta a zero candidate", v1_candidates == 0),
+            ("verdetto definito", results["decision"]["verdict"] in {"no_evidence", "candidate_for_s7", "revise_controls"}),
+        ],
+    )
+
+
+def evidence_m6_2e_04(_tmp: Path) -> tuple[str, list[Measure], list[Check]]:
+    manifest = json.loads((ROOT / "campaigns" / "m6_2e" / "manifest.json").read_text())
+    criteria = manifest["criteria"]
+    configs_ok = all(
+        load_config(ROOT / "campaigns" / "m6" / run["config"]).hash() == run["config_hash"]
+        for run in manifest["runs"]
+    )
+    return (
+        "Preregistrazione della ri-analisi: criteri, riferimenti a M6 e hash, "
+        "fissati prima dell'esecuzione.",
+        [
+            ("versione rilevatore", manifest["detector_version"]),
+            ("criteri", json.dumps(criteria)),
+            ("run", str(len(manifest["runs"]))),
+            ("sorgente", manifest["source_campaign"]),
+            ("configurazioni coerenti", str(configs_ok)),
+        ],
+        [
+            ("criteri v2 fissati", criteria == {"radius": 2, "window": 150, "persist_steps": 10, "min_size": 4, "min_copies": 5, "min_generation": 2}),
+            ("25 run", len(manifest["runs"]) == 25),
+            ("hash delle configurazioni coerenti", configs_ok),
+        ],
+    )
+
+
 BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M1-01": evidence_01,
     "M1-02": evidence_02,
@@ -1757,6 +1962,10 @@ BUILDERS: dict[str, Callable[..., tuple[str, list[Measure], list[Check]]]] = {
     "M6-01": evidence_m6_01,
     "M6-02": evidence_m6_02,
     "M6-03": evidence_m6_03,
+    "M6.2-01": evidence_m6_2e_01,
+    "M6.2-02": evidence_m6_2e_02,
+    "M6.2-03": evidence_m6_2e_03,
+    "M6.2-04": evidence_m6_2e_04,
 }
 
 

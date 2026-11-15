@@ -2,7 +2,7 @@
 
 - Requisito: docx S3 / contratto M1 (riproducibilità)
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:42+00:00
+- Eseguito: 2026-11-15T13:21:09+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -29,6 +29,6 @@ Due run indipendenti con sorgenti, dissipazione e costi, stesso seed, 60 passi.
 
 ## Test pytest associati
 
-- `tests/test_energy.py::test_open_run_is_deterministic` → **PASSED** (0.0660 s)
+- `tests/test_energy.py::test_open_run_is_deterministic` → **PASSED** (0.0860 s)
 - `tests/test_energy.py::test_rng_budget_with_flows_disabled` → **PASSED** (0.0010 s)
 - `tests/test_energy.py::test_priority_uses_identity` → **PASSED** (0.0000 s)

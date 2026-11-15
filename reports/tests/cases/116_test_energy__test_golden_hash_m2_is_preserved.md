@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_energy.py::test_golden_hash_m2_is_preserved`
 - Stato: **PASSED**
-- Durata: 0.0540 s
+- Durata: 0.0530 s
 - Modulo: `tests/test_energy.py`
 - Requisito: test aggiuntivo (non obbligatorio dal contratto)
 - Comando: `.venv/bin/python -m pytest "tests/test_energy.py::test_golden_hash_m2_is_preserved"`

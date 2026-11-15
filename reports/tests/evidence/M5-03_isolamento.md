@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §2 — controlli completamente isolati
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:49+00:00
+- Eseguito: 2026-11-15T13:21:15+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario
@@ -13,7 +13,7 @@ Isolamento: i moduli del motore non devono importare né citare il pacchetto dei
 
 | Voce | Valore |
 |---|---|
-| moduli del motore | __main__.py, analysis.py, chemistry.py, cli.py, config.py, dynamics.py, events.py, metrics.py, particles.py, persistence.py, replication.py, rng.py, structures.py, world.py |
+| moduli del motore | __main__.py, analysis.py, chemistry.py, cli.py, config.py, dynamics.py, events.py, metrics.py, particles.py, persistence.py, replication.py, replication_v2.py, rng.py, structures.py, world.py |
 | moduli con riferimenti ai controlli | nessuno |
 | fixture | m5-fixtures-1 |
 

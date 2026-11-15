@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_energy.py::test_open_run_keeps_identity`
 - Stato: **PASSED**
-- Durata: 0.0410 s
+- Durata: 0.0490 s
 - Modulo: `tests/test_energy.py`
 - Requisito: M3-01 — Identità energetica in sistema aperto
 - Comando: `.venv/bin/python -m pytest "tests/test_energy.py::test_open_run_keeps_identity"`

@@ -2,7 +2,7 @@
 
 - Requisito: M6 — salvare e ripristinare anche l'analisi
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:55:49+00:00
+- Eseguito: 2026-11-15T13:21:15+00:00
 - Test pytest associati: 3 (3 superati)
 
 ## Scenario
@@ -30,6 +30,6 @@ Salvataggio e ripristino di tracker e rilevatore: run continuo di 40 passi contr
 
 ## Test pytest associati
 
-- `tests/test_analysis.py::test_roundtrip_preserves_state` → **PASSED** (0.0540 s)
-- `tests/test_analysis.py::test_resume_matches_continuous_run` → **PASSED** (0.1160 s)
-- `tests/test_analysis.py::test_restore_requires_matching_step` → **PASSED** (0.0120 s)
+- `tests/test_analysis.py::test_roundtrip_preserves_state` → **PASSED** (0.0430 s)
+- `tests/test_analysis.py::test_resume_matches_continuous_run` → **PASSED** (0.0920 s)
+- `tests/test_analysis.py::test_restore_requires_matching_step` → **PASSED** (0.0090 s)
