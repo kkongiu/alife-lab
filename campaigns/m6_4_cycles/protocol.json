@@ -1,0 +1,89 @@
+{
+  "schema": "alife-m6-4-spontaneous-cycles-exact-observer-v1",
+  "status": "frozen-before-analytical-code-and-new-results",
+  "date": "2026-11-15",
+  "scientific_issue": "In max-valence-2 square-lattice chemistry, naturally occurring simple rings could be topologically closed and kinetically persistent; current WL cyclic fingerprint (exact=false) can alias nonisomorphic species-labeled rings. Quantify emergence, lifetime, and natural aliasing without changing ALife dynamics.",
+  "prediction": {
+    "deterministic_counterexample": "Two synthetic 4-member rings, with same 2 S0 + 2 S1 but sequences S0,S0,S1,S1 versus S0,S1,S0,S1, yield same original F: fingerprint but distinct exact cyclic canonical code.",
+    "geometry": "With even 24x24 toroidal 4-neighbor grid, all cycles are even; any observed odd cycle signals a bug.",
+    "valence": "A simple ring has all member degrees two; since all ring-forming species have max_bonds two, an intact ring cannot acquire external bonds without a bond breaking.",
+    "empirical": "Natural cycles may or may not arise at tested densities; count all zero runs and avoid assuming a positive event."
+  },
+  "world": {
+    "source_config": "campaigns/m6/configs/unfed-6101.json",
+    "grid": {
+      "width": 24,
+      "height": 24,
+      "boundary": "periodic"
+    },
+    "densities": {
+      "baseline": {
+        "S0": 80,
+        "S1": 80,
+        "S2": 24,
+        "S3": 16
+      },
+      "enriched": {
+        "S0": 108,
+        "S1": 108,
+        "S2": 28,
+        "S3": 20
+      }
+    },
+    "seeds": [
+      8601,
+      8602,
+      8603,
+      8604,
+      8605,
+      8606,
+      8607,
+      8608,
+      8609,
+      8610,
+      8611,
+      8612
+    ],
+    "steps": 600,
+    "expected_runs": 24,
+    "initial_conditions": "World.create of original M6 Config with only grid size, seed and species counts adjusted, zero bonds and random uniform placement; NO artificial scaffolds.",
+    "laws_unchanged": true,
+    "no_catalysis": true
+  },
+  "measurements": {
+    "cycle": "A connected component with N>=4, exactly N edges, every constituent degree=2; with max valence 2, this is a simple cycle (includes winding rings).",
+    "canonical_exact": "For the cyclic ordered species sequence, minimal lexicographic rotation across both forward and reverse traversal; this is an exact isomorphism invariant for connected, degree-2, species-labeled cycles; separate from old F: signature and no edits to its historical definition.",
+    "alias": "F: key maps to more than one exact cyclic canonical signature, first in the synthetic fixture and optionally in spontaneous run(s). Same F: does NOT mean same topology/sequence; count distinct aliases by true canonical code.",
+    "episode": "Continuous observations of exactly the same material IDs and edge IDs making a cycle. Terminate at first recorded break BondEvent of any episode edge (even if reformed in same world tick) OR first absent/changed snapshot. A later reformation starts a NEW episode.",
+    "chain4_control": "Continuous observation of the same four physical IDs and three bond IDs in a simple 4-member linear chain. Terminate at first break or any topology change, including attachment. Compare episode survival descriptively with 4-rings; groups are not randomized, cannot infer a causal topology effect.",
+    "ring_closure": "A detected ring is 'from_snapshot_chain' if the immediately preceding tick had the same four IDs as one connected 4-chain; otherwise label unknown predecessor. Do not call closure autocatalysis.",
+    "runtime": "Mark per-run event counts, distinct ring material sets, length composition by ring size, ring 4/chain 4 episodes and durations, WL collisions, example ID sets, and initial/final full hash + RNG.",
+    "energy": "All worlds checked with World.check at t0 and t600; observer must never draw RNG.",
+    "no_birth": "No particle births in these configurations; 'ring birth' means ring-forming reaction, not living organism birth."
+  },
+  "analysis": {
+    "primary": "Number of naturally formed simple cycles and of 4-cycles per run/density; percentage of worlds with >=1 ring; count of different exact species cycles and actual WL alias collisions.",
+    "secondary": "Observed lifetime distribution and right-censoring for continuous 4-cycle vs 4-chain episodes, closure from chain4, spontaneous 4-cycle ring formation and first bond break; event-based vs snapshot-based lifetimes clearly separated.",
+    "predefined_decision": "If >=2 nonisomorphic naturally formed cycles share the same WL key, report confirmed natural fingerprint aliasing. Synthetic test aliasing alone is still a confirmed analytic limitation. If >=1 naturally formed ring episode survives >=50 consecutive observed ticks, report measured long-lived self-sealed structure, NOT replication. Null findings remain negative results and do not trigger configuration changes.",
+    "no_p_values": true,
+    "observational_limits": "Nonrandomized cycle/chain comparison, no controlled causal selection, small 24x24 periodic world, densities differ slightly in species ratios, ring classification exact only for degree2 topology, no proof of inheritance."
+  },
+  "integrity": {
+    "replay_fixed": [
+      [
+        "baseline",
+        8601
+      ],
+      [
+        "enriched",
+        8601
+      ]
+    ],
+    "cross_check": "Recreate world without observer and require equal final full hash, RNG fingerprint/draws, total energy/dissipation and bond counters.",
+    "tests": "Synthetic two four-cycle shapes must have identical F: key with exact=false and distinct canonical cyclic signature; a known six-member cycle must be rotation/reversal invariant; all observed cycle lengths even.",
+    "abort_on_failed_test": true,
+    "output": "campaigns/m6_4_cycles/results.json",
+    "branch_only": true,
+    "no_master_or_law_changes": true
+  }
+}
