@@ -118,7 +118,21 @@ def main() -> None:
     }
     output = M62 / "unfed_6101_audit.json"
     output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({\n        "run": RUN_ID,\n        "world_hash_matches_m6": report["world_hash_matches_m6"],\n        "summary": {key: detector.summary()[key] for key in ("candidates", "matched", "persistent", "classified")},\n        "matches": [{\n            "birth_step": m["birth_step"],\n            "matched_step": m["matched_step"],\n            "child_id": m["child_id"],\n            "template_id": m["template_id"],\n            "signature": m["target_signature"],\n            "persistent": m["persistent_with_corrected_detector"],\n            "continuous_checks": len(m["continuous_form_checks"]),\n            "shared_particle_ids_at_match": m.get("shared_particle_ids_at_match"),\n        } for m in matches],\n    }, indent=2))
+    print(json.dumps({
+        "run": RUN_ID,
+        "world_hash_matches_m6": report["world_hash_matches_m6"],
+        "summary": {key: detector.summary()[key] for key in ("candidates", "matched", "persistent", "classified")},
+        "matches": [{
+            "birth_step": m["birth_step"],
+            "matched_step": m["matched_step"],
+            "child_id": m["child_id"],
+            "template_id": m["template_id"],
+            "signature": m["target_signature"],
+            "persistent": m["persistent_with_corrected_detector"],
+            "continuous_checks": len(m["continuous_form_checks"]),
+            "shared_particle_ids_at_match": m.get("shared_particle_ids_at_match"),
+        } for m in matches],
+    }, indent=2))
     if not report["world_hash_matches_m6"]:
         raise SystemExit("ERROR: world diverged from preregistered M6")
 
