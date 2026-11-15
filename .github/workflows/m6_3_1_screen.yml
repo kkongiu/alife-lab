@@ -1,0 +1,38 @@
+name: M6.3-1 density and access screen
+
+on:
+  push:
+    branches:
+      - exp/m6-3-1-variant-density-accessibility
+  pull_request:
+    paths:
+      - 'campaigns/m6_3_1/**'
+      - 'tools/m6_3_1_screen.py'
+      - 'tests/test_m6_3_1_screen.py'
+      - '.github/workflows/m6_3_1_screen.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  m6-3-1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Run all tests
+        run: python -m pytest -q
+      - name: Execute locked 160-run paired screen (original laws)
+        run: python -m tools.m6_3_1_screen
+      - name: Retain per-seed results including zeros
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-3-1-all-runs
+          path: campaigns/m6_3_1/results.json
+          if-no-files-found: warn

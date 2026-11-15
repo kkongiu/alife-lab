@@ -1,0 +1,181 @@
+{
+  "schema": "alife-m6-3-1-variant-accessibility-v1",
+  "status": "frozen_before_runner_or_outcome_inspection",
+  "date": "2026-11-15",
+  "predecessor_protocol": "campaigns/m6_3_0/protocol.json",
+  "prior_observation": "M6.3-0 produced only 2-4 strict-near A/B events per bonded arm over 12 seeds and 300 ticks; no specific A/B effect. This motivated fixed density/duration increase, not optimization after examining M6.3-1 results.",
+  "hypothesis": "With original ALife physics, increasing encounter opportunities may reveal motif-specific production of new material-independent chains near an intact template; a difference can still be spatial/kinetic rather than hereditary.",
+  "scope": "Deliberately synthesized four-atom motif at tick 0, no replicator or genotype, no engine/RNG/detector edits.",
+  "model": {
+    "source_m6_config": "campaigns/m6/configs/unfed-6101.json",
+    "fixture_grid": {
+      "width": 24,
+      "height": 24,
+      "boundary": "periodic"
+    },
+    "densities": {
+      "baseline": {
+        "S0": 80,
+        "S1": 80,
+        "S2": 24,
+        "S3": 16
+      },
+      "enriched": {
+        "S0": 108,
+        "S1": 108,
+        "S2": 28,
+        "S3": 20
+      }
+    },
+    "scaffold_sites": [
+      [
+        10,
+        12
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        12
+      ],
+      [
+        13,
+        12
+      ]
+    ],
+    "scaffold_particle_ids": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "scaffold_bonds": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "variant_sites": {
+      "A": [
+        "S0",
+        "S1",
+        "S0",
+        "S1"
+      ],
+      "B": [
+        "S0",
+        "S0",
+        "S1",
+        "S1"
+      ],
+      "A_reverse": [
+        "S1",
+        "S0",
+        "S1",
+        "S0"
+      ],
+      "B_reverse": [
+        "S1",
+        "S1",
+        "S0",
+        "S0"
+      ],
+      "C": [
+        "S0",
+        "S1",
+        "S1",
+        "S0"
+      ]
+    },
+    "arm_order": [
+      "A",
+      "B",
+      "A_reverse",
+      "B_reverse",
+      "C"
+    ],
+    "bonded_arms": [
+      "A",
+      "B",
+      "A_reverse",
+      "B_reverse",
+      "C"
+    ],
+    "duration_steps": 450,
+    "seed_list": [
+      8101,
+      8102,
+      8103,
+      8104,
+      8105,
+      8106,
+      8107,
+      8108,
+      8109,
+      8110,
+      8111,
+      8112,
+      8113,
+      8114,
+      8115,
+      8116
+    ],
+    "placement": "For fixed density/seed, 4 scaffold cells and initial non-scaffold positions/species are identical across all arms, same state of sequential PCG64 after placement. Background placed without replacement from free cells, using the existing M6.3-0 generator.",
+    "energy": "All five arms have exactly 3 bonded scaffold edges with the same total species composition and the same dissipated initial formation energy. S0/S1 initial energies differ by species but each arm has two of each, preserving total ledger.",
+    "law_changes": false
+  },
+  "primary_measure": {
+    "target_variants": [
+      "A",
+      "B",
+      "C"
+    ],
+    "event": "First observation of a material set of EXACTLY four non-scaffold particle IDs with a canonical exact tree signature matching target motif; deduplicate by (signature, sorted particle IDs) across all ticks.",
+    "near": "At least one particle of that new component at toroidal Manhattan distance <=2 from any fixed scaffold site AT FIRST APPEARANCE.",
+    "strict": "Exclude any candidate with a constituent that has ever occupied a bonded component containing any scaffold ID, including the current tick.",
+    "active_template": "Scaffold is intact ONLY if a connected component of exactly IDs 0,1,2,3 has the initial arm's exact signature and exactly 3 bonds at the observation tick.",
+    "outcome": "Counts of strict near new A/B events while source scaffold intact; C events are separately described as an isoenergetic bond-control motif.",
+    "survival": "Sum of intact scaffold ticks; report per-run first failure and periods of regrowth, not just final intact status.",
+    "exposure": "Count free S0 and S1 particles adjacent (toroidal Manhattan distance 1) to any scaffold site, separately while scaffold intact and inactive, accumulated across ticks; these are potential encounters, not bond-forming reactions.",
+    "background": "Count strict distinct new A/B/C elsewhere (including while scaffold inactive), total bond formations/breakage, hash, RNG fingerprints, stored energy and ledger.",
+    "forbidden": "No deliberate daughter construction; do not call an association causal replication."
+  },
+  "analyses": {
+    "arm_comparison": "At each density, compare (A_near-B_near) between source A and B, and separately between A_reverse and B_reverse on the SAME 16 seeded backgrounds; C is a third fully bonded, isoenergetic motif-sham with different sequence. Present raw absolute counts and normalized per 1000 intact exposure site-ticks, without treating adjacent seed trajectories as identical RNG draws.",
+    "density_comparison": "Compare event counts, survival and exposure separately between baseline and enriched. Do not pool densities without labels.",
+    "gate_power": "Only consider motif-specific effect evaluable if for enriched density each of four A/B orientation arms has >=8 strict near A+B events while scaffold intact AND at least 8/16 seeds have intact scaffold >=100 ticks in every tested arm.",
+    "gate_specificity": "Only mark 'screen_signal_for_followup' if gate_power true and source-matched motif is more frequent in >=11/16 paired seeds for both A and B conditions and in both reverse orientations, using raw strict near counts; no reweighting or alternative outcome selected after inspection.",
+    "decision": "A signal calls for new independent preregistered causal validation; otherwise 'underpowered_or_no_detectable_specificity'. Never call self-replication or authorize a physics change.",
+    "negative_controls": "C bonded four-particle chain of same composition, length and energy, plus orientation reversal for A/B. No unbonded controls, because their initial ledger was not isoenergetic in M6.3-0.",
+    "no_p_hacking": "Do not adjust densities, seeds, duration, radius, protocol, classification, arm set or thresholds after outcomes. Revise only under a different version with a new independent seed list.",
+    "reported_confounds": [
+      "Species position ordering affects geometry and local affinity even with same overall composition",
+      "Scaffold may disintegrate; events after disintegration must not support templating",
+      "A/B/C do not guarantee equal encounter surface per species",
+      "Sequential RNG can diverge after state-dependent candidate counts",
+      "Sites are fixed; window distance is spatial association, not lineage"
+    ],
+    "all_zero_runs_saved": true
+  },
+  "integrity": {
+    "no_engine_files_modified": true,
+    "world_check_initial_final": true,
+    "same_background_and_rng_at_t0_within_density_seed": true,
+    "same_energy_ledger_across_arms": true,
+    "reproducibility_replay": "Repeat one independently reconstructed source A arm per density and compare hash + counts + event trace.",
+    "dataset": "campaigns/m6_3_1/results.json created by GitHub Actions, includes all 160 runs, zero runs and full protocol SHA.",
+    "stop_on_any_failed_test": true,
+    "never_overwrite": "campaigns/m6_3_0 protocol/results and any M6 manifest/results",
+    "no_m7_promotion": true
+  }
+}
