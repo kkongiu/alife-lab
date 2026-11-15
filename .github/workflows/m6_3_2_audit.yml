@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - analysis/m6-3-2-five-stage-physical-audit
+    paths:
+      - 'campaigns/m6_3_2/**'
+      - 'tools/m6_3_2_audit.py'
+      - 'tests/test_m6_3_2_audit.py'
+      - '.github/workflows/m6_3_2_audit.yml'
   pull_request:
     paths:
       - 'campaigns/m6_3_2/**'
