@@ -1,0 +1,43 @@
+name: M6.7 ten-tick reclosure null audit
+
+on:
+  push:
+    branches:
+      - exp/m6-7-reclosure-mechanism-bernoulli-null
+    paths:
+      - 'campaigns/m6_7_reclosure_null/**'
+      - 'tools/m6_7_reclosure_null.py'
+      - 'tests/test_m6_7_reclosure_null.py'
+      - '.github/workflows/m6_7_reclosure_null.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_7_reclosure_null/**'
+      - 'tools/m6_7_reclosure_null.py'
+      - 'tests/test_m6_7_reclosure_null.py'
+      - '.github/workflows/m6_7_reclosure_null.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  bond-formation-null:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Run full regression and observer noninterference tests
+        run: python -m pytest -q
+      - name: Run 40 new spontaneous universes and 10-step opened-edge audit
+        run: python -m tools.m6_7_reclosure_null
+      - name: Archive full fork histories including null outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-7-reclosure-contact-null
+          path: campaigns/m6_7_reclosure_null/results.json
+          if-no-files-found: warn
