@@ -46,13 +46,13 @@ def test_event_collector_records_post_advance_step_without_consuming_rng():
                    "allowed_pairs": [["S0", "S0"]], "catalysis": []},
     )
     world = world_with(config, [(0, 0), (1, 0)], [0, 0])
-    world.step = START_STEP - 2
+    world.step = START_STEP - 1
     sink = ReadOnlyEventCollector(world)
     world.event_sink = sink
     # Event is emitted at old step=769, visible in observed step=770.
     world.advance(1)
     before = world.rng.draws
     assert sink.counts.get(START_STEP, {}).get("form") == 1
-    assert world.step == START_STEP - 1
+    assert world.step == START_STEP
     assert world.rng.draws == before
     world.check()
