@@ -1,0 +1,224 @@
+{
+  "schema": "alife-m6-3-17-to-26-reactive-termini-v1",
+  "status": "frozen-before-runner-and-outcome-inspection",
+  "date": "2026-11-15",
+  "motivation": "M6.3-15 post-hoc physical-rule audit showed A and B hide internal differences behind saturated valence-2 middle atoms and share reactive S0/S1 ends. Compare new C(S0/S0 ends) and D(S1/S1 ends) while retaining A/B same-terminal negative control and reversed orientation controls, with existing M6 chemistry untouched.",
+  "epistemic_status": "Prerecorded new-seed synthetic-probe mechanistic validation of local terminal chemistry, NOT spontaneous life, templated information transmission or heritable reproduction.",
+  "single_campaign": "Ten steps M6.3-17..26 are ten evaluations of one new 144-universe dataset, NOT ten independent samples.",
+  "world": {
+    "source_config": "campaigns/m6/configs/unfed-6101.json",
+    "fixture_builder": "tools/m6_3_0_screen.py make_world",
+    "fixture_protocol": "campaigns/m6_3_1/protocol.json",
+    "grids": "24x24 periodic",
+    "densities": {
+      "baseline": {
+        "S0": 80,
+        "S1": 80,
+        "S2": 24,
+        "S3": 16
+      },
+      "enriched": {
+        "S0": 108,
+        "S1": 108,
+        "S2": 28,
+        "S3": 20
+      }
+    },
+    "source_sites": [
+      [
+        10,
+        12
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        12
+      ],
+      [
+        13,
+        12
+      ]
+    ],
+    "source_ids": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source_bonds": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ]
+    ],
+    "arm_order": [
+      "A",
+      "B",
+      "A_reverse",
+      "B_reverse",
+      "C",
+      "D"
+    ],
+    "sequences": {
+      "A": [
+        "S0",
+        "S1",
+        "S0",
+        "S1"
+      ],
+      "B": [
+        "S0",
+        "S0",
+        "S1",
+        "S1"
+      ],
+      "A_reverse": [
+        "S1",
+        "S0",
+        "S1",
+        "S0"
+      ],
+      "B_reverse": [
+        "S1",
+        "S1",
+        "S0",
+        "S0"
+      ],
+      "C": [
+        "S0",
+        "S1",
+        "S1",
+        "S0"
+      ],
+      "D": [
+        "S1",
+        "S0",
+        "S0",
+        "S1"
+      ]
+    },
+    "terminal_S1_counts": {
+      "A": 1,
+      "B": 1,
+      "A_reverse": 1,
+      "B_reverse": 1,
+      "C": 0,
+      "D": 2
+    },
+    "seed_list": [
+      8401,
+      8402,
+      8403,
+      8404,
+      8405,
+      8406,
+      8407,
+      8408,
+      8409,
+      8410,
+      8411,
+      8412
+    ],
+    "steps_per_world": 450,
+    "expected_worlds": 144,
+    "identical_chemistry": "source M6 S1-S2 allowed, S0-S2 forbidden; original same S0/S1 equal max_bonds 2, S2 max_bonds 1, S3 0; catalysts unchanged/off",
+    "matched_initial": "Same per-density/seed non-source background positions/species and state RNG after placement in all six arms; all templates have two S0 and two S1, three bonds, identical total initial energy and ledger. Species per source site differ deliberately, thus site-specific energies and rates may differ.",
+    "new_physics": false
+  },
+  "ten_gates": [
+    {
+      "step": 17,
+      "name": "Freeze protocol, verify 4 distinct canonical signatures and identical initial background/energy"
+    },
+    {
+      "step": 18,
+      "name": "Audit initial static pair generator: A=B and A_reverse=B_reverse; S0-terminal C has no S2 partner, D can have eligible S2 if adjacent"
+    },
+    {
+      "step": 19,
+      "name": "Record actual local S2 proximity and eligible source-terminal/S2 pairs before the first original-edge break"
+    },
+    {
+      "step": 20,
+      "name": "Record accepted BondEvent source-terminal/S2 formation strictly before any original-edge break, distinguishing actual chemistry from exposure"
+    },
+    {
+      "step": 21,
+      "name": "Track uninterrupted three-edge core survival and first break, with censoring"
+    },
+    {
+      "step": 22,
+      "name": "Compare A/B internal controls and A/B spatial reversal without presuming synchronized RNG after divergence"
+    },
+    {
+      "step": 23,
+      "name": "Trace purity loss, core growth, source saturation and external monomer/cluster attaches"
+    },
+    {
+      "step": 24,
+      "name": "Count disjoint new exact A/B/C/D motifs near/far and stratified by pure/grown/broken; no proximity-based lineage claims"
+    },
+    {
+      "step": 25,
+      "name": "Full suite, invariant checks on all runs and independent identical-hash replay on two preselected seed/density/arm pairs"
+    },
+    {
+      "step": 26,
+      "name": "Consolidate descriptive terminal-chemistry findings, assess preregistered gate, publish ten reports and next decision"
+    }
+  ],
+  "metrics": {
+    "primary": "Sum of accepted source-terminal(IDs 0 or 3) to S2-atom bonds in the continuous-unbroken-core window; count only if ALL original edges have never broken before or during that transition. Report by density/arm/seed; source C should be structural negative control.",
+    "opportunities": "On t=0 and after each step while original core still continuously unbroken, count statically eligible terminal-to-S2 von Neumann adjacent pairs using true _candidate_pairs (without RNG), no guessing contact rates. Also report adjacent but ineligible S2.",
+    "safety": "Observer records BondEvent in pre-step t and maps it to post-step t+1; never changes ledger, reactions, RNG, particles or configuration.",
+    "core": "Track exact pure quartet, three original bonds physically present, never-broken window, first break, first growth, formed external S0/S1/S2 source bonds and terminal-specific S2.",
+    "motifs": "For each exact four-atom signature A/B/C/D, count first new material atom-set (signature, sorted IDs) without any prior connected component containing source ID, within Manhattan toroidal radius <=2 around original four scaffold sites. Separate pure, grown_with_original_edges and original_edges_missing phases.",
+    "control": "A and B share endpoints; C both S0 termini (S2 forbidden) and D both S1 termini (S2 allowed); all isoenergetic as total system, not necessarily per-particle energy. A/B reverse test spatial anisotropy. Local S2 reaction differences are predicted trivially by allowed_pairs, NOT inheritance.",
+    "null_output": "Every zero, right-censored bond, per-run data, hash and RNG fingerprint must be reported."
+  },
+  "decision": {
+    "terminal_chemistry_gate": "At BOTH densities, D must have strictly more actual accepted S2 source-terminal bonds than C in the still-unbroken window, AND D must exhibit at least one accepted bond per density. Only then label 'verified_local_terminal_chemistry' (a mechanistic positive control, not replication).",
+    "negative_A_B_gate": "At t0, exact _candidate_pairs must match A and B, likewise A_reverse and B_reverse, when seeded backgrounds are paired; do not demand subsequent trajectories match.",
+    "specificity_gate": "Report motif count distribution, but NEVER infer heritable structure from new-near matches; only flag any unexpected difference for a new independent causal test. No generation count in this dataset.",
+    "outcome_if_no_positive": "If zero accepted D-S2 in a density, declare opportunity-limited/inconclusive; DO NOT alter seed/density/duration after inspection.",
+    "next_step": "Only if terminal chemistry is verified consider future protocol that tests transmission of a variant under coupled geometry-matched reaction opportunity, separate from trivial terminal chemistry. Any law modification requires independent approval.",
+    "no_M7": true,
+    "no_automatic_engine_changes": true,
+    "no_statistical_p_values": true
+  },
+  "integrity": {
+    "expected_run_count": 144,
+    "fixed_replay_selections": [
+      [
+        "baseline",
+        8401,
+        "A"
+      ],
+      [
+        "enriched",
+        8401,
+        "D"
+      ]
+    ],
+    "check_original_fixture_hashes": false,
+    "check_full_world_initial_and_final": true,
+    "observer_must_not_consume_rng": true,
+    "replay_compare": "Final full hash, RNG fingerprint and draws, energy+dissipation, formed/broken bonds, exact per-run observer metrics",
+    "no_resampling_or_retroactive_gate_changes": true,
+    "master_untouched": true,
+    "raw_dataset": "campaigns/m6_3_17_to_26/results.json",
+    "documentation_dir": "reports",
+    "workflow": ".github/workflows/m6_3_17_to_26.yml"
+  }
+}
