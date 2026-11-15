@@ -16,6 +16,8 @@ Documenti:
 
 - [`SPEC.md`](SPEC.md) — specifica del modello (M1–M3), sufficiente a una
   reimplementazione indipendente.
+- [`docs/SCIENTIFIC_DEVELOPMENT_PLAN.md`](docs/SCIENTIFIC_DEVELOPMENT_PLAN.md) —
+  **addendum scientifico prioritario** dalla [issue #4](https://github.com/kkongiu/alife-lab/issues/4): verifica causale di `unfed-6101`, versioni v2/v2.1, genealogie e criteri prima di cambiare la fisica.
 - [`reports/M1_baseline.md`](reports/M1_baseline.md) — performance e decisioni M1.
 - [`reports/M2_chemistry.md`](reports/M2_chemistry.md) — legami, aggregati, catalisi.
 - [`reports/M3_energy.md`](reports/M3_energy.md) — flussi, dissipazione, costi,
