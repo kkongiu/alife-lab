@@ -84,8 +84,17 @@ class ProgressiveDetector:
 
         still_pending: list[tuple[int, ProgressiveCandidate]] = []
         for due, candidate in self.persistence:
-            if step >= due:
-                candidate.persistent = candidate.child in active
+            tracked = active.get(candidate.child)
+            # "Persistent" means the *copied form* survives continuously, not
+            # merely that some structure keeps the same tracker identity.
+            if tracked is None:
+                candidate.persistent = False
+                candidate.discarded = "dead_after_match"
+            elif not tracked.signature.exact or tracked.signature.key != candidate.target_key:
+                candidate.persistent = False
+                candidate.discarded = "signature_changed_after_match"
+            elif step >= due:
+                candidate.persistent = True
             else:
                 still_pending.append((due, candidate))
         self.persistence = still_pending
@@ -101,13 +110,15 @@ class ProgressiveDetector:
                 candidate.discarded = "template_dead"
                 del self.pending[child_id]
                 continue
+            # Apply the preregistered limit BEFORE testing for a match.
+            if step - candidate.birth_step > self.window:
+                candidate.discarded = "window_expired"
+                del self.pending[child_id]
+                continue
             if tracked.signature.exact and tracked.signature.key == candidate.target_key:
                 candidate.matched_step = step
                 del self.pending[child_id]
                 self.persistence.append((step + self.persist_steps, candidate))
-            elif step - candidate.birth_step > self.window:
-                candidate.discarded = "window_expired"
-                del self.pending[child_id]
 
         templates = [
             tracked
