@@ -26,6 +26,15 @@ jobs:
         run: python -m pytest -q
       - name: Audit M6.2-E unfed-6101 (read-only world)
         run: python tools/audit_m6_2e_candidate.py
+      - name: Trace unfed-6101 particle and bond timeline (read-only)
+        run: python tools/trace_unfed6101.py
+      - name: Archive deterministic particle trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-2e-unfed-6101-particle-trace
+          path: campaigns/m6_2e/unfed_6101_trace.json
+          if-no-files-found: warn
       - name: Archive audit evidence
         if: always()
         uses: actions/upload-artifact@v4
