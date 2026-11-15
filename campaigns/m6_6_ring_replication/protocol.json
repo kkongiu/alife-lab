@@ -1,0 +1,77 @@
+{
+  "schema": "alife-m6-6-independent-fork-replication-v1",
+  "status": "frozen-before-code-and-outcomes",
+  "date": "2026-11-15",
+  "relation": "Independent-seed confirmatory extension of M6.5, KEEPING ITS EXACT PRIMARY GATE. Uses unchanged M6.5 intervention algorithm; observational plus counterfactual fork, no physics edits.",
+  "motivation": "M6.5 had directional isolation advantage to keeping rings intact at both densities but failed preregistered >=0.20 contrast at enriched density (0.1818). New seeds may or may not replicate effect.",
+  "fixed_sampling": {
+    "source": "tools/m6_5_ring_forks.py sample_density and paired_experiment unchanged",
+    "seeds": [
+      9001,
+      9002,
+      9003,
+      9004,
+      9005,
+      9006,
+      9007,
+      9008,
+      9009,
+      9010,
+      9011,
+      9012,
+      9013,
+      9014,
+      9015,
+      9016,
+      9017,
+      9018,
+      9019,
+      9020
+    ],
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "max_precursor_tick": 600,
+    "max_distinct_first_rings_per_world": 2,
+    "followup_steps": 120,
+    "arms": [
+      "keep_ring",
+      "open_lowest_edge",
+      "open_opposite_edge"
+    ],
+    "expected_worlds": 40,
+    "max_forks": 80,
+    "selection": "The first two distinct naturally formed four-ring material-ID sets in each world, in observation and sorted-ID order. Missing cases retained. No seed replacement, no treatment modification or post-outcome optimizations."
+  },
+  "original_M65_gate_unchanged": {
+    "min_selected_pairs": 20,
+    "keep_vs_lowest_required_absolute_difference_each_density": 0.2,
+    "keep_vs_opposite_required_positive_difference_each_density": true,
+    "verdict_if_pass": "ring_closure_protection_signal_replicated_under_perturbation",
+    "verdict_if_fail": "not_confirmed_or_underpowered",
+    "no_p_values": true
+  },
+  "secondary_preregistered": {
+    "ring_reclosure": "Among open_lowest and open_opposite forks, count any observation of exact four-ID ring topology within 120 ticks; summarize first closure tick and within 10 ticks separately. This is spontaneous reclosure of a manipulated configuration, not self-repairing organism.",
+    "isolation_time": "Means of post-fork ticks of isolated four-source component for all arms and by density",
+    "paired_discordances": "Keep-only and open-only isolated at t=120 by density and precursor world (avoid treating two rings from the same world as independent).",
+    "first_loss": "Attachment vs fragmentation, first-loss observed and right-censored after 120 steps.",
+    "overlap_caveat": "The two selected rings per precursor can share background evolution and RNG stream and cannot be treated as independent worlds."
+  },
+  "integrity": {
+    "energy": "All three arms conserve identical total energy at fork; edge opening releases stored bond energy to endpoints, changes topology, valence and energy distribution.",
+    "sham": "Original M6.5 algorithm performs sham replay for first selected ring of first seed per density.",
+    "laws": "No changes to src/alife physical laws or to historical detector/experiment.",
+    "original_seed_overlap": false,
+    "initial_config": "same 24x24 periodic natural background density regimes as M6.5",
+    "full_results": "campaigns/m6_6_ring_replication/results.json",
+    "test_suite": "python -m pytest -q",
+    "no_master_merge": true
+  },
+  "scientific_guardrails": {
+    "interpretation": "A fork contrast can suggest an effect of the combined edge-opening+energy redistribution intervention. It is not a pure-topology causal effect, life or heredity.",
+    "negative": "Do not adjust threshold if new results fail, do not silently pool with M6.5 for a new positive gate. If pooled, label exploratory.",
+    "no_background_claims": "Only say a CI process is active while its run actually executes."
+  }
+}
