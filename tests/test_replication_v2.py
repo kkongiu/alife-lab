@@ -68,7 +68,7 @@ def _progressive_world():
         ],
         chemistry={"enabled": False},
     )
-    positions = [(x, 0) for x in range(4)] + [(x, 2) for x in range(4)]
+    positions = [(x, 0) for x in range(4)] + [(0, 2), (1, 2), (1, 3), (0, 3)]
     species = [0, 1, 1, 0, 0, 1, 1, 0]
     world = world_with(config, positions, species, bonds=[(0, 1, 0), (1, 2, 0), (2, 3, 0)])
     return world
@@ -225,11 +225,11 @@ def test_matched_copy_must_keep_signature_until_persistence_due() -> None:
     assert detector.summary()["matched"] == 1
 
     world.step = 4
-    world.store.remove_bond(6, 7)
+    world.store.add_bond(4, 7, 0)  # close square: same members, now a cycle
     tracker.observe(world)
     detector.observe(world, tracker)
 
-    # The largest fragment retains its tracker identity, but not the copied form.
+    # The connected square retains its identity, but no longer has the copied tree signature.
     for step in range(5, 15):
         world.step = step
         tracker.observe(world)
