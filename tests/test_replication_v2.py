@@ -12,6 +12,7 @@ from alife.controls import (
     positive_world,
 )
 from alife.replication_v2 import DETECTOR_VERSION, ProgressiveDetector
+from alife.replication_v21 import DETECTOR_VERSION as DETECTOR_VERSION_V21, ProgressiveDetector as ProgressiveDetectorV21
 from alife.structures import Tracker
 from support import make_energy_config, world_with
 
@@ -175,7 +176,7 @@ def test_match_after_window_is_rejected() -> None:
     """A match at birth+window+1 must not bypass the preregistered bound."""
     world = _progressive_world()
     tracker = Tracker()
-    detector = ProgressiveDetector(window=2, min_copies=1, min_generation=1)
+    detector = ProgressiveDetectorV21(window=2, min_copies=1, min_generation=1)
     tracker.observe(world)
     detector.observe(world, tracker)
 
@@ -204,7 +205,7 @@ def test_matched_copy_must_keep_signature_until_persistence_due() -> None:
     """Same tracker identity is insufficient if the copied graph changes."""
     world = _progressive_world()
     tracker = Tracker()
-    detector = ProgressiveDetector(min_copies=1, min_generation=1)
+    detector = ProgressiveDetectorV21(min_copies=1, min_generation=1)
     tracker.observe(world)
     detector.observe(world, tracker)
 
@@ -245,7 +246,7 @@ def test_matched_copy_must_keep_signature_until_persistence_due() -> None:
 def test_match_at_exact_window_boundary_is_allowed() -> None:
     world = _progressive_world()
     tracker = Tracker()
-    detector = ProgressiveDetector(window=2, min_copies=1, min_generation=1)
+    detector = ProgressiveDetectorV21(window=2, min_copies=1, min_generation=1)
     tracker.observe(world)
     detector.observe(world, tracker)
 
@@ -265,3 +266,8 @@ def test_match_at_exact_window_boundary_is_allowed() -> None:
     detector.observe(world, tracker)
 
     assert detector.summary()["matched"] == 1
+
+
+def test_strict_detector_is_separately_versioned() -> None:
+    assert DETECTOR_VERSION == "v2"
+    assert DETECTOR_VERSION_V21 == "v2.1"
