@@ -1,0 +1,90 @@
+{
+  "schema": "alife-m6-7-reclosure-ordinary-chemistry-null-v1",
+  "status": "frozen-before-runner-and-results",
+  "date": "2026-11-15",
+  "scientific_question": "Are the rapid ring reclosures in M6.6 (31/76 within 10 ticks for either opening) compatible with the ordinary per-adjacent-candidate bond formation probability p=0.05, without invoking emergent directed repair?",
+  "inspiration": "M6.6 preregistered secondary: 31/76 opened arms reclose within 10 ticks, compared with naive fully eligible contact benchmark 1-(1-0.05)^10 ≈0.4013. This is post-discovery hypothesis tested on NEW SEEDS.",
+  "prespecified_source": {
+    "original_config": "campaigns/m6/configs/unfed-6101.json via tools/m6_4_cycles.py create_natural",
+    "parent_geometry": "Unmodified M6.4 natural start 24x24 periodic, initial zero bonds",
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "new_seeds": [
+      9201,
+      9202,
+      9203,
+      9204,
+      9205,
+      9206,
+      9207,
+      9208,
+      9209,
+      9210,
+      9211,
+      9212,
+      9213,
+      9214,
+      9215,
+      9216,
+      9217,
+      9218,
+      9219,
+      9220
+    ],
+    "max_precursor_ticks": 600,
+    "selection": "First two distinct 4-cycle material ID sets in each world, in first detection tick then sorted material ID order; no replacement or resampling. No pre-existing synthetic scaffolds.",
+    "max_natural_worlds": 40,
+    "max_ring_selection_events": 80,
+    "opened_arms": [
+      "lowest_source_id_edge",
+      "opposite_disjoint_edge"
+    ],
+    "tick_horizon": 10,
+    "allowed_source_edits": "NONE. Intervention only in cloned state through M6.5 open_bond which redistributes stored bond energy, then full native physics."
+  },
+  "null_model": {
+    "formation_probability": 0.05,
+    "reference_probability_by_tick10": 0.401263060761621,
+    "formula": "1-(1-0.05)**10, a NAIVE Bernoulli contact benchmark assuming an eligible bond-formation trial each tick, no competing reactions, no occlusion and no loss of ring geometry.",
+    "caveat": "Reference is NOT an exact null for real crowded worlds: competing bonds, energy decay, ruptures, and eligibility reduce or change contact opportunities. No p-values for dependent forks. The event audit is needed to evaluate opportunities and reasons for deviations.",
+    "kinetic_target": "An event of kind=form linking the artificially opened source ID pair (regardless of later breaks), not a 4-cycle topology snapshot; both reported separately.",
+    "energetic_constraint": "The intervention conserves entire world's instantaneous energy but changes its distribution and frees two valences; do not claim pure topology causality."
+  },
+  "measurements": {
+    "primary": "For each density and each opening arm, fraction of naturally created ring forks having a native BondEvent(kind=form) of the target original edge by tick 10.",
+    "secondary": [
+      "Fraction with exact same-source 4-cycle seen at any snapshot in ticks 1..10",
+      "Fraction with target edge reformed but not full original ring (other original edges may break)",
+      "First target edge reformation tick; exact event count and chronological event trace for source bonds",
+      "Fraction of 10-tick observation windows (before first target reformation) in which target edge is a STATIC chemistry candidate at pre-step snapshot, evaluated read-only with chemistry._candidate_pairs, subject to per-step movement/break confound",
+      "Number of selected worlds and zero-case worlds; per-precursor-world distinct fork counts",
+      "Original full hash and PCG64 RNG fingerprint/draws at fork, after each arm; replay for first selected fork of first seed in each density without observer must match event-instrumented result",
+      "All 160 possible opened trajectories (less if no rings) in raw JSON"
+    ],
+    "interpretation": "An edge reforming in a graphically persistent chain after an ordinary allowed chemical bond event is NOT self-repair, copying or metabolism. If fully eligible contact benchmark approximates measured rate, that's evidence against a special extra repair mechanism, not proof of model completeness."
+  },
+  "decision": {
+    "min_opened_forks_per_density_per_arm": 20,
+    "absolute_margin_to_naive_reference": 0.1,
+    "label_if_all_four_strata_within_margin": "consistent_with_simple_contact_reference_descriptive",
+    "label_if_any_stratum_outside_margin": "deviation_from_naive_contact_reference_in_at_least_one_stratum",
+    "label_if_underpowered": "underpowered",
+    "no_statistical_tests": "Do not use confidence levels or tests of significance; this is a preregistered descriptive diagnostic with correlated selections.",
+    "no_goalpost_move": true,
+    "never_claim_special_autorepair_or_life": true
+  },
+  "integrity": {
+    "run_full_tests": true,
+    "all_forks_saved": true,
+    "selection_protocol_frozen": true,
+    "original_M6_laws_unchanged": true,
+    "master_unchanged": true,
+    "no_merge": true,
+    "result_artifact": "campaigns/m6_7_reclosure_null/results.json",
+    "ci_script": "python -m tools.m6_7_reclosure_null",
+    "report": "reports/M6_7_reclosure_null.md",
+    "repeatability": "For first chosen fork in first seed of each density, fork and rerun native world without observer 10 ticks; final full hash, RNG draw count, energy and total formed/broken counts must match observer run."
+  }
+}
