@@ -2,7 +2,7 @@
 
 - Requisito: docx S4 — log eventi accessibile
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:11:42+00:00
+- Eseguito: 2026-11-15T11:25:11+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -32,4 +32,4 @@ Configurazione M3 quick tracciata per 300 passi: strutture, eventi, persistenza 
 ## Test pytest associati
 
 - `tests/test_structures.py::test_tracker_writes_jsonl_files` → **PASSED** (0.0010 s)
-- `tests/test_cli.py::test_run_with_tracking` → **PASSED** (0.2480 s)
+- `tests/test_cli.py::test_run_with_tracking` → **PASSED** (0.2560 s)

@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_energy.py::test_breaking_dissipation`
 - Stato: **PASSED**
-- Durata: 0.0000 s
+- Durata: 0.0010 s
 - Modulo: `tests/test_energy.py`
 - Requisito: M3-05 — Costi di formazione e rottura
 - Comando: `.venv/bin/python -m pytest "tests/test_energy.py::test_breaking_dissipation"`

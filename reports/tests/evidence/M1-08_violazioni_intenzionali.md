@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §7, punto 8
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:11:41+00:00
+- Eseguito: 2026-11-15T11:25:10+00:00
 - Test pytest associati: 12 (12 superati)
 
 ## Scenario
@@ -38,7 +38,7 @@ Sei violazioni introdotte deliberatamente su stati validi; ogni caso deve produr
 - `tests/test_invariants.py::test_validate_detects_grid_desynchronisation` → **PASSED** (0.0010 s)
 - `tests/test_invariants.py::test_validate_detects_missing_particle` → **PASSED** (0.0010 s)
 - `tests/test_invariants.py::test_validate_detects_invalid_species_index` → **PASSED** (0.0010 s)
-- `tests/test_energy.py::test_validate_detects_unsorted_identifiers` → **PASSED** (0.0000 s)
+- `tests/test_energy.py::test_validate_detects_unsorted_identifiers` → **PASSED** (0.0010 s)
 - `tests/test_checkpoint.py::test_detects_tampered_particle` → **PASSED** (0.0020 s)
 - `tests/test_checkpoint.py::test_detects_tampered_config_hash` → **PASSED** (0.0020 s)
 - `tests/test_checkpoint.py::test_detects_energy_imbalance` → **PASSED** (0.0020 s)

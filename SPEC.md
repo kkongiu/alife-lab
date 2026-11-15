@@ -745,15 +745,19 @@ fixture: la sola dinamica è l'assemblaggio template-diretto.
 Una **copia candidata** richiede tutte le condizioni:
 
 1. nascita di una struttura con firma **esatta** già presente in un'altra
-   struttura attiva;
+   struttura **nata in un passo precedente** (`born_step < step`): due strutture
+   nate nello stesso passo non possono essere l'una il genitore dell'altra;
 2. distanza di Manhattan fra le due ≤ `radius` (default 2, toroidale);
 3. almeno `min_size` particelle (default 4: sotto questa soglia una struttura è
    indistinguibile da un'associazione casuale);
 4. persistenza ≥ `persist_steps` passi (default 10).
 
 Un run è classificato `replication` se ha almeno `min_copies` copie persistenti
-(default 5) **e** almeno una catena di seconda generazione (una copia nata vicino
-a una copia, non solo al template).
+(default 5) **e** una catena di generazioni costruita **solo con copie
+persistenti**: una seconda generazione transitoria non conta. La generazione di
+una copia è la lunghezza della catena di copie persistenti che la separa dalla
+struttura originale; se un antenato non è persistente la catena si interrompe e
+la copia non appartiene a una discendenza persistente.
 
 Il criterio usa la firma per confrontare e l'identità delle particelle per la
 discendenza: non deduce mai una linea da una somiglianza.

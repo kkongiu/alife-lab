@@ -2,7 +2,7 @@
 
 - Requisito: alife.md §2 — controlli completamente isolati
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:11:49+00:00
+- Eseguito: 2026-11-15T11:25:17+00:00
 - Test pytest associati: 1 (1 superati)
 
 ## Scenario

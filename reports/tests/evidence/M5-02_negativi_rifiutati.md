@@ -2,8 +2,8 @@
 
 - Requisito: docx S5 — i negativi non sono replicazione
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:11:49+00:00
-- Test pytest associati: 4 (4 superati)
+- Eseguito: 2026-11-15T11:25:17+00:00
+- Test pytest associati: 6 (6 superati)
 
 ## Scenario
 
@@ -31,7 +31,9 @@ Cinque condizioni senza copiatura: immobilità, aggregazione casuale, reazioni r
 
 ## Test pytest associati
 
-- `tests/test_controls.py::test_negative_immobile_is_not_replication` → **PASSED** (0.0300 s)
-- `tests/test_controls.py::test_negative_random_aggregation_is_not_replication` → **PASSED** (2.9880 s)
-- `tests/test_controls.py::test_negative_reversible_is_not_replication` → **PASSED** (1.8210 s)
-- `tests/test_controls.py::test_negative_stress_cases_are_not_replication` → **PASSED** (1.7590 s)
+- `tests/test_controls.py::test_negative_immobile_is_not_replication` → **PASSED** (0.0120 s)
+- `tests/test_controls.py::test_negative_random_aggregation_is_not_replication` → **PASSED** (3.2300 s)
+- `tests/test_controls.py::test_negative_reversible_is_not_replication` → **PASSED** (2.1900 s)
+- `tests/test_controls.py::test_negative_stress_cases_are_not_replication` → **PASSED** (1.9090 s)
+- `tests/test_controls.py::test_simultaneous_identical_structures_are_not_copies` → **PASSED** (0.0010 s)
+- `tests/test_controls.py::test_transient_second_generation_does_not_classify` → **PASSED** (0.0010 s)

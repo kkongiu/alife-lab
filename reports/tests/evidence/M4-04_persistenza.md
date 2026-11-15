@@ -2,7 +2,7 @@
 
 - Requisito: docx S4 — metriche di persistenza
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:11:42+00:00
+- Eseguito: 2026-11-15T11:25:11+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario

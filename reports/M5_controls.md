@@ -7,7 +7,7 @@ Data: 2026-11-15 · Milestone: M5 · Specifica: `SPEC.md` §18 · Fixture: `m5-f
 | Milestone | Esito | Evidenza |
 |---|---|---|
 | M1–M4 | GO (approvati) | invariati; il motore non conosce i controlli |
-| **M5** | **GO** | 164 test; 33 requisiti con evidenza; positivo riconosciuto 9/9; cinque condizioni negative con 0 falsi positivi |
+| **M5** | **GO** | 166 test; 33 requisiti con evidenza; positivo riconosciuto 9/9; cinque condizioni negative con 0 falsi positivi |
 
 Il gate del docx S5 — *il benchmark positivo è riconosciuto e i negativi non
 vengono classificati come replicazione* — è soddisfatto: 9 copie persistenti su 9
@@ -85,7 +85,9 @@ discendenza, materia di M6–M7.
 | `persist_steps` | 10 | una comparsa effimera non è una copia |
 | `min_size` | 4 | sotto questa soglia l'associazione casuale è indistinguibile |
 | `min_copies` | 5 | evita di classificare un singolo evento |
-| `min_generation` | 2 | richiede una catena, non solo una copia del template |
+| `min_generation` | 2 | richiede una catena persistente, non solo una copia del template |
+| genitore precedente | `born_step < step` | due strutture nate insieme non possono essere genitore e figlia |
+| generazioni | solo copie persistenti | una seconda generazione transitoria non conta |
 
 I parametri sono fissati nel codice prima dei run e riportati in
 `reports/controls.json` insieme ai risultati. Cambiarli richiede una nuova
@@ -131,3 +133,35 @@ template-diretto, non la replicazione in generale.
 
 **M6 non è stata iniziata.** Campagne multi-seed e preregistrazione richiedono
 approvazione esplicita.
+
+---
+
+## 12. Correzioni successive alla consegna
+
+Due criticità del rilevatore, entrambe corrette prima di M6.
+
+**1. Le generazioni contavano anche le copie non persistenti.** `max_generation`
+era calcolato su tutti i candidati, mentre `min_copies` veniva verificato solo
+sui persistenti: una seconda generazione transitoria poteva bastare per la
+classificazione. Ora la generazione di una copia è la lunghezza della catena di
+**copie persistenti** che la separa dalla struttura originale; se un antenato non
+è persistente la catena vale 0 e non contribuisce. Il valore diagnostico su tutti
+i candidati resta disponibile come `max_generation_all`, ma non decide.
+
+**2. Il genitore poteva essere nato nello stesso passo.** Il rilevatore cercava
+una struttura con la stessa firma fra quelle attive, incluse quelle nate nel
+passo corrente: due strutture identiche comparse insieme potevano essere
+considerate genitore e figlia. Ora serve `born_step < step`.
+
+Test aggiunti (falliscono sul codice precedente):
+
+- `test_simultaneous_identical_structures_are_not_copies`: due strutture
+  identiche nate insieme, adiacenti, non producono alcuna copia candidata;
+- `test_transient_second_generation_does_not_classify`: una catena
+  template → copia effimera → copia persistente non basta, anche se la
+  generazione grezza è 2.
+
+**Impatto sulle misure: nessuno** sui controlli attuali. Il positivo resta 9/9
+copie persistenti, generazione 9; i cinque negativi restano a 0 candidate. La
+correzione elimina due modi di ottenere un falso positivo che le fixture presenti
+non attivavano, ma che una campagna M6 avrebbe potuto incontrare.

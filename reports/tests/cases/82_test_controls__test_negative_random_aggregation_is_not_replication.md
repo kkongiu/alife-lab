@@ -2,7 +2,7 @@
 
 - Nodo pytest: `tests/test_controls.py::test_negative_random_aggregation_is_not_replication`
 - Stato: **PASSED**
-- Durata: 2.9880 s
+- Durata: 3.2300 s
 - Modulo: `tests/test_controls.py`
 - Requisito: M5-02 — Controlli negativi non classificati (falsi positivi)
 - Comando: `.venv/bin/python -m pytest "tests/test_controls.py::test_negative_random_aggregation_is_not_replication"`

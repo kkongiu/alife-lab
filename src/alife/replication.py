@@ -10,8 +10,12 @@ Criterio **preregistrato** (fissato prima di guardare i risultati):
    queste densità);
 3. la copia deve persistere almeno `persist_steps` passi;
 4. un run è classificato `replication` solo se ci sono almeno `min_copies`
-   copie persistenti **e** almeno una catena di seconda generazione (una copia
-   nata vicino a una copia, non solo al template originale).
+   copie persistenti **e** una catena di generazioni costruita **solo con copie
+   persistenti**: una seconda generazione transitoria non conta.
+
+Il genitore deve esistere **prima** del passo in cui la copia compare: due
+strutture identiche nate nello stesso passo non possono essere l'una il genitore
+dell'altra.
 
 Il criterio non usa la firma per stabilire la discendenza: quella viene
 dall'identità delle particelle (tracker M4). La firma serve a confrontare, la
@@ -62,6 +66,7 @@ class ReplicationDetector:
         self.candidates: list[CopyCandidate] = []
         self.pending: list[tuple[int, CopyCandidate]] = []
         self.generation: dict[int, int] = {}
+        self.by_child: dict[int, CopyCandidate] = {}
 
     def observe(self, world: "World", tracker: "Tracker") -> None:
         step = world.step
@@ -76,8 +81,14 @@ class ReplicationDetector:
 
         active_by_key: dict[str, list] = {}
         for tracked in tracker.active.values():
-            if tracked.signature.exact:
-                active_by_key.setdefault(tracked.signature.key, []).append(tracked)
+            if not tracked.signature.exact:
+                continue
+            # un genitore deve esistere PRIMA del passo della presunta copia:
+            # due strutture nate insieme non possono essere l'una il genitore
+            # dell'altra
+            if tracked.born_step >= step:
+                continue
+            active_by_key.setdefault(tracked.signature.key, []).append(tracked)
 
         for birth in tracker.last_births:
             sig = birth.signature
@@ -116,13 +127,36 @@ class ReplicationDetector:
                 distance=best_distance,
             )
             self.candidates.append(candidate)
+            self.by_child[birth.structure_id] = candidate
             self.pending.append((step + self.persist_steps, candidate))
+
+    def _persistent_generation(self, candidate: CopyCandidate) -> int:
+        """Lunghezza della catena di copie persistenti fino al genitore originale.
+
+        0 significa che il genitore era una copia non persistente: la catena è
+        interrotta e questa copia non appartiene a una discendenza persistente.
+        """
+        chain = 0
+        current = candidate
+        while True:
+            parent = self.by_child.get(current.parent)
+            if parent is None:
+                return chain + 1  # il genitore è una struttura originale
+            if not parent.persistent:
+                return 0
+            chain += 1
+            current = parent
 
     def summary(self) -> dict:
         persistent = [candidate for candidate in self.candidates if candidate.persistent]
         unresolved = [candidate for candidate in self.candidates if candidate.persistent is None]
-        generations = Counter(candidate.generation for candidate in self.candidates)
-        max_generation = max(generations, default=0)
+        raw_generations = Counter(candidate.generation for candidate in self.candidates)
+        persistent_generations = Counter(
+            generation
+            for generation in (self._persistent_generation(candidate) for candidate in persistent)
+            if generation > 0
+        )
+        max_generation = max(persistent_generations, default=0)
         classified = (
             len(persistent) >= self.min_copies and max_generation >= self.min_generation
         )
@@ -138,12 +172,21 @@ class ReplicationDetector:
             "persistent": len(persistent),
             "unresolved": len(unresolved),
             "max_generation": max_generation,
-            "generations": {str(gen): count for gen, count in sorted(generations.items())},
+            "generations": {
+                str(gen): count for gen, count in sorted(persistent_generations.items())
+            },
+            "max_generation_all": max(raw_generations, default=0),
+            "generations_all": {
+                str(gen): count for gen, count in sorted(raw_generations.items())
+            },
             "classified": "replication" if classified else "not_replication",
             "examples": [
                 {
                     "step": candidate.step,
                     "generation": candidate.generation,
+                    "persistent_generation": self._persistent_generation(candidate)
+                    if candidate.persistent
+                    else None,
                     "child": candidate.child,
                     "parent": candidate.parent,
                     "distance": candidate.distance,

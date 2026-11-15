@@ -2,7 +2,7 @@
 
 - Requisito: docx S5 — fixture versionate
 - Esito: **PASS**
-- Eseguito: 2026-11-15T11:11:49+00:00
+- Eseguito: 2026-11-15T11:25:17+00:00
 - Test pytest associati: 2 (2 superati)
 
 ## Scenario
@@ -27,5 +27,5 @@ Due esecuzioni indipendenti del controllo positivo con le stesse posizioni e lo 
 
 ## Test pytest associati
 
-- `tests/test_controls.py::test_positive_control_is_reproducible` → **PASSED** (0.0700 s)
+- `tests/test_controls.py::test_positive_control_is_reproducible` → **PASSED** (0.0660 s)
 - `tests/test_controls.py::test_fixture_version_is_declared` → **PASSED** (0.0000 s)

@@ -389,6 +389,8 @@ REQUIRED = [
             "tests/test_controls.py::test_negative_random_aggregation_is_not_replication",
             "tests/test_controls.py::test_negative_reversible_is_not_replication",
             "tests/test_controls.py::test_negative_stress_cases_are_not_replication",
+            "tests/test_controls.py::test_simultaneous_identical_structures_are_not_copies",
+            "tests/test_controls.py::test_transient_second_generation_does_not_classify",
         ],
     },
     {
