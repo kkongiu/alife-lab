@@ -1,0 +1,234 @@
+{
+  "campaign": "m6",
+  "version": 1,
+  "preregistered_utc": "2026-11-15T11:38:33+00:00",
+  "tool_version": "0.1.0",
+  "git_commit": "96bb8dc5968ee592d41a90593057147ddd191794",
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "base_config": "configs/m3_baseline.json",
+  "base_config_hash": "97f5bfa1402f11492ef9d51f2dba22897ea1670a073970ad42aaabf85e80b9ec",
+  "hypothesis": "Verificare se il rilevatore preregistrato segnala copie persistenti in ambienti alimentati, non alimentati e chiusi. L'ipotesi di replicazione spontanea non \u00e8 assunta: la campagna \u00e8 progettata per poterla smentire.",
+  "observations_vs_hypotheses": "Il report separa le misure (osservazioni) dalle spiegazioni proposte (ipotesi non dimostrate). Nessun run viene presentato come replicazione senza la classificazione del rilevatore e la ripetizione su seed indipendenti.",
+  "seeds": [
+    6101,
+    6102,
+    6103,
+    6104,
+    6105
+  ],
+  "steps": 3000,
+  "conditions": {
+    "closed": "chimica M3 senza costi, senza decadimento, senza sorgenti: energia conservata",
+    "unfed": "costi e decadimento attivi, nessuna sorgente: sistema non alimentato",
+    "fed-low": "come unfed con 9 sorgenti a 1 quanto per passo",
+    "fed-mid": "come unfed con 9 sorgenti a 2 quanti per passo",
+    "fed-high": "come unfed con 9 sorgenti a 4 quanti per passo"
+  },
+  "detector": {
+    "radius": 2,
+    "persist_steps": 10,
+    "min_size": 4,
+    "min_copies": 5,
+    "min_generation": 2
+  },
+  "metrics": [
+    "strutture attive",
+    "nascite, morti, crescite, riduzioni, scissioni, fusioni, trasformazioni",
+    "vita media e massima delle strutture",
+    "firme distinte e passi con ambiguit\u00e0",
+    "copie candidate e persistenti",
+    "generazione massima persistente",
+    "classificazione del rilevatore",
+    "energia interna, iniettata, dissipata, non assorbita e identit\u00e0",
+    "hash completo dello stato"
+  ],
+  "decision_rule": {
+    "candidate_condition": "almeno 3 seed su 5 classificati 'replication' e mediana delle copie persistenti >= 5",
+    "otherwise": "nessuna evidenza di replicazione in questa campagna",
+    "control_check": "se 'closed' o 'unfed' risultano 'replication', il criterio \u00e8 invalido: REVISE",
+    "independence": "un singolo seed non \u00e8 evidenza; i run nulli sono registrati come tali"
+  },
+  "runs": [
+    {
+      "id": "closed-6101",
+      "condition": "closed",
+      "seed": 6101,
+      "config": "configs/closed-6101.json",
+      "config_hash": "9bdfa469e6ee87fe58708932f7d8d4580d5bf12974c825973850a497cfab7537"
+    },
+    {
+      "id": "closed-6102",
+      "condition": "closed",
+      "seed": 6102,
+      "config": "configs/closed-6102.json",
+      "config_hash": "d96c77cb2c7ac84c69a0ee705c9f68f5a434e44f57ebb0a99b8c5a7c3c05be72"
+    },
+    {
+      "id": "closed-6103",
+      "condition": "closed",
+      "seed": 6103,
+      "config": "configs/closed-6103.json",
+      "config_hash": "210525a3f32ae16040a6f4996bb6b53778520f5de66b4c1c6a34fa6a1486de94"
+    },
+    {
+      "id": "closed-6104",
+      "condition": "closed",
+      "seed": 6104,
+      "config": "configs/closed-6104.json",
+      "config_hash": "547ea06a26df654ffe2e1bb252a9a14596374180ed9b77e6a81ef191dd679f45"
+    },
+    {
+      "id": "closed-6105",
+      "condition": "closed",
+      "seed": 6105,
+      "config": "configs/closed-6105.json",
+      "config_hash": "15190acd11cfa7d0231ca83f454d19e6c19b52a54bebda4a79cf78786bcc9884"
+    },
+    {
+      "id": "unfed-6101",
+      "condition": "unfed",
+      "seed": 6101,
+      "config": "configs/unfed-6101.json",
+      "config_hash": "9d4a0dddcd861363d0813b5a011a9d1b1f31849ff2e05a4f278459c4b81f3882"
+    },
+    {
+      "id": "unfed-6102",
+      "condition": "unfed",
+      "seed": 6102,
+      "config": "configs/unfed-6102.json",
+      "config_hash": "8571e7e56adae3a8b689110f7215d6d3c81c9c335b62297e5944e29272fd1c2e"
+    },
+    {
+      "id": "unfed-6103",
+      "condition": "unfed",
+      "seed": 6103,
+      "config": "configs/unfed-6103.json",
+      "config_hash": "5098ef649709cd1bdb2426ccb4083e8e8e4dbb57bbd8da49fd84364d9dd8cc00"
+    },
+    {
+      "id": "unfed-6104",
+      "condition": "unfed",
+      "seed": 6104,
+      "config": "configs/unfed-6104.json",
+      "config_hash": "7d313e9733644c8327b7d4c4507f57b1e01489bcd4763745751bb90a90f51a46"
+    },
+    {
+      "id": "unfed-6105",
+      "condition": "unfed",
+      "seed": 6105,
+      "config": "configs/unfed-6105.json",
+      "config_hash": "b2291ea99f0f2fd79d670e528ff5283b8cd99bbf33abbe0d49e4100d2da24525"
+    },
+    {
+      "id": "fed-low-6101",
+      "condition": "fed-low",
+      "seed": 6101,
+      "config": "configs/fed-low-6101.json",
+      "config_hash": "d94e5a9abfff02e62d66af66e32a82d66b6835c6610bf6001927bf7cf38ad252"
+    },
+    {
+      "id": "fed-low-6102",
+      "condition": "fed-low",
+      "seed": 6102,
+      "config": "configs/fed-low-6102.json",
+      "config_hash": "ad62d42ba2549413d92216625cabd8edd23fb0ceeb2b0a80a910cea67cfc4dd6"
+    },
+    {
+      "id": "fed-low-6103",
+      "condition": "fed-low",
+      "seed": 6103,
+      "config": "configs/fed-low-6103.json",
+      "config_hash": "5291e4993b3fb346d1f22adfa8f3426bf6001a08fbc0f4d6541c94aca166368c"
+    },
+    {
+      "id": "fed-low-6104",
+      "condition": "fed-low",
+      "seed": 6104,
+      "config": "configs/fed-low-6104.json",
+      "config_hash": "328cc9b8d7034bb560f75df0035b7b56e6371787e34d0cbbde333d2803863800"
+    },
+    {
+      "id": "fed-low-6105",
+      "condition": "fed-low",
+      "seed": 6105,
+      "config": "configs/fed-low-6105.json",
+      "config_hash": "57b21499bfb80a0c30632fc668e433bb49c2e914544ee318800f61fe6046380c"
+    },
+    {
+      "id": "fed-mid-6101",
+      "condition": "fed-mid",
+      "seed": 6101,
+      "config": "configs/fed-mid-6101.json",
+      "config_hash": "0da05785daf3611b8689bc02a6d12701fc0454bb5cabf7a2b6f7ebffba241118"
+    },
+    {
+      "id": "fed-mid-6102",
+      "condition": "fed-mid",
+      "seed": 6102,
+      "config": "configs/fed-mid-6102.json",
+      "config_hash": "cef4caf073401576b289f561225d808538edd9d536171309c85ad33e683d0932"
+    },
+    {
+      "id": "fed-mid-6103",
+      "condition": "fed-mid",
+      "seed": 6103,
+      "config": "configs/fed-mid-6103.json",
+      "config_hash": "78855401d13842d2b63760a9ee3a833888db61367274c72efede9287e6c61eea"
+    },
+    {
+      "id": "fed-mid-6104",
+      "condition": "fed-mid",
+      "seed": 6104,
+      "config": "configs/fed-mid-6104.json",
+      "config_hash": "d02f1f885ec851d2f59852475291a1ccc3bd81defe3a93627ddc8c178c1fdcac"
+    },
+    {
+      "id": "fed-mid-6105",
+      "condition": "fed-mid",
+      "seed": 6105,
+      "config": "configs/fed-mid-6105.json",
+      "config_hash": "e086cad192bdd315ac3741da70cc085a2b97982ee55ea0de6a84f82be1becb06"
+    },
+    {
+      "id": "fed-high-6101",
+      "condition": "fed-high",
+      "seed": 6101,
+      "config": "configs/fed-high-6101.json",
+      "config_hash": "9bb46cba33d0be7e3f549f8ede185b63fc0d7fb568cccfc4b09d08a40d4a6553"
+    },
+    {
+      "id": "fed-high-6102",
+      "condition": "fed-high",
+      "seed": 6102,
+      "config": "configs/fed-high-6102.json",
+      "config_hash": "c3eff895d7406e31db4fd7e73ed846c83f631fe1385db1f2839095f6008209dd"
+    },
+    {
+      "id": "fed-high-6103",
+      "condition": "fed-high",
+      "seed": 6103,
+      "config": "configs/fed-high-6103.json",
+      "config_hash": "a5c68acd0774983272483da18fcdefcb07c252c4a20f8a549c01c8af2609a5d3"
+    },
+    {
+      "id": "fed-high-6104",
+      "condition": "fed-high",
+      "seed": 6104,
+      "config": "configs/fed-high-6104.json",
+      "config_hash": "911bd926a0654cc5f43f9285c1facdfb7958b5db1b2960daba69267babe8f9c6"
+    },
+    {
+      "id": "fed-high-6105",
+      "condition": "fed-high",
+      "seed": 6105,
+      "config": "configs/fed-high-6105.json",
+      "config_hash": "955119ba73929d5bf148a7ba1ca8967ffbbc0e2a9a1219967aedf18d5b4d3f24"
+    }
+  ]
+}
