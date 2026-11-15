@@ -3,8 +3,9 @@
 Universo computazionale minimo, deterministico e headless, nel quale osservare —
 senza imporle — eventuali proprietà emergenti.
 
-Stato: **M3 — flussi energetici, dissipazione e costi**, dopo M1 (motore fisico)
-e M2 (chimica e legami reversibili) approvati.
+Stato: **M3 approvato** (2026-11-15) — flussi energetici, dissipazione e costi,
+dopo M1 (motore fisico) e M2 (chimica e legami reversibili) approvati.
+**M4 non è stata iniziata.**
 
 **M3 non contiene vita, né la cerca.** Non ci sono organismi, genomi, replicatori,
 reti neurali, funzioni di fitness. Ci sono particelle che si spostano, legami

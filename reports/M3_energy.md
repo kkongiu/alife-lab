@@ -184,12 +184,12 @@ proprio file in `reports/tests/cases/`; indice in `reports/tests/index.md`.
 
 ## 11. Verdetti
 
-**M3: GO.** Ogni trasformazione ha un costo o un trasferimento coerente e il
-bilancio è verificabile con interi esatti; i controlli (chiuso, alimentato, senza
-alimentazione) si comportano in modo plausibile e distinguibile. Il risultato
-principale è negativo: il flusso mantiene strutture, ma non ne produce di più che
-il sistema chiuso, e metà dell'energia è sprecata. Questo è un risultato, non un
-difetto da nascondere.
+**M3: GO — approvato il 2026-11-15.** Ogni trasformazione ha un costo o un
+trasferimento coerente e il bilancio è verificabile con interi esatti; i controlli
+(chiuso, alimentato, senza alimentazione) si comportano in modo plausibile e
+distinguibile. Il risultato principale è negativo: il flusso mantiene strutture,
+ma non ne produce di più che il sistema chiuso, e metà dell'energia è sprecata.
+Questo è un risultato, non un difetto da nascondere.
 
 **M4 non è stata iniziata.** Rilevamento e tracciamento delle strutture
 richiedono approvazione esplicita.
