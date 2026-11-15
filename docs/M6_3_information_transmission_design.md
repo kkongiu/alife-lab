@@ -1,7 +1,7 @@
 # ALIFE — M6.3: capacità fisiche per la trasmissione di informazione
 
 **Stato:** proposta scientifica **solo progettuale**, non autorizzazione a implementare.  
-**Data:** 15 novembre 2026 · **Origine:** [issue #4](https://github.com/kkongiu/alife-lab/issues/4) e [addendum scientifico](../docs/SCIENTIFIC_DEVELOPMENT_PLAN.md) in PR #5.  
+**Data:** 15 novembre 2026 · **Origine:** [issue #4](https://github.com/kkongiu/alife-lab/issues/4) e [addendum scientifico proposto nella PR #5](https://github.com/kkongiu/alife-lab/pull/5).  
 **Compatibilità:** questo file parte dal `master` M6.2-E; le PR #1–#8 sono revisioni **non assunte come già integrate**. La validazione dei nuovi osservatori e la revisione causale rimangono requisiti distinti.
 
 > **Domanda:** sotto le regole locali attuali, può una variante di una struttura
