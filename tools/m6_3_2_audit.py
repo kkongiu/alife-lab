@@ -286,13 +286,17 @@ def analyse_one(world,p,arm,target_signatures):
     if first_loss_details is not None:
         assert first_loss_details["mode"]!="other",first_loss_details
     assert tick_totals["pure_ticks"]+tick_totals["core_grown_ticks"]+tick_totals["core_missing_ticks"]==p["integrity"]["expected_steps"]
+    ticks=dict(sorted(tick_totals.items()))
+    for key in ("pure_ticks","core_grown_ticks","core_missing_ticks",
+                "core_bond_retained_ticks","core_connected_ticks"):
+        ticks.setdefault(key,0)
     return {
         "seed":world.config.seed,"arm":arm,
         "first_loss_tick":first_loss,
         "first_loss":first_loss_details,
         "first_original_edge_loss_tick":first_original_loss,
         "first_core_growth_tick":first_growth,
-        "ticks":dict(sorted(tick_totals.items())),
+        "ticks":ticks,
         "incident_bond_events":dict(sorted(local_events.items())),
         "motif_counts":dict(sorted(phase_counts.items())),
         "first_strict_near_events":samples,
