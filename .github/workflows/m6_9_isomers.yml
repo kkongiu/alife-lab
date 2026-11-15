@@ -1,0 +1,43 @@
+name: M6.9 species sequence causality in natural rings
+
+on:
+  push:
+    branches:
+      - exp/m6-9-cycle-sequence-causal-isomers
+    paths:
+      - 'campaigns/m6_9_isomers/**'
+      - 'tools/m6_9_isomers.py'
+      - 'tests/test_m6_9_isomers.py'
+      - '.github/workflows/m6_9_isomers.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_9_isomers/**'
+      - 'tools/m6_9_isomers.py'
+      - 'tests/test_m6_9_isomers.py'
+      - '.github/workflows/m6_9_isomers.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  cyclic-sequence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project and development tools
+        run: python -m pip install -e '.[dev]'
+      - name: Run full test suite including prebreak invariance and forced-break tests
+        run: python -m pytest -q
+      - name: Run preregistered 100 natural-world paired-isomer experiment
+        run: python -m tools.m6_9_isomers
+      - name: Archive all selected source states, forks and zero cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-9-ring-sequence-isomer-forks
+          path: campaigns/m6_9_isomers/results.json
+          if-no-files-found: warn
