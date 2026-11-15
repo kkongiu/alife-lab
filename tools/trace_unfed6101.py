@@ -287,6 +287,25 @@ def run(out: Path = DEFAULT_OUT) -> dict:
         "child_birth": BIRTH_STEP,
         "child_match": MATCH_STEP,
         "local_bond_events": sum(len(r["local_bond_events"]) for r in timeline),
+        "local_event_details": [
+            {"post_step": t["step"], "kind": e["kind"],
+             "bond_ids": [e["id_a"], e["id_b"]],
+             "incident_to_target": e["incident_to_watch"],
+             "nearest_watch_distance": e["distance_to_watch_at_event"]}
+            for t in timeline for e in t["local_bond_events"]
+        ],
+        "key_steps": [
+            {"step": step,
+             "template_exists": at[step]["template"] is not None,
+             "child_component_size": (
+                 at[step]["component_containing_child_birth_ids"]["size"]
+                 if at[step]["component_containing_child_birth_ids"] else None),
+             "child_component_bonds": (
+                 at[step]["component_containing_child_birth_ids"]["bonds"]
+                 if at[step]["component_containing_child_birth_ids"] else []),
+             "template_child_distance": at[step]["template_child_min_distance"]}
+            for step in (770, 771, 792, 800, 835, 845)
+        ],
         "background_structure_ids": report["background_signature_frequency"]["distinct_structure_ids"],
         "output": str(out.relative_to(ROOT)) if out.is_relative_to(ROOT) else str(out),
     }
