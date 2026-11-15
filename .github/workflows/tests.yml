@@ -44,6 +44,15 @@ jobs:
           name: m6-2e-unfed-6101-ancestry
           path: campaigns/m6_2e/unfed_6101_ancestry.json
           if-no-files-found: warn
+      - name: Execute frozen P2 initial-condition counterfactual
+        run: python tools/p2_initial_conditions.py
+      - name: Archive P2 paired controls and RNG divergence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-2e-p2-initial-conditions
+          path: campaigns/m6_2e/p2_initial_conditions_results.json
+          if-no-files-found: warn
       - name: Archive audit evidence
         if: always()
         uses: actions/upload-artifact@v4
