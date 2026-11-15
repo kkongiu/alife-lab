@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 from alife.config import load_config
-from alife.replication_v2 import ProgressiveDetector
+from alife.replication_v21 import ProgressiveDetector
 from alife.structures import Tracker
 from alife.world import World
 
