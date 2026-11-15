@@ -1,0 +1,43 @@
+name: M6.3-2 five-stage physical audit
+
+on:
+  push:
+    branches:
+      - analysis/m6-3-2-five-stage-physical-audit
+    paths:
+      - 'campaigns/m6_3_2/**'
+      - 'tools/m6_3_2_audit.py'
+      - 'tests/test_m6_3_2_audit.py'
+      - '.github/workflows/m6_3_2_audit.yml'
+  pull_request:
+    paths:
+      - 'campaigns/m6_3_2/**'
+      - 'tools/m6_3_2_audit.py'
+      - 'tests/test_m6_3_2_audit.py'
+      - '.github/workflows/m6_3_2_audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  physical-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project and test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Verify full historical regression suite
+        run: python -m pytest -q
+      - name: Execute five-stage locked physical audit (160 runs)
+        run: python -m tools.m6_3_2_audit
+      - name: Archive all structural causes and raw run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-3-2-five-stage-audit-json
+          path: campaigns/m6_3_2/audit_results.json
+          if-no-files-found: warn
