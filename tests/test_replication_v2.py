@@ -169,3 +169,99 @@ def test_detector_is_deterministic() -> None:
     _, detector_first = _run(first, 40, TemplateCopier.for_world(first))
     _, detector_second = _run(second, 40, TemplateCopier.for_world(second))
     assert detector_first.summary() == detector_second.summary()
+
+
+def test_match_after_window_is_rejected() -> None:
+    """A match at birth+window+1 must not bypass the preregistered bound."""
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetector(window=2, min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 4  # birth+3, strictly outside window 2
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    summary = detector.summary()
+    assert summary["candidates"] == 1
+    assert summary["matched"] == 0
+    assert summary["discarded"]["window_expired"] == 1
+
+
+def test_matched_copy_must_keep_signature_until_persistence_due() -> None:
+    """Same tracker identity is insufficient if the copied graph changes."""
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetector(min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 3
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+    assert detector.summary()["matched"] == 1
+
+    world.step = 4
+    world.store.remove_bond(6, 7)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    # The largest fragment retains its tracker identity, but not the copied form.
+    for step in range(5, 15):
+        world.step = step
+        tracker.observe(world)
+        detector.observe(world, tracker)
+
+    summary = detector.summary()
+    assert summary["matched"] == 1
+    assert summary["persistent"] == 0
+    assert summary["classified"] == "not_replication"
+    assert summary["discarded"]["signature_changed_after_match"] == 1
+
+
+def test_match_at_exact_window_boundary_is_allowed() -> None:
+    world = _progressive_world()
+    tracker = Tracker()
+    detector = ProgressiveDetector(window=2, min_copies=1, min_generation=1)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 1
+    world.store.add_bond(4, 5, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 2
+    world.store.add_bond(5, 6, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    world.step = 3  # birth+window, inclusive
+    world.store.add_bond(6, 7, 0)
+    tracker.observe(world)
+    detector.observe(world, tracker)
+
+    assert detector.summary()["matched"] == 1
