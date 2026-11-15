@@ -1,0 +1,236 @@
+{
+  "campaign": "m6.2-e",
+  "version": 1,
+  "preregistered_utc": "2026-11-15T13:03:24+00:00",
+  "tool_version": "0.1.0",
+  "git_commit": "44b66b57d32f1d53586b24dcd903fda583eb0e39",
+  "versions": {
+    "python": "3.14.9",
+    "numpy": "2.5.4",
+    "platform": "Linux-7.3.3-1-cachyos-x86_64-with-glibc2.44",
+    "machine": "x86_64",
+    "processor": "n/d"
+  },
+  "detector_version": "v2",
+  "criteria": {
+    "radius": 2,
+    "window": 150,
+    "persist_steps": 10,
+    "min_size": 4,
+    "min_copies": 5,
+    "min_generation": 2
+  },
+  "source_campaign": "m6",
+  "source_manifest_sha256": "c1205a8a380709297884708958d237f25ec1497b30d31f98356bb1271f3890f8",
+  "source_results_sha256": "4f6cccb1fb529a430623b27ffc1576a2ebcb72f7a3854acd36677ead43351033",
+  "hypothesis": "Verificare se il rilevatore v2, che riconosce copie che raggiungono progressivamente la firma di un template, trova candidati che il v1 (solo nascite complete) non poteva vedere. Nessun candidato \u00e8 atteso; un candidato va trattato come ipotesi da verificare, non come risultato.",
+  "method": "Riesecuzione deterministica dei 25 mondi M6 con le stesse configurazioni e seed; verifica dell'hash completo del mondo contro M6; v1 e v2 applicati agli stessi percorsi. Nessuna nuova legge.",
+  "decision_rule": {
+    "candidate_condition": "almeno 3 seed su 5 classificati 'replication' dal v2 e mediana delle copie persistenti >= 5",
+    "otherwise": "nessuna evidenza di replicazione progressiva in questa ri-analisi",
+    "control_check": "se 'closed' o 'unfed' risultano 'replication', il criterio v2 \u00e8 invalido: REVISE",
+    "world_check": "ogni run deve riprodurre l'hash completo del mondo registrato in M6"
+  },
+  "runs": [
+    {
+      "id": "closed-6101",
+      "condition": "closed",
+      "seed": 6101,
+      "config": "configs/closed-6101.json",
+      "config_hash": "9bdfa469e6ee87fe58708932f7d8d4580d5bf12974c825973850a497cfab7537",
+      "expected_world_hash": "feb49be372b6daea4215e109f811405d54627e2de09ecf4de8c51af7eab4816a"
+    },
+    {
+      "id": "closed-6102",
+      "condition": "closed",
+      "seed": 6102,
+      "config": "configs/closed-6102.json",
+      "config_hash": "d96c77cb2c7ac84c69a0ee705c9f68f5a434e44f57ebb0a99b8c5a7c3c05be72",
+      "expected_world_hash": "4b44130f71a376f56204372f235ac7c9cbe4b8b2d5de535cfecf83cf462b5883"
+    },
+    {
+      "id": "closed-6103",
+      "condition": "closed",
+      "seed": 6103,
+      "config": "configs/closed-6103.json",
+      "config_hash": "210525a3f32ae16040a6f4996bb6b53778520f5de66b4c1c6a34fa6a1486de94",
+      "expected_world_hash": "8e091752db75e8ad54f443639b7016c93f6e28b9ee0f673b4c9ae33df23180f9"
+    },
+    {
+      "id": "closed-6104",
+      "condition": "closed",
+      "seed": 6104,
+      "config": "configs/closed-6104.json",
+      "config_hash": "547ea06a26df654ffe2e1bb252a9a14596374180ed9b77e6a81ef191dd679f45",
+      "expected_world_hash": "26868e25b70aeb4529d25d83956a8a70537bbeb05550d6c97d499b204cb1112e"
+    },
+    {
+      "id": "closed-6105",
+      "condition": "closed",
+      "seed": 6105,
+      "config": "configs/closed-6105.json",
+      "config_hash": "15190acd11cfa7d0231ca83f454d19e6c19b52a54bebda4a79cf78786bcc9884",
+      "expected_world_hash": "d5c80b40c03ec67bdd27817886f3c6128febda2a7d396c7ff662a3a489d370db"
+    },
+    {
+      "id": "unfed-6101",
+      "condition": "unfed",
+      "seed": 6101,
+      "config": "configs/unfed-6101.json",
+      "config_hash": "9d4a0dddcd861363d0813b5a011a9d1b1f31849ff2e05a4f278459c4b81f3882",
+      "expected_world_hash": "34dc7c81454bc8a2b7ed84972d14f19f155f8fd942afe19514fa1f12b57cff97"
+    },
+    {
+      "id": "unfed-6102",
+      "condition": "unfed",
+      "seed": 6102,
+      "config": "configs/unfed-6102.json",
+      "config_hash": "8571e7e56adae3a8b689110f7215d6d3c81c9c335b62297e5944e29272fd1c2e",
+      "expected_world_hash": "b187344c6f645473ea5754a103d6b621d9caedab972d21aeab4d4156c034e5c8"
+    },
+    {
+      "id": "unfed-6103",
+      "condition": "unfed",
+      "seed": 6103,
+      "config": "configs/unfed-6103.json",
+      "config_hash": "5098ef649709cd1bdb2426ccb4083e8e8e4dbb57bbd8da49fd84364d9dd8cc00",
+      "expected_world_hash": "992b7f335797ec3ce8b62c0b36644935093f1c2c14f1ccc403e1108c00184893"
+    },
+    {
+      "id": "unfed-6104",
+      "condition": "unfed",
+      "seed": 6104,
+      "config": "configs/unfed-6104.json",
+      "config_hash": "7d313e9733644c8327b7d4c4507f57b1e01489bcd4763745751bb90a90f51a46",
+      "expected_world_hash": "6718d7e380047381c1482350711beeda2a59c54122def1c1df1301505c12fa6a"
+    },
+    {
+      "id": "unfed-6105",
+      "condition": "unfed",
+      "seed": 6105,
+      "config": "configs/unfed-6105.json",
+      "config_hash": "b2291ea99f0f2fd79d670e528ff5283b8cd99bbf33abbe0d49e4100d2da24525",
+      "expected_world_hash": "47f3fc69c9ab7b49084ce946e0f169375f484475fc9ff2c044815c53a45d67f3"
+    },
+    {
+      "id": "fed-low-6101",
+      "condition": "fed-low",
+      "seed": 6101,
+      "config": "configs/fed-low-6101.json",
+      "config_hash": "d94e5a9abfff02e62d66af66e32a82d66b6835c6610bf6001927bf7cf38ad252",
+      "expected_world_hash": "e30ee974a16066ec4a2a6fed4be5e595d8589f0b0b58af08083f1a51f5c9f3fb"
+    },
+    {
+      "id": "fed-low-6102",
+      "condition": "fed-low",
+      "seed": 6102,
+      "config": "configs/fed-low-6102.json",
+      "config_hash": "ad62d42ba2549413d92216625cabd8edd23fb0ceeb2b0a80a910cea67cfc4dd6",
+      "expected_world_hash": "8b0732d6292cfdcfc785b2f53a8a714aea7c0536b355ca9714944e0c58f17507"
+    },
+    {
+      "id": "fed-low-6103",
+      "condition": "fed-low",
+      "seed": 6103,
+      "config": "configs/fed-low-6103.json",
+      "config_hash": "5291e4993b3fb346d1f22adfa8f3426bf6001a08fbc0f4d6541c94aca166368c",
+      "expected_world_hash": "e479ef61e899bc0f51499a19b52686ef7bc79743432710b1a9baf86a309f9e97"
+    },
+    {
+      "id": "fed-low-6104",
+      "condition": "fed-low",
+      "seed": 6104,
+      "config": "configs/fed-low-6104.json",
+      "config_hash": "328cc9b8d7034bb560f75df0035b7b56e6371787e34d0cbbde333d2803863800",
+      "expected_world_hash": "3167eb6839c69f795f0bb3f13f0e1525f799940053966d01780194c04b06eacd"
+    },
+    {
+      "id": "fed-low-6105",
+      "condition": "fed-low",
+      "seed": 6105,
+      "config": "configs/fed-low-6105.json",
+      "config_hash": "57b21499bfb80a0c30632fc668e433bb49c2e914544ee318800f61fe6046380c",
+      "expected_world_hash": "46a6af8a812141b1cdf7e2deefab1de8d39bdcbef4f7ca361883e7050ea5e0f7"
+    },
+    {
+      "id": "fed-mid-6101",
+      "condition": "fed-mid",
+      "seed": 6101,
+      "config": "configs/fed-mid-6101.json",
+      "config_hash": "0da05785daf3611b8689bc02a6d12701fc0454bb5cabf7a2b6f7ebffba241118",
+      "expected_world_hash": "07fe1ad238885b2243b038d86dc15ab0188ee79aa2e9296d4f32c8aecc52fd43"
+    },
+    {
+      "id": "fed-mid-6102",
+      "condition": "fed-mid",
+      "seed": 6102,
+      "config": "configs/fed-mid-6102.json",
+      "config_hash": "cef4caf073401576b289f561225d808538edd9d536171309c85ad33e683d0932",
+      "expected_world_hash": "7859bb481fbc24987a127f1f19637d1f907296f477e83f5286cc851d15a4c948"
+    },
+    {
+      "id": "fed-mid-6103",
+      "condition": "fed-mid",
+      "seed": 6103,
+      "config": "configs/fed-mid-6103.json",
+      "config_hash": "78855401d13842d2b63760a9ee3a833888db61367274c72efede9287e6c61eea",
+      "expected_world_hash": "618dbe2fdd6925553407cc54382bc333537073f51f6b39e003198f8393a140bb"
+    },
+    {
+      "id": "fed-mid-6104",
+      "condition": "fed-mid",
+      "seed": 6104,
+      "config": "configs/fed-mid-6104.json",
+      "config_hash": "d02f1f885ec851d2f59852475291a1ccc3bd81defe3a93627ddc8c178c1fdcac",
+      "expected_world_hash": "f4e1f7b4c65926c702550d3aba5cfc679d2b90db5955eca29fccef307b69144d"
+    },
+    {
+      "id": "fed-mid-6105",
+      "condition": "fed-mid",
+      "seed": 6105,
+      "config": "configs/fed-mid-6105.json",
+      "config_hash": "e086cad192bdd315ac3741da70cc085a2b97982ee55ea0de6a84f82be1becb06",
+      "expected_world_hash": "1fffa7f69a1bcea04f9950f3930c3c198fe5ddf4d882307cb6da157481f64b20"
+    },
+    {
+      "id": "fed-high-6101",
+      "condition": "fed-high",
+      "seed": 6101,
+      "config": "configs/fed-high-6101.json",
+      "config_hash": "9bb46cba33d0be7e3f549f8ede185b63fc0d7fb568cccfc4b09d08a40d4a6553",
+      "expected_world_hash": "f879b1b5906bebdaa249c5033f75126a2a6fd9221d283451335777ae3003f49e"
+    },
+    {
+      "id": "fed-high-6102",
+      "condition": "fed-high",
+      "seed": 6102,
+      "config": "configs/fed-high-6102.json",
+      "config_hash": "c3eff895d7406e31db4fd7e73ed846c83f631fe1385db1f2839095f6008209dd",
+      "expected_world_hash": "c9ca7a3fe67f63e8cca36022d6af13730936d101582b4efd7aef7b7249f47e0b"
+    },
+    {
+      "id": "fed-high-6103",
+      "condition": "fed-high",
+      "seed": 6103,
+      "config": "configs/fed-high-6103.json",
+      "config_hash": "a5c68acd0774983272483da18fcdefcb07c252c4a20f8a549c01c8af2609a5d3",
+      "expected_world_hash": "4918b79078fd64019f221fca16fd8d9db4ab6114f6df2f78473409cc5f67e1bf"
+    },
+    {
+      "id": "fed-high-6104",
+      "condition": "fed-high",
+      "seed": 6104,
+      "config": "configs/fed-high-6104.json",
+      "config_hash": "911bd926a0654cc5f43f9285c1facdfb7958b5db1b2960daba69267babe8f9c6",
+      "expected_world_hash": "9ef9db9b96f3198e17f4868aad61fecdae9ac5a70544b639176830e49c9938ba"
+    },
+    {
+      "id": "fed-high-6105",
+      "condition": "fed-high",
+      "seed": 6105,
+      "config": "configs/fed-high-6105.json",
+      "config_hash": "955119ba73929d5bf148a7ba1ca8967ffbbc0e2a9a1219967aedf18d5b4d3f24",
+      "expected_world_hash": "f9605a1a6b0a3e42b212f90cb4a8ff613bab891aa0c7461f8d2c4718942eb9e4"
+    }
+  ]
+}
