@@ -211,6 +211,8 @@ class Tracker:
         self.ambiguous_structures = 0
         self.examples: dict[str, list[dict]] = defaultdict(list)
         self.last_births: list[TrackedStructure] = []
+        # Default remains the historical exact-tree/WL scheme (no checkpoint changes).
+        self._signature_fn = signature
 
     # -- osservazione ----------------------------------------------------
     def observe(self, world: "World") -> None:
@@ -222,7 +224,7 @@ class Tracker:
         for indices, bonds in components(store):
             current.append(
                 (
-                    signature(store, indices, bonds, species_names),
+                    self._signature_fn(store, indices, bonds, species_names),
                     frozenset(store.ids[index] for index in indices),
                     len(indices),
                 )
@@ -573,3 +575,84 @@ def _structure_from_dict(data: dict) -> TrackedStructure:
         particles=frozenset(int(value) for value in data["particles"]),
         parents=tuple(int(value) for value in data.get("parents", [])),
     )
+
+
+# Opt-in detector v2: exact canonical codes for connected degree-two cycles.
+# The historical signature() and Tracker remain bit-for-bit compatible.
+CYCLE_SIGNATURE_SCHEME = "exact-cycle-v2"
+
+
+def signature_v2(
+    store: "ParticleStore",
+    indices: tuple[int, ...],
+    bonds: tuple[tuple[int, int], ...],
+    species_names: list[str],
+) -> Signature:
+    """Use an exact cyclic canonical sequence for simple rings, otherwise
+    retain the original canonical tree or explicitly fuzzy WL signature.
+
+    No physical state or RNG is touched. For non-simple cyclic graphs the
+    legacy F: fingerprint is retained with exact=False.
+    """
+    old = signature(store, indices, bonds, species_names)
+    if len(indices) < 4 or len(bonds) != len(indices):
+        return old
+    neighbours = {index: [] for index in indices}
+    for a, b in bonds:
+        neighbours[a].append(b)
+        neighbours[b].append(a)
+    if any(len(adjacencies) != 2 for adjacencies in neighbours.values()):
+        return old
+    # "indices" and "bonds" are a connected component from components().
+    # Validate connectivity independently, so a disjoint union of cycles is
+    # never given a bogus exact signature if this API is called directly.
+    start = min(indices)
+    traversal = [start]
+    previous = start
+    current = min(neighbours[start])
+    while current != start:
+        if current in traversal or len(traversal) >= len(indices):
+            return old
+        traversal.append(current)
+        following = [i for i in neighbours[current] if i != previous]
+        if len(following) != 1:
+            return old
+        previous, current = current, following[0]
+    if len(traversal) != len(indices):
+        return old
+    names = tuple(species_names[store.species[i]] for i in traversal)
+    reversed_names = names[::-1]
+    n = len(names)
+    canon = min(
+        [names[i:] + names[:i] for i in range(n)]
+        + [reversed_names[i:] + reversed_names[:i] for i in range(n)]
+    )
+    # JSON encoding avoids ambiguous comma/colon punctuation in species names;
+    # prefix version C2: distinguishes this namespace from historical F:.
+    key = "C2:" + json.dumps(canon, separators=(",", ":"), ensure_ascii=True)
+    return Signature(key, old.size, old.bonds, old.composition, True)
+
+
+class ExactCycleTrackerV2(Tracker):
+    """Explicit opt-in tracker for exact simple cycles and legacy other graphs.
+
+    Checkpoints are version marked to prevent silent mixing with old Tracker.
+    Existing Tracker checkpoints and the original signature() are untouched.
+    """
+
+    def __init__(self, out_dir: str | Path | None = None):
+        super().__init__(out_dir=out_dir)
+        self._signature_fn = signature_v2
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data["signature_scheme"] = CYCLE_SIGNATURE_SCHEME
+        return data
+
+    @classmethod
+    def from_dict(
+        cls, data: dict, out_dir: str | Path | None = None
+    ) -> "ExactCycleTrackerV2":
+        if data.get("signature_scheme") != CYCLE_SIGNATURE_SCHEME:
+            raise ValueError("Checkpoint is not exact-cycle-v2; no implicit migration")
+        return super().from_dict(data, out_dir=out_dir)
