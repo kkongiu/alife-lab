@@ -1,0 +1,91 @@
+{
+  "campaign": "m6.2-b",
+  "protocol_version": 1,
+  "steps_per_run": 3000,
+  "seeds": [
+    6101,
+    6102,
+    6103,
+    6104,
+    6105
+  ],
+  "worlds": 15,
+  "arms": {
+    "off": {
+      "target_formations_by_seed": {
+        "6101": 760,
+        "6102": 794,
+        "6103": 810,
+        "6104": 799,
+        "6105": 814
+      },
+      "delta_vs_off_by_seed": {
+        "6101": 0,
+        "6102": 0,
+        "6103": 0,
+        "6104": 0,
+        "6105": 0
+      },
+      "median_target_formations": 799,
+      "median_paired_delta": 0,
+      "seeds_with_increase": 0,
+      "kinetic_effect_criterion_met": false,
+      "catalyzed_target_formations": 0,
+      "total_matched_copy_candidates_v21": 0,
+      "total_persistent_copy_candidates_v21": 0
+    },
+    "external_S3": {
+      "target_formations_by_seed": {
+        "6101": 889,
+        "6102": 923,
+        "6103": 862,
+        "6104": 838,
+        "6105": 890
+      },
+      "delta_vs_off_by_seed": {
+        "6101": 129,
+        "6102": 129,
+        "6103": 52,
+        "6104": 39,
+        "6105": 76
+      },
+      "median_target_formations": 889,
+      "median_paired_delta": 76,
+      "seeds_with_increase": 5,
+      "kinetic_effect_criterion_met": true,
+      "catalyzed_target_formations": 928,
+      "total_matched_copy_candidates_v21": 1,
+      "total_persistent_copy_candidates_v21": 0
+    },
+    "incorporated_S0": {
+      "target_formations_by_seed": {
+        "6101": 1015,
+        "6102": 1010,
+        "6103": 971,
+        "6104": 1051,
+        "6105": 1054
+      },
+      "delta_vs_off_by_seed": {
+        "6101": 255,
+        "6102": 216,
+        "6103": 161,
+        "6104": 252,
+        "6105": 240
+      },
+      "median_target_formations": 1015,
+      "median_paired_delta": 240,
+      "seeds_with_increase": 5,
+      "kinetic_effect_criterion_met": true,
+      "catalyzed_target_formations": 3390,
+      "total_matched_copy_candidates_v21": 0,
+      "total_persistent_copy_candidates_v21": 0
+    }
+  },
+  "all_original_m6_off_hashes_reproduced": true,
+  "scientific_scope": "Paired kinetic effects of explicit catalysis; NO causal structural replication or self-catalytic amplification has been demonstrated.",
+  "evidence": {
+    "github_actions_run": "https://github.com/kkongiu/alife-lab/actions/runs/43721178967",
+    "github_actions_artifact": "https://github.com/kkongiu/alife-lab/actions/runs/43721178967/artifacts/14164148129",
+    "protocol_commit": "a00028c1a1c9476713fd4fa7ca2c5730a8694a6a"
+  }
+}

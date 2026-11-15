@@ -1,0 +1,56 @@
+name: M6.2-B catalysis campaign
+
+on:
+  push:
+    branches:
+      - exp/m6-2b-catalysis
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run-seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        seed: [6101, 6102, 6103, 6104, 6105]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install package
+        run: python -m pip install -e .
+      - name: Execute preregistered seed (3 arms x 3000 steps)
+        run: python tools/experiment_m6_2b.py --seed ${{ matrix.seed }} --output campaigns/m6_2b/work/run-${{ matrix.seed }}.json
+      - name: Archive reproducible seed result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-2b-seed-${{ matrix.seed }}
+          path: campaigns/m6_2b/work/run-${{ matrix.seed }}.json
+          if-no-files-found: warn
+  aggregate:
+    needs: [run-seed]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m6-2b-seed-*
+          path: campaigns/m6_2b/incoming
+          merge-multiple: true
+      - name: Verify all original M6 hashes and preregistered criteria
+        run: python tools/aggregate_m6_2b.py --input-dir campaigns/m6_2b/incoming --protocol campaigns/m6_2b/protocol.json --output-dir campaigns/m6_2b/final
+      - name: Publish scientific report
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-2b-complete-results
+          path: campaigns/m6_2b/final
+          if-no-files-found: error
