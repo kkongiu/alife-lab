@@ -1,0 +1,98 @@
+{
+  "campaign": "m6.2-b",
+  "protocol_version": 1,
+  "phase": "catalysis-only, no engine changes",
+  "preregistered_after_m6_2e_audit_commit": "5d0aaa51e24a42c0e65081b11b581d7ac5a9ff07",
+  "source": "M6 fed-mid 5 seeds x 3000 steps",
+  "seeds": [
+    6101,
+    6102,
+    6103,
+    6104,
+    6105
+  ],
+  "steps": 3000,
+  "arms": {
+    "off": [],
+    "external_S3": [
+      {
+        "catalyst": "S3",
+        "pair": [
+          "S0",
+          "S1"
+        ],
+        "factor": 5
+      }
+    ],
+    "incorporated_S0": [
+      {
+        "catalyst": "S0",
+        "pair": [
+          "S0",
+          "S1"
+        ],
+        "factor": 5
+      }
+    ]
+  },
+  "source_runs": [
+    {
+      "seed": 6101,
+      "config": "configs/fed-mid-6101.json",
+      "config_hash": "0da05785daf3611b8689bc02a6d12701fc0454bb5cabf7a2b6f7ebffba241118",
+      "expected_off_world_hash": "07fe1ad238885b2243b038d86dc15ab0188ee79aa2e9296d4f32c8aecc52fd43"
+    },
+    {
+      "seed": 6102,
+      "config": "configs/fed-mid-6102.json",
+      "config_hash": "cef4caf073401576b289f561225d808538edd9d536171309c85ad33e683d0932",
+      "expected_off_world_hash": "7859bb481fbc24987a127f1f19637d1f907296f477e83f5286cc851d15a4c948"
+    },
+    {
+      "seed": 6103,
+      "config": "configs/fed-mid-6103.json",
+      "config_hash": "78855401d13842d2b63760a9ee3a833888db61367274c72efede9287e6c61eea",
+      "expected_off_world_hash": "618dbe2fdd6925553407cc54382bc333537073f51f6b39e003198f8393a140bb"
+    },
+    {
+      "seed": 6104,
+      "config": "configs/fed-mid-6104.json",
+      "config_hash": "d02f1f885ec851d2f59852475291a1ccc3bd81defe3a93627ddc8c178c1fdcac",
+      "expected_off_world_hash": "f4e1f7b4c65926c702550d3aba5cfc679d2b90db5955eca29fccef307b69144d"
+    },
+    {
+      "seed": 6105,
+      "config": "configs/fed-mid-6105.json",
+      "config_hash": "e086cad192bdd315ac3741da70cc085a2b97982ee55ea0de6a84f82be1becb06",
+      "expected_off_world_hash": "1fffa7f69a1bcea04f9950f3930c3c198fe5ddf4d882307cb6da157481f64b20"
+    }
+  ],
+  "detector": "v2.1",
+  "primary_metric": "total formation events of S0-S1 bonds over 3000 steps",
+  "secondary_metrics": [
+    "number of catalyzed S0-S1 formations",
+    "total bond formations and breaks",
+    "final bond count",
+    "tracker size and candidate copies with v2.1",
+    "energy budget",
+    "reproduced M6 off world hash"
+  ],
+  "decision": {
+    "kinetic_effect": "paired target bond formation count increases in at least 4 of 5 seeds and median paired difference is strictly positive; separate for each arm",
+    "no_effect": "otherwise; count null runs",
+    "replication": "do not claim replication from this test, regardless of copy candidate counts"
+  },
+  "interpretation_limits": [
+    "S3 is a nonbonding external catalyst, not self-replication",
+    "S0 count is invariant; catalysis by S0 does not itself imply production of catalysts or autocatalytic growth",
+    "same seeds are paired but RNG streams may diverge when catalyst changes the number of possible reactions",
+    "sampling bond events does not measure per-opportunity reaction probability; causal interpretation limited to effect of configured law",
+    "M6 source hashes frozen, original M6.2-E report remains immutable",
+    "future shuffled-spatial controls would require separate preregistration and explicit mapping"
+  ],
+  "goals": [
+    "test a controlled local catalytic law against baseline",
+    "measure pathway specificity without adding a replication rule",
+    "preserve reproducibility of all prior milestones"
+  ]
+}
