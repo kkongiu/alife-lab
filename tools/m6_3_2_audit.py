@@ -347,6 +347,16 @@ def aggregate(rows,p):
             "mean_core_connected_ticks":round(counts["core_connected_ticks"]/num,3),
             "core_grown_worlds":sum(r["first_core_growth_tick"] is not None for r in subset),
             "initial_bond_broken_worlds":sum(r["first_original_edge_loss_tick"] is not None for r in subset),
+            "mean_first_original_edge_loss_tick_observed":round(
+                sum(r["first_original_edge_loss_tick"] for r in subset
+                    if r["first_original_edge_loss_tick"] is not None) /
+                sum(r["first_original_edge_loss_tick"] is not None for r in subset),3
+            ) if any(r["first_original_edge_loss_tick"] is not None for r in subset) else None,
+            "mean_first_core_growth_tick_observed":round(
+                sum(r["first_core_growth_tick"] for r in subset
+                    if r["first_core_growth_tick"] is not None) /
+                sum(r["first_core_growth_tick"] is not None for r in subset),3
+            ) if any(r["first_core_growth_tick"] is not None for r in subset) else None,
             "eligible_pairs_while_pure":sum(
                 counts.get(f"pure_eligible_{s}",0) for s in ("S0","S1")
             ),
@@ -380,7 +390,22 @@ def aggregate(rows,p):
                 "mean_pure_ticks":round(sum(r["ticks"]["pure_ticks"] for r in arm_rows)/len(arm_rows),3),
                 "mean_core_retained_ticks":round(
                     sum(r["ticks"]["core_bond_retained_ticks"] for r in arm_rows)/len(arm_rows),3
-                )
+                ),
+                "new_strict_near_by_source_phase":{
+                    phase:{v:sum(r["motif_counts"].get(f"strict_{phase}_near_{v}",0)
+                                  for r in arm_rows)
+                           for v in ("A","B","C")}
+                    for phase in ("pure","core_grown","core_edges_missing")
+                },
+                "eligible_source_pairs_when_pure":sum(
+                    sum(r["ticks"].get(f"pure_eligible_{v}",0)
+                        for v in ("S0","S1"))
+                    for r in arm_rows),
+                "first_growth_in_runs":sum(r["first_core_growth_tick"] is not None
+                                            for r in arm_rows),
+                "first_original_edge_loss_in_runs":sum(
+                    r["first_original_edge_loss_tick"] is not None
+                    for r in arm_rows),
             }
         result[density]["arms"]=per_arm
     return result
