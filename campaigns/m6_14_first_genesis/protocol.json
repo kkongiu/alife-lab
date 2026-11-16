@@ -1,0 +1,94 @@
+{
+  "schema": "alife-m6-14-independent-first-native-cage-genesis-v1",
+  "status": "frozen_before_runner_or_results",
+  "date": "2026-11-16",
+  "reference": "M6.13 found 3/400 enriched seed worlds with >=30 tick native geometric confinement but only 1/400 on first 7-edge material episode. M6.14 uses entirely new seeds and requires no previous observation of either a 7-edge perimeter path or an 8-edge exact cycle with the same material identifiers.",
+  "question": "Do at least two new independent native worlds spontaneously form, at the FIRST observed seven-edge or eight-edge 3x3 perimeter event for that material ID set, a seven-original-edge barrier enclosing a native mobile unbonded monomer that remains intact >=30 consecutive ticks?",
+  "sample": {
+    "natural_source": "M6.4 original natural M6 laws, zero initial bonds, 24x24 periodic, enriched density only (264 particles): deliberately selected prior to new sample from M6.12/M6.13 detection enrichment",
+    "density": "enriched",
+    "seed_first": 13001,
+    "seed_last": 14600,
+    "seed_count": 1600,
+    "horizon_ticks": 600,
+    "expected_worlds": 1600,
+    "expected_world_ticks": 960000,
+    "shards": [
+      {
+        "start": 13001,
+        "end": 13200
+      },
+      {
+        "start": 13201,
+        "end": 13400
+      },
+      {
+        "start": 13401,
+        "end": 13600
+      },
+      {
+        "start": 13601,
+        "end": 13800
+      },
+      {
+        "start": 13801,
+        "end": 14000
+      },
+      {
+        "start": 14001,
+        "end": 14200
+      },
+      {
+        "start": 14201,
+        "end": 14400
+      },
+      {
+        "start": 14401,
+        "end": 14600
+      }
+    ],
+    "must_finish_all": true,
+    "no_adaptive_sampling": true
+  },
+  "definitions": {
+    "valid_native_seven_edge": "Exactly eight native particles occupy toroidal 3x3 perimeter, connected by exactly seven ORIGINAL native bonds along 8-cycle positions (linear perimeter path), no off-ring bonds on member components, and degree multiset (1,1,2,2,2,2,2,2). Original M6.12 precursor_candidates.",
+    "native_8_ring_history": "At each post-tick observer snapshot, note exact 8-member degree-2 native connected cycles whose coordinates are exact 3x3 perimeter. If material set ever appeared as an exact native 8 ring, first-origin qualification of later 7-edge path with same eight IDs is false.",
+    "first_genesis": "The FIRST post-tick snapshot of this set of eight material IDs observed as either an exact seven-edge path OR exact eight-edge ring, across all centers. Qualifying event must be seven-edge native path on that first snapshot; any prior path or ring disqualifies reappearance.",
+    "mobile_resident": "Native free central monomer with degree=0 and move_probability>0, resident persistent ID constant from inception.",
+    "continuous_barrier": "Same seven original bond identities (no observed or same-tick broken-then-reformed edge), same eight material particles fixed at original perimeter positions, and same center resident ID; independent of eighth edge closing.",
+    "interval": ">=30 observed consecutive post-step ticks; episode starting at t and ending on first original break at t+L has length L; t600 right censored. A censored episode with >=30 observed ticks counts as such but marked censored; <30 does not."
+  },
+  "primary": {
+    "success": "At least two distinct NEW numeric seeds (13001-14600) have a first_genesis seven-edge original path with mobile resident at first observation, maintaining uninterrupted original seven-edge barrier and resident for >=30 observed ticks; zero-bond initial state.",
+    "single": "Exactly one => one_first_genesis_world",
+    "null": "None => no_first_genesis_replication",
+    "primary_counts": "Distinct numeric seeds, not episodes, not new reclosures, and not prior campaigns.",
+    "no_threshold_change_after_results": true
+  },
+  "secondary": {
+    "duration_cutoffs": [
+      30,
+      100,
+      250,
+      500
+    ],
+    "report": "All worlds/zero runs, first 7 events, previously seen 8 cycles, subsequent reclosures, repeated source material cohorts, censoring and durations, resident IDs, eighth-bond closure timing and event breaks.",
+    "mechanism": "Separate observational comparisons first vs recurrent; a longer recurrent cage does NOT prove active self-repair or selection. Record time since last observed original material episode and number of prior episodes; no p-values on dependent episodes.",
+    "frequency": "Wilson 95% descriptive interval on 1600 independent numeric-seed worlds for first genesis >=30 and any later repeat >=30; no causal claim.",
+    "historical": "No seed or episode from M6.11–M6.13 included in M6.14 primary numerator or denominator.",
+    "no_biological_claims": true
+  },
+  "integrity": {
+    "no_change_to_master": true,
+    "no_src_changes": true,
+    "no_changes_to_original_M6": true,
+    "preregistration_before_code": true,
+    "test_full_suite_before_runs": true,
+    "all_shards_must_match_protocol_hash": true,
+    "every_positive_primary_or_any_repeat_30tick_bare_replay": true,
+    "fixed_seed13001_bare_replay": true,
+    "independent_replay_matching": "hash, RNG fingerprint and draws, energy, dissipated, bond formations and breaks",
+    "artifact": "campaigns/m6_14_first_genesis/merged_results.json",
+    "report": "reports/M6_14_first_genesis.md"
+  }
+}
