@@ -1,0 +1,88 @@
+{
+  "schema": "alife-m7-4-native-material-cohort-paired-forks-v1",
+  "status": "preregistered_before_implementation_and_results",
+  "date": "2026-11-16",
+  "base": "exp/m7-3-bond-network-energy",
+  "science_question": "Does energy conduction along a NATURALLY FORMED native connected material cohort cause that SAME cohort to acquire new native members or survive longer, compared with an exactly matched clone with no transfer? Keep incident bond formation separate from global new bonds.",
+  "design": {
+    "source_seeds": {
+      "start": 22001,
+      "end_inclusive": 22160,
+      "count": 160
+    },
+    "parent_search_ticks": 250,
+    "followup_ticks": 120,
+    "original_world": "M7.3 no_transfer 264 particles, 24x24 periodic, original M6 chemistry (no catalysis), movement energy cost=1, 16 dispersed sources delivering 19200 energy per full 600 ticks, start zero bonds",
+    "paired_arms": [
+      "no_transfer",
+      "bond_only",
+      "all_contacts"
+    ],
+    "source_selection": "In each source seed scan original no_transfer native trajectory after each tick 1..250 until FIRST exact connected native component of 3..10 material IDs with >=2 chemical edges and at least one member has unused native valence. Select smallest sorted member-ID tuple at that first qualifying tick. At most one fork per source seed, regardless of future outcomes.",
+    "shards": [
+      {
+        "start": 22001,
+        "end": 22040
+      },
+      {
+        "start": 22041,
+        "end": 22080
+      },
+      {
+        "start": 22081,
+        "end": 22120
+      },
+      {
+        "start": 22121,
+        "end": 22160
+      }
+    ],
+    "include_all_no_source_worlds": true,
+    "independently_count_numeric_source_seed_not_aggregates": true,
+    "no_adaptive_sampling": true
+  },
+  "source_identity": {
+    "native_component": "maximal connected component of current native chemical bonds at selection, never planted or manually edited",
+    "initial_material_ids": "sorted source member particle IDs fixed across all arms",
+    "initial_bond_ids": "original material ID pairs, same in all three arm clones",
+    "first_break": "first actual bond-break EVENT involving any initial material pair, including within-tick reformation (native BreakRecorder); censor if none by 120 ticks",
+    "original_survival": "true iff no original material-pair bond break event through selected horizon; if a bond breaks and re-forms, still count broken",
+    "new_incident_bond": "bond FORMATION event with one endpoint in original source members and the other outside; count events on original source materials, not the rest of the world",
+    "growth": "at a posttick snapshot the native component containing all original source material IDs includes at least one new external particle. A component no longer connecting all originals does NOT count as coherent growth.",
+    "original_bond_reclosure": "after first original material pair break, whether the exact original pair bond recurs in a later snapshot; this is chemistry, not inferred active repair",
+    "source_bond_energy_events": "post-native-step transfer events along bonds whose both endpoints belong to original source IDs; record separately from contacts elsewhere",
+    "followup": "120 steps after source fork tick, existing M6 physical rules and external sources unchanged; on the conduction arms, apply experimental transport after each native World.advance(1)."
+  },
+  "experimental_transport": {
+    "off": "no energy exchange after base step",
+    "bonded": "exact already-tested M7.3 energy_transfer(w,'bond_only') across native chemical bonds",
+    "all_contacts": "exact already-tested M7.3 energy_transfer(w,'all_contacts') across cardinally adjacent particles",
+    "isolate_flux": "A separate observer independently computes accepted transfer count along original member-member bonds using identical snapshot/donor sorting; must exactly match official global transfer output in synthetic tests; never change RNG or physics.",
+    "conserved": "particle energy before and after passive pass exactly equal; ledger stored+dissipated+unabsorbed=initial+injected at all checkpoints"
+  },
+  "preregistered_decisions": {
+    "primary_cohort_growth": "Among at least 30 source-selected worlds and at least 20 DISCORDANT matched pairs, bond_only has coherent rooted growth by tick120 where no_transfer does not in >=2/3 of discordant pairs. Else 'not_met_or_underpowered'. This is a paired effect on the SAME material cohort, not evidence of heredity.",
+    "secondary_original_survival": "Among at least 20 DISCORDANT matched pairs, bond_only retains every original source bond unbroken through tick120 where no_transfer does not in >=2/3 discordant pairs. Else 'not_met_or_underpowered'. Constant native break probability is unchanged; long-run RNG schedule divergence can affect this.",
+    "track_first_external_formation": "Report number of paired worlds with >=1 new incident formation at source and total incident formation events, plus pairwise first occurrence and differences, no post-hoc new gate.",
+    "no_active_maintenance_claim": "Neither cohesion nor first reattachment alone establishes active self-repair, metabolism or heredity, regardless of outcomes.",
+    "no_posthoc_threshold_change": true
+  },
+  "integrity": {
+    "no_src_changes": true,
+    "no_master_changes": true,
+    "exact_three_arm_same_full_initial_hash_rng_draws_and_energy_at_fork": true,
+    "first_step_original_bond_break_events_identical_between_all_arms": true,
+    "full_native_no_conduction_source_check": true,
+    "exact_160_source_seed_coverage_all_nulls": true,
+    "four_shard_protocol_sha256": true,
+    "at_least_one_sham_clone_replay_each_shard": true,
+    "event_recorder_is_observational_no_rng_draw": true,
+    "full_replay_first_selected_seed_per_shard": true,
+    "complete_energy_ledger": true
+  },
+  "outputs": {
+    "results": "campaigns/m7_4_material/results.json",
+    "report": "reports/M7_4_material_feedback.md",
+    "workflow": ".github/workflows/m7_4_material_feedback.yml"
+  }
+}
