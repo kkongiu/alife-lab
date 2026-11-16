@@ -1,0 +1,43 @@
+{
+  "schema": "alife-m7-0-capability-audit-v1",
+  "status": "frozen_before_code_and_audit",
+  "date": "2026-11-16",
+  "base": "exp/m6-14-first-native-cage-genesis",
+  "mode": "deterministic law and fixture audit, not hypothesis test of spontaneous living organization",
+  "sources": [
+    "campaigns/m6/configs/unfed-6101.json",
+    "src/alife/world.py",
+    "src/alife/dynamics.py",
+    "src/alife/chemistry.py",
+    "src/alife/particles.py"
+  ],
+  "checks": [
+    {
+      "key": "fixed_particle_population",
+      "definition": "IDs and population unchanged through 120 original enriched world steps; original World.advance has no create/delete operation"
+    },
+    {
+      "key": "zero_bond_catalysis",
+      "definition": "Original M6 allowed chemistry catalysis list is empty (no direct species or pattern catalytic rules)"
+    },
+    {
+      "key": "source_energy_zero",
+      "definition": "Original M6 sources list empty and world energy never rises during tested native unfed trajectories"
+    },
+    {
+      "key": "free_motion_at_zero_energy",
+      "definition": "With only initial count and particle energy controlled, a native S3 with E=0 under original M6 zero movement cost still moves in finite steps, with energy conserved at zero"
+    },
+    {
+      "key": "fully_bonded_ring_saturated",
+      "definition": "Original max_bonds=2 for S0/S1, a degree-2 cycle has no available extra bond slot before original edge breaks"
+    }
+  ],
+  "limits": [
+    "No formal proof that pattern copying or spatial templating is mathematically impossible; finite fixed particles could reorganize",
+    "A seeded synthetic configuration is only a mechanism check, never spontaneous evidence",
+    "Results do not change physical laws or M6 preregistered observations"
+  ],
+  "output": "campaigns/m7_0_capability/audit.json",
+  "report": "reports/M7_0_capability_audit.md"
+}
