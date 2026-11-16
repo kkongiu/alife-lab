@@ -279,7 +279,7 @@ def follow_pair(source,candidate,choice,horizon=120,sham=False):
     }
 
 
-def study_seed(seed,p,natural):
+def study_seed(seed,p,natural,sham=False):
     parent=create_natural(seed,p["sample"]["density"],natural)
     first_candidate_seen=False
     failed_remote_candidates=0
@@ -298,7 +298,7 @@ def study_seed(seed,p,natural):
                 continue
             experiment=follow_pair(parent,cand,choice,
                                    p["sample"]["fork_horizon_ticks"],
-                                   sham=(seed==p["sample"]["seed_start"]))
+                                   sham=sham)
             assert experiment["same_first_step_source_breaks"]
             return {
                 "seed":seed, "eligible":True, "selected_tick":t,
@@ -377,7 +377,10 @@ def run_shard(start,end):
     natural=natural_protocol()
     worlds=[]
     for seed in range(start,end+1):
-        w=study_seed(seed,p,natural)
+        # One genuinely selected matched pair per shard must be independently
+        # reproduced by a no-event-observer sham clone, not only the first
+        # numeric seed (which may contain no natural seven-edge candidate).
+        w=study_seed(seed,p,natural,sham=not any(x["eligible"] for x in worlds))
         worlds.append(w)
         if (seed-start+1)%20==0:
             print(f"M615_PROGRESS {start}-{end} seed={seed} pairs={sum(x['eligible'] for x in worlds)}",flush=True)
