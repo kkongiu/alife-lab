@@ -100,6 +100,19 @@ Entrambi i gruppi hanno il medesimo segno descrittivo, ma nel secondo ci sono so
 - Lo script del nuovo esperimento verifica ad ogni fork che i tre mondi partano con identici **hash del mondo completo, stato RNG, energie e legami**; i primi eventi di rottura originale devono coincidere tra tutti i bracci.
 - **Verifica indipendente del file ZIP GitHub originale**: ricontati 320 seed, 960 risultati di fork, gli esatti 41/18/10/251 per la crescita e 60/63/26/171 per la persistenza; controllate età di tutti i legami selezionati, le condizioni di valenza, i cinque checkpoint di ogni fork, il bilancio degli scambi passivi e l'identità dei primi eventi di rottura. Tutti i controlli effettuati concordano con i risultati della CI.
 
+
+### Audit fisico indipendente post-hoc sui 960 fork — PASS
+
+Ho eseguito anche un secondo controllo, **successivo alla conclusione della campagna** e quindi non utilizzabile per cambiare l'endpoint preregistrato:
+
+- [GitHub Actions #43964566621 — PASS, replay di tutti i 320 seed e 960 fork](https://github.com/kkongiu/alife-lab/actions/runs/43964566621).
+- [Artifact #14275746539 — audit fisico completo](https://github.com/kkongiu/alife-lab/actions/runs/43964566621/artifacts/14275746539).
+- [Script indipendente `tools/m7_5_posthoc_independent_replay.py`](../tools/m7_5_posthoc_independent_replay.py).
+
+Il controllo **non invoca** il selettore M7.5, il suo tracciatore dei flussi o la sua funzione `follow()`. Per ognuno dei **320 seed**, ricostruisce il mondo nativo da zero fino al tick di selezione e ne confronta l'hash completo, il RNG e i legami originari; poi esegue ciascuno dei **tre fork** usando l'implementazione di trasferimento **M7.3 originale**, classifica in modo separato la connettività degli ID materiali tramite attraversamento del grafo e rileva gli eventi di rottura originali con un proprio registratore. I confronti sono esatti per **960/960 fork**: hash finali, RNG/draws, energia, iniezione/overflow/dissipazione, contatori chimici, primo tick di rottura originale, crescita e conservazione. Conferma anche i quattro gruppi di crescita **41/18/10/251**, senza alcun caso discordante tra l'audit e il dataset M7.5.
+
+Questo audit è **post-hoc sullo stesso campione**: aumenta la fiducia nella correttezza del rilevamento ma **non** costituisce una replica statistica su nuovi universi. Il successivo studio confermativo deve usare nuovi seed, lo stesso protocollo e senza scegliere i criteri in funzione degli esiti presenti.
+
 ## Interpretazione
 
 In una simulazione con conduzione energetica **deliberatamente abilitata** sui legami chimici, gli aggregati che spontaneamente possiedono più legami persistenti hanno maggior probabilità di risultare **cresciuti coerentemente** dopo 120 tick rispetto a copie equivalenti prive della conduzione. Questo è un **effetto del regime fisico sul comportamento della stessa coorte**, confermato dall'endpoint preregistrato.
