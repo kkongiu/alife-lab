@@ -1,0 +1,40 @@
+name: M6.14 posthoc independent physical audit of all first-genesis positives
+
+on:
+  push:
+    branches:
+      - exp/m6-14-first-native-cage-genesis
+    paths:
+      - 'tools/m6_14_independent_physical_audit.py'
+      - '.github/workflows/m6_14_independent_physical_audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-native-material-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Retrieve FROZEN 1600-world data from successful pre-registered campaign
+        uses: actions/download-artifact@v4
+        with:
+          name: m6-14-1600-worlds-merged
+          run-id: 43855208596
+          github-token: ${{ github.token }}
+          path: campaigns/m6_14_first_genesis
+      - name: Rebuild every primary native cage trajectory and audit no prior 7 or 8 ring from scratch
+        run: python -m tools.m6_14_independent_physical_audit
+      - name: Archive posthoc physical audit separately from preregistered result
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-14-posthoc-first-genesis-audit
+          path: campaigns/m6_14_first_genesis/independent_crosscheck.json
+          if-no-files-found: error
