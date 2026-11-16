@@ -1,0 +1,35 @@
+name: M7.0 original M6 capabilities, energy and population deterministic audit
+
+on:
+  push:
+    branches:
+      - analysis/m7-0-physical-capability-audit
+    paths:
+      - 'campaigns/m7_0_capability/**'
+      - 'tools/m7_0_capability_audit.py'
+      - '.github/workflows/m7_0_capability_audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capability-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: All regression tests
+        run: python -m pytest -q
+      - name: Deterministic native-law audit with zero-energy motion and fully saturated ring fixtures
+        run: python -m tools.m7_0_capability_audit
+      - name: Archive verifiable audit as independent artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-0-native-capability-audit
+          path: campaigns/m7_0_capability/audit.json
+          if-no-files-found: error
