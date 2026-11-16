@@ -1,0 +1,38 @@
+name: M6.11 preregistered native pocket occupancy
+
+on:
+  push:
+    branches:
+      - exp/m6-11-pocket-center-occupancy
+    paths:
+      - 'campaigns/m6_11_occupancy/**'
+      - 'tools/m6_11_occupancy.py'
+      - 'tests/test_m6_11_occupancy.py'
+      - '.github/workflows/m6_11_occupancy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  occupancy-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install project
+        run: python -m pip install -e '.[dev]'
+      - name: Full regression tests and M6.11 controls
+        run: python -m pytest -q
+      - name: Run M6.11 preregistered 200 natural worlds
+        run: python -m tools.m6_11_occupancy
+      - name: Archive all worlds, zero cases and summaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-11-pocket-occupancy-results
+          path: campaigns/m6_11_occupancy/results.json
+          if-no-files-found: warn
