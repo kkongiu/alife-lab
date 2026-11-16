@@ -1,0 +1,93 @@
+name: M6.14 strictly first-native-cage genesis 1600 worlds
+
+on:
+  push:
+    branches:
+      - exp/m6-14-first-native-cage-genesis
+    paths:
+      - 'campaigns/m6_14_first_genesis/**'
+      - 'tools/m6_14_first_genesis.py'
+      - 'tests/test_m6_14_first_genesis.py'
+      - '.github/workflows/m6_14_first_genesis.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full pytest including first-event provenance, previous eight-ring and censor gates
+        run: python -m pytest -q
+
+  shard:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 13001
+            end: 13200
+          - start: 13201
+            end: 13400
+          - start: 13401
+            end: 13600
+          - start: 13601
+            end: 13800
+          - start: 13801
+            end: 14000
+          - start: 14001
+            end: 14200
+          - start: 14201
+            end: 14400
+          - start: 14401
+            end: 14600
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: 200 new natural enriched worlds with native first-genesis observation
+        run: python -m tools.m6_14_first_genesis shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve all worlds and bare replays, including negatives
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-14-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m6_14_first_genesis/shards/enriched-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m6-14-shard-*
+          path: campaigns/m6_14_first_genesis/shards
+          merge-multiple: true
+      - name: Require all 1600 worlds and 8 frozen shards; validate all successful bare replays
+        run: python -m tools.m6_14_first_genesis merge
+      - name: Archive entire fixed sample and honest first-genesis decision
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-14-1600-worlds-merged
+          path: campaigns/m6_14_first_genesis/merged_results.json
+          if-no-files-found: error
