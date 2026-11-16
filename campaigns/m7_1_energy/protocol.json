@@ -1,0 +1,130 @@
+{
+  "schema": "alife-m7-1-open-energy-local-catalysis-factorial-v1",
+  "status": "preregistered_before_code_and_outcomes",
+  "date": "2026-11-16",
+  "base": "analysis/m7-0-physical-capability-audit",
+  "science_question": "Can existing configurable M3/M6 physics support sustained *energy-accounted* movement and chemical turnover when localized energy sources drive the system, and how do these effects interact with generic non-template local catalysis? This tests a driven chemistry, NOT organism genesis.",
+  "scope": "A distinct new M7.1 physical REGIME using existing validated Config schema3 mechanisms. No core dynamics modifications, no genomes, no planted rings/replicators, no particle birth/death.",
+  "source_native_config": "campaigns/m6/configs/unfed-6101.json",
+  "sample": {
+    "grid": {
+      "width": 24,
+      "height": 24,
+      "boundary": "periodic"
+    },
+    "counts": {
+      "S0": 108,
+      "S1": 108,
+      "S2": 28,
+      "S3": 20
+    },
+    "seeds": {
+      "start": 18001,
+      "end_inclusive": 18080,
+      "count": 80
+    },
+    "factorial_arms": [
+      "closed_no_catalysis",
+      "driven_no_catalysis",
+      "closed_catalysis",
+      "driven_catalysis"
+    ],
+    "independent_numeric_seed_units": 80,
+    "total_worlds": 320,
+    "horizon_ticks": 600,
+    "world_ticks": 192000,
+    "frozen_shards": [
+      {
+        "start": 18001,
+        "end": 18020
+      },
+      {
+        "start": 18021,
+        "end": 18040
+      },
+      {
+        "start": 18041,
+        "end": 18060
+      },
+      {
+        "start": 18061,
+        "end": 18080
+      }
+    ],
+    "paired_identical_initial_particle_positions_species_energy_and_rng": true
+  },
+  "physical_config": {
+    "movement_cost_all_arms": 1,
+    "base_chemistry": "exact unfed-6101 allowed_pairs, bond_cost2, formation_probability0.05, break_probability0.002 and original dissipation/decay",
+    "closed_sources": [],
+    "driven_sources": {
+      "coordinates_x": [
+        2,
+        8,
+        14,
+        20
+      ],
+      "coordinates_y": [
+        2,
+        8,
+        14,
+        20
+      ],
+      "count": 16,
+      "each_rate_num": 2,
+      "each_rate_den": 1,
+      "each_capacity": 12,
+      "overflow": "discard",
+      "generator": "cartesian product in y-major order"
+    },
+    "catalysis_enabled_rule": {
+      "catalyst": "S2",
+      "pair": [
+        "S0",
+        "S1"
+      ],
+      "factor": 4
+    },
+    "no_catalysis_rules": [],
+    "never_modify_existing_core_src": true,
+    "initial_bonds": 0
+  },
+  "measurements": {
+    "checkpoints": [
+      0,
+      100,
+      200,
+      400,
+      500,
+      600
+    ],
+    "late_window": "ticks 501-600 inclusive",
+    "every_tick": "world.moves_total; bonds_formed_total; bonds_broken_total; injected; dissipated; unabsorbed; total world energy",
+    "check_energy_ledger": "At each checkpoint, world.energy()+world.dissipated+world.unabsorbed == initial_energy+world.injected (count energy held in buffers)",
+    "last_100": "Number of accepted movement events, newly formed bond events, bond break events, energy injected; active movement-capable free species count at tick600",
+    "native_structures": "At final checkpoint count connected ring components with all member degrees 2 and >=4 atoms, and bounded exact geometrical 3x3 7-edge native precursor (descriptive). No structures seeded.",
+    "pairwise": "For each numeric seed compare driven versus closed within same catalysis condition, then catalysis versus no catalysis within feed status. Do not treat four arms of one seed as four independent samples.",
+    "replay": "For the first numeric seed of each 20-seed shard repeat all four arms without observer and require identical full hash, RNG fingerprint/draw count, energy ledger, injected, dissipated, moves, bond formation and break counts."
+  },
+  "preregistered_gates": {
+    "primary_driven_mobility": "For driven_no_catalysis vs closed_no_catalysis, at least 60 of 80 distinct paired seed worlds have strictly more accepted moves in ticks 501-600 in driven arm, and at least 60 of 80 driven worlds have >0 accepted moves in this window.",
+    "secondary_sustained_chemistry": "For driven_no_catalysis vs closed_no_catalysis, at least 48 of 80 paired seed worlds have strictly more new native bonds in ticks 501-600 under driven condition. If not met, report no_persistent_chemical_turnover_benefit.",
+    "catalysis_interaction": "Report paired contrasts in bond formations for all seeds (early 1-100 and late 501-600), but do not label them genetic inheritance or self-replication.",
+    "no_claim": "No genotype, heredity, birth/death or organism-generation decision is tested; a positive activity gate is NOT evidence for artificial life.",
+    "no_posthoc_threshold_adjustment": true
+  },
+  "integrity": {
+    "test_full_suite_before_runs": true,
+    "all_four_shards_required": true,
+    "protocol_sha256_in_every_shard": true,
+    "no_mutation_master": true,
+    "no_mutation_src": true,
+    "no_artificial_seeded_structures": true,
+    "all_raw_cases_including_zero_activity": true
+  },
+  "artifacts": {
+    "results": "campaigns/m7_1_energy/merged_results.json",
+    "report": "reports/M7_1_driven_chemistry.md",
+    "workflow": ".github/workflows/m7_1_driven_chemistry.yml"
+  }
+}

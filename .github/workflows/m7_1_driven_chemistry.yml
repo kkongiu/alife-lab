@@ -1,0 +1,85 @@
+name: M7.1 energy-accounted driven chemistry 4-arm preregistered factorial
+
+on:
+  push:
+    branches:
+      - exp/m7-1-driven-chemistry-factorial
+    paths:
+      - 'campaigns/m7_1_energy/**'
+      - 'tools/m7_1_energy_factorial.py'
+      - 'tests/test_m7_1_energy_factorial.py'
+      - '.github/workflows/m7_1_driven_chemistry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full regression tests including energy ledger, no-energy motion freeze and sham replay
+        run: python -m pytest -q
+
+  shards:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 18001
+            end: 18020
+          - start: 18021
+            end: 18040
+          - start: 18041
+            end: 18060
+          - start: 18061
+            end: 18080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Run paired four-arm worlds in fixed seed order, exact energy accounting and sham replay
+        run: python -m tools.m7_1_energy_factorial shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve all worlds and no-activity controls
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-1-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_1_energy/shards/seeds-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-1-shard-*
+          path: campaigns/m7_1_energy/shards
+          merge-multiple: true
+      - name: Require exact 320 worlds, all four arms per seed, frozen protocol and all four bare replays per shard
+        run: python -m tools.m7_1_energy_factorial merge
+      - name: Archive complete all-320-world data, including negative results
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-1-320-world-factorial-results
+          path: campaigns/m7_1_energy/merged_results.json
+          if-no-files-found: error
