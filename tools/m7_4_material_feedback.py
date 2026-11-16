@@ -81,14 +81,14 @@ def coherent_root_size(w,original_ids):
     return None
 
 
-def route_source(w,arm,material_ids):
+def route_source(w,arm,material_ids,original_edges):
     """Exact M7.3 transfer with classified source flow; same native-energy outcomes.
 
     All counts are event counts; energy can circulate multiple times. The source
     internal count does not prove net energy inflow (both endpoints are original).
     """
     if arm=="no_transfer":
-        return (0,0,0,0,0)
+        return (0,0,0,0,0,0)
     s=w.store
     source=set(material_ids)
     src_energies=tuple(s.energy)
@@ -98,7 +98,7 @@ def route_source(w,arm,material_ids):
     delta=[0]*len(src_energies)
     originals=set(s.bonds)
     pairs=bond_pairs(w) if arm=="bond_only" else contacts(s)
-    n_internal=n_boundary_in=n_boundary_out=total=0
+    n_internal=n_boundary_in=n_boundary_out=n_original=total=0
     bondroute=nonbondroute=0
     for i,j in pairs:
         if src_energies[i]-src_energies[j]>=2:
@@ -116,6 +116,8 @@ def route_source(w,arm,material_ids):
         a=s.ids[donor] in source
         b=s.ids[recipient] in source
         if a and b:n_internal+=1
+        if tuple(sorted((s.ids[donor],s.ids[recipient]))) in original_edges:
+            n_original+=1
         elif a:n_boundary_out+=1
         elif b:n_boundary_in+=1
         if (i,j) in originals or (j,i) in originals:bondroute+=1
@@ -128,7 +130,7 @@ def route_source(w,arm,material_ids):
     assert (w.rng.fingerprint(),w.rng.draws)==old_rng
     assert n_internal+n_boundary_in+n_boundary_out<=total
     if arm=="bond_only":assert nonbondroute==0
-    return (total,n_internal,n_boundary_in,n_boundary_out,bondroute)
+    return (total,n_internal,n_boundary_in,n_boundary_out,bondroute,n_original)
 
 
 def follow(source,chosen,horizon=HORIZON,replay=False):
@@ -188,18 +190,15 @@ def follow(source,chosen,horizon=HORIZON,replay=False):
                 # snapshot is not evidence for active self-repair.
                 if originals.issubset(native_pairs(w)):
                     h["first_original_reclosure_tick"]=t
-            flux=route_source(w,name,material)
+            flux=route_source(w,name,material,originals)
             h["all_transfer_events"]+=flux[0]
             h["root_internal_transfer_events"]+=flux[1]
             h["root_boundary_energy_in_events"]+=flux[2]
             h["root_boundary_energy_out_events"]+=flux[3]
-            # These are transfers along the source's ORIGINAL pair bonds,
-            # distinguished from later source-source bonds and boundary edges.
-            # Compute exact accepted proposal count along source original edges
-            # in a separate test (below) from a snapshot if required.
-            # Current root_internal counts ALL current source-source edges and
-            # contacts, not exclusive ORIGINAL source bonds.
-            h["root_original_edge_transfer_events"]=None
+            # Only currently existing ORIGINAL source pairs contribute.
+            # The same material group can form other bonds later; they are
+            # counted by internal, but not original-edge flows.
+            h["root_original_edge_transfer_events"]+=flux[5]
             size=coherent_root_size(w,chosen["ids"])
             if size is not None and size>len(material):
                 h["root_growth_ticks"]+=1
@@ -304,6 +303,8 @@ def summarize(records,p):
                 r["outcomes"][name]["incident_external_bond_events"] for r in selected]),
             "mean_original_internal_flow_events":mean([
                 r["outcomes"][name]["root_internal_transfer_events"] for r in selected]),
+            "mean_exact_original_edge_transfer_events":mean([
+                r["outcomes"][name]["root_original_edge_transfer_events"] for r in selected]),
             "mean_root_boundary_energy_in_events":mean([
                 r["outcomes"][name]["root_boundary_energy_in_events"] for r in selected]),
             "mean_root_growth_ticks":mean([r["outcomes"][name]["root_growth_ticks"] for r in selected]),
