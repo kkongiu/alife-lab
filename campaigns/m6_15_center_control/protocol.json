@@ -1,0 +1,77 @@
+{
+  "schema": "alife-m6-15-paired-native-center-position-counterfactual-v1",
+  "status": "frozen_before_code_and_outcomes",
+  "date": "2026-11-16",
+  "base": "exp/m6-14-first-native-cage-genesis",
+  "background": "M6.14 confirmed repeated first-observed native 7-bond geometrical cages. Presence of a resident cannot directly affect breaking probability under M6, because break_bonds occurs before movement and bond formation and uses a constant break_threshold for all bonds. At longer horizons any change could be indirect via candidate-bond formation, RNG stream divergence, or site occupancy.",
+  "question": "In identical natural 7-bond 3x3 perimeter source states, does a position-only change of one free native mobile monomer from a remote site to the center (or reverse) affect first-source-bond-break events and 120-tick material continuity?",
+  "null_hypothesis": "Conditional on identical starting native bond graph and identical PCG RNG state, the next tick's original-source-bond break event must be identical regardless of moving an unbonded free mobile resident. Any violation signals a bug. No preordained medium-term difference is assumed.",
+  "sample": {
+    "density": "enriched",
+    "seed_start": 15001,
+    "seed_end_inclusive": 16000,
+    "seeds": 1000,
+    "parent_horizon_ticks": 600,
+    "fork_horizon_ticks": 120,
+    "max_forks_per_world": 1,
+    "independent_unit": "numeric seed, one deterministic first valid candidate per world",
+    "shards": [
+      {
+        "start": 15001,
+        "end": 15200
+      },
+      {
+        "start": 15201,
+        "end": 15400
+      },
+      {
+        "start": 15401,
+        "end": 15600
+      },
+      {
+        "start": 15601,
+        "end": 15800
+      },
+      {
+        "start": 15801,
+        "end": 16000
+      }
+    ],
+    "source": "M6.4 original unchanged M6 chemistry with zero initial bonds and original enriched density 264 in 24x24 periodic grid",
+    "condition": "native exact 3x3 perimeter 8 source atoms with 7 original native path bonds (M6.12 precursor), native center empty or native degree-zero mobile",
+    "no_adaptive_stop": true
+  },
+  "arms": {
+    "occupied_center": "same source world clone with free mobile particle at pocket center. From empty source, move an isolated unbonded native remote particle to center. From naturally occupied source, clone unchanged.",
+    "empty_center": "same source world clone with center empty. From occupied source, relocate the existing center resident to an isolated empty remote site. From naturally empty source, clone unchanged.",
+    "remote_rule": "Deterministic lexicographically lowest suitable remote cell/particle at toroidal Manhattan distance >=7 from center; both original donor site and intervention destination must be empty of neighbors within von Neumann radius 1 in the relevant source, to minimize remote perturbation. If unavailable skip that source candidate.",
+    "intervention": "Only change x/y of exactly one degree-zero mobile particle and update grid; preserve IDs, species, energy, all original bond edges, total energy, counters, event history, RNG state/draw count and original source state. This is a counterfactual position intervention and must never be mislabeled as a natural occurrence.",
+    "source_selection": "For each source seed, scan 600 parent ticks, use FIRST eligible exact seven-edge candidate in deterministic center/material-ID order; do not choose based on future survival, and stop after first selected pair. Record all no-candidate/no-remote worlds.",
+    "comparator": "Natural arm (unchanged state) is precisely one of the two arms; assert sham no-op reproduction equals a separately cloned identical natural arm over 120 ticks for fixed seed and first found pair."
+  },
+  "outcomes": {
+    "invariant_next_break": "For each selected fork, the set of original seven bond break events on the very next M6 step MUST MATCH between arms. This tests the absence of direct feedback on bond break hazard under current laws.",
+    "primary_longer_term": "Paired difference in FIRST original source bond loss survival at horizons 10,30,60,120 ticks, with event-level detection counting transient break even if reformed in same tick. Report arm survival and discordant worlds; do not interpret common RNG synchronization as intervention-proof causal component across all future draws.",
+    "first_loss_time": "Earliest observed original source bond break after fork, 1..120; right censor if no break within 120",
+    "closure": "First eighth native edge addition and prevalence when original seven edges still intact, separated from source-bond-break outcome",
+    "cohort_stratification": "Separate originally-empty from originally-occupied source states. Natural center occupancy is not randomized; one-world paired intervention changes center occupancy and remote vacancy as a combined treatment.",
+    "descriptive": "No p-values from per-tick samples. Binary paired contrasts by independent seed with Wilson intervals on discordant categories if useful; no subgroup causal claims with <20 selected worlds.",
+    "prebreak_rng": "If RNG diverges between arms before original first break, report first divergent RNG draw step and explain this makes later pairwise break differences potentially influenced by stream desynchronization."
+  },
+  "integrity": {
+    "no_changes_to_src": true,
+    "no_changes_to_master": true,
+    "no_changes_to_original_dynamics": true,
+    "no_new_particles_or_bonds": true,
+    "no_genome_added": true,
+    "fixed_preregistration_commit_before_runner": true,
+    "complete_1000_world_results_including_zeros": true,
+    "assert_matched_energy_and_bond_state_and_rng_at_fork": true,
+    "assert_next_original_bond_break_events_identical": true,
+    "all_shards_required": true,
+    "no_observer_replay": "For every selected natural-arm fork (or deterministic first pair per shard), replay natural clone without observer and check full hashes, RNG and energy; both counterfactual clones independently check world invariants.",
+    "report": "reports/M6_15_causal_center_control.md",
+    "output": "campaigns/m6_15_center_control/results.json"
+  },
+  "biological_note": "Current M6 has finite fixed particle population and zero catalysis. No particle birth/death rules or genotype inheritance; positive cage duration alone cannot yield a living self-replicator. A capability audit is part of report, separate from this causal trial."
+}
