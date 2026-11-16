@@ -1,0 +1,32 @@
+name: M6.13 posthoc independent physical trace of positive seeds
+
+on:
+  push:
+    branches:
+      - exp/m6-13-natural-barrier-replication
+    paths:
+      - 'tools/m6_13_physical_crosscheck.py'
+      - '.github/workflows/m6_13_physical_crosscheck.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  physical-trace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Independent tick-level audit on 12199, 12229, 12321 + bare replay
+        run: python -m tools.m6_13_physical_crosscheck
+      - name: Preserve post-hoc physical audit, not a preregistered rerun
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-13-posthoc-physical-crosscheck
+          path: campaigns/m6_13_replication/posthoc_crosscheck.json
+          if-no-files-found: error
