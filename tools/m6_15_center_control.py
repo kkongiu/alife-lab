@@ -209,7 +209,9 @@ def follow_pair(source,candidate,choice,horizon=120,sham=False):
                 if len(member)==8 and set(member)==ring_ids:
                     all_cycle={tuple(sorted((member[k],member[(k+1)%8])))
                                for k in range(8)}
-                if len(all_cycle)==8 and all_cycle.issubset(source_graph):
+                if (first_loss[name] is None and len(all_cycle)==8
+                        and all_cycle.issubset(source_graph)
+                        and edges.issubset(source_graph)):
                     first_8_edge[name]=t
         # Prove necessary null: same native original bond graph, same RNG before
         # the first break step => same seven-source-edge breaks at t=1.
