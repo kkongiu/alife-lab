@@ -60,6 +60,21 @@ Con unità conservativa di 400 seed numerici distinti, **3/400 = 0,75%**, interv
 - Tutti i risultati (inclusi universi senza anelli), episodi materiali, durate, chiusure ottavo legame e marcatori di censura sono conservati nel dataset. **Nessun p-value derivato da tick o episodi correlati**.
 - Gli stessi 400 numeri di seed sono usati per due densità: ciò è gestito contando il **numero di seed unici**, non 800 prove statisticamente del tutto indipendenti.
 
+
+### Audit fisico indipendente, successivo ai risultati (post-hoc)
+
+Il codice [`tools/m6_13_physical_crosscheck.py`](../tools/m6_13_physical_crosscheck.py) **non** chiama il rilevatore M6.12 né la logica di classificazione degli episodi M6.13. Esegue da zero i tre universi positivi, controlla **a ogni singolo tick** tutte le sette connessioni materiali originali, la geometria del bordo, l'ID e il grado del residente, l'istante di formazione dell'ottavo legame e l'esatto evento di rottura che termina l'intervallo. Ripete ciascun mondo senza osservatore e verifica identità di hash completo, RNG, energia e contatori fisici.
+
+Il controllo aggiuntivo è **PASS**: [GitHub Actions #43852751508](https://github.com/kkongiu/alife-lab/actions/runs/43852751508), [artefatto #14219805388](https://github.com/kkongiu/alife-lab/actions/runs/43852751508/artifacts/14219805388). Conferma:
+
+| Seed | Tick iniziale | Ultimo tick integro | Prima rottura originale | Legame rotto | Tick ottavo legame |
+|---|---:|---:|---:|---|---:|
+| `12199` | 217 | 267 | 268 | 9–56 | 220 |
+| `12229` | 24 | 128 | 129 | 29–39 | 74 |
+| `12321` | 344 | 503 | 504 | 8–133 | 362 |
+
+Questa verifica è **post-hoc**, non una nuova replica statistica né una modifica delle soglie preregistrate. Conferma l'implementazione dell'osservazione su tre traiettorie note, non la validità biologica del modello.
+
 ## Significato scientifico
 
 Abbiamo **un fenomeno fisico simulato ripetibile** di confinamento passivo per decine o centinaia di passi, in un sistema con legami reversibili locali e regole deterministiche condizionate al seed. Il modello però non implementa riproduzione di particelle, metabolismo, selettività di una membrana, capacità di crescita organizzata o ereditarietà. Il risultato è una premessa per investigare forme primitive di compartimentazione *geometrica*, non evidenza di vita artificiale.
