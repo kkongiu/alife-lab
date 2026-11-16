@@ -1,0 +1,87 @@
+{
+  "schema": "alife-m6-13-independent-geometric-confinement-replication-v1",
+  "status": "preregistered_before_code_and_run",
+  "created_at": "2026-11-16",
+  "base_ref": "exp/m6-12-native-precursor-controls",
+  "question": "Can naturally formed connected seven-native-edge 3x3 barriers with native unbonded mobile resident persist >=30 consecutive observed ticks in at least two distinct NEW seeds under unchanged M6 dynamics?",
+  "sample": {
+    "seeds": {
+      "start": 12001,
+      "end_inclusive": 12400,
+      "count": 400
+    },
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "worlds": 800,
+    "horizon_ticks": 600,
+    "grid": "24x24 periodic as M6.4",
+    "start": "World.create, original M6 config at two M6.4 densities, no seeded bonds/templates",
+    "frozen_shards": [
+      {
+        "density": "baseline",
+        "start": 12001,
+        "end": 12200
+      },
+      {
+        "density": "baseline",
+        "start": 12201,
+        "end": 12400
+      },
+      {
+        "density": "enriched",
+        "start": 12001,
+        "end": 12200
+      },
+      {
+        "density": "enriched",
+        "start": 12201,
+        "end": 12400
+      }
+    ],
+    "all_worlds_required": true
+  },
+  "definitions": {
+    "new_seed_unit": "A distinct numeric seed is the conservative independent unit across densities; baseline/enriched same seed must not count twice toward primary replication gate.",
+    "valid_precursor": "Use unchanged M6.12 seven-native-edge material-path observer: eight particles form exact 3x3 perimeter; seven native edges connect them, no off-component bonds, native mobile grade-zero resident at center.",
+    "continuous_barrier": "Same seven ORIGINAL bonds intact without even transient breaks, same eight material IDs fixed at perimeter positions, and same native mobile center resident ID. Eighth bond may close or reopen.",
+    "observed_duration": "Count from first observed precursor tick through last tick of intact seven original edges. End at first break even if same-tick reformation; 600-tick right-censored episodes keep observed lower bound.",
+    "canonical_event": "Use first episode of a given source material ID set per world as strict sensitivity check. Repeated closure episodes still reported separately.",
+    "status": "Persistence is geometric confinement by static occupied nearest-neighbor cells; not cell life, biological membrane, metabolism, Darwinian evolution or self replication."
+  },
+  "preregistered_primary": {
+    "success": "At least TWO DISTINCT NEW numeric seeds (regardless of density pairing) contain a native mobile resident confined by an intact original seven-edge perimeter for >=30 observed ticks. Count both ended and right-censored >=30, but label censored cases as lower bounds.",
+    "one": "Exactly one distinct seed qualifies => single_not_independently_replicated",
+    "none": "Zero distinct seeds => no_30tick_replication",
+    "first_material_only_check": "Apply same >=30 criterion to first episode per material ID set; include sensitivity and disagreements.",
+    "conservative_pairing": "Never count baseline and enriched worlds at the same numeric seed as two independent replications.",
+    "no_posthoc_threshold_change": true
+  },
+  "secondary": {
+    "nested_duration_cutoffs": [
+      30,
+      100,
+      250,
+      500
+    ],
+    "count": "All valid seven-edge episodes; number of unique material sets; unbonded mobile resident episodes; source worlds; distinct seeds; first-of-material subset; right-censoring.",
+    "rarity": "Point estimate and Wilson interval for proportion of 400 numeric seeds with >=30 observations, and density-specific 400-world proportions; no p-value from dependent episode/tick data.",
+    "eighth_edge": "Report formation of eighth bond as a separate event, NOT origin of confinement.",
+    "world_rates": "Also report rates among the 800 world configurations but mark paired-by-seed correlation.",
+    "historical": "M6.11 and M6.12 evidence is exploratory motivation, NEVER included in confirmatory M6.13 numerator/denominator."
+  },
+  "integrity": {
+    "no_new_physical_laws": true,
+    "no_src_changes": true,
+    "no_change_master": true,
+    "preregister_before_implementation": true,
+    "test_suite_before_runs": true,
+    "four_shards_and_coverage_verification": true,
+    "no_rng_draw_by_observer": true,
+    "no_observer_replays": "For each world with >=30-tick resident confinement, and fixed baseline/enriched seed12001, recreate without observer and require identical final full hash/RNG/draws/energy/physical counters.",
+    "raw_all_worlds": true,
+    "output": "campaigns/m6_13_replication/results.json",
+    "report": "reports/M6_13_independent_replication.md"
+  }
+}
