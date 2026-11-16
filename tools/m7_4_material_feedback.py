@@ -116,7 +116,8 @@ def route_source(w,arm,material_ids,original_edges):
         a=s.ids[donor] in source
         b=s.ids[recipient] in source
         if a and b:n_internal+=1
-        if tuple(sorted((s.ids[donor],s.ids[recipient]))) in original_edges:
+        if (tuple(sorted((s.ids[donor],s.ids[recipient]))) in original_edges
+                and ((i,j) in originals or (j,i) in originals)):
             n_original+=1
         elif a:n_boundary_out+=1
         elif b:n_boundary_in+=1
