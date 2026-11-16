@@ -1,0 +1,73 @@
+{
+  "schema": "alife-m6-12-native-seven-edge-precursor-audit-v1",
+  "status": "preregistered-before-runner-or-results",
+  "date": "2026-11-16",
+  "based_on": "exp/m6-11-pocket-center-occupancy",
+  "background": "M6.11 observed enriched-10093 at tick175 with all eight border sites occupied, seven native bonds and resident mobile ID98; the cardinal blockage precedes the eighth bond. Distinguish geometric confinement onset from graph cycle closure.",
+  "questions": [
+    "Does a native free mobile center occupant change the observed rate of 7-edge precursor closure to eight edges relative to an otherwise same native 7-edge structure with empty center?",
+    "Can a mobile native center remain geometrically confined for >=30 ticks inside a seven-original-edge scaffold (with or without subsequent eighth-edge closure)?",
+    "What part of any apparent effect is an observational selection/density/species/energy artifact?"
+  ],
+  "fixed_sample": {
+    "seed_start": 11001,
+    "seed_end": 11150,
+    "seed_count": 150,
+    "densities": [
+      "baseline",
+      "enriched"
+    ],
+    "total_worlds": 300,
+    "horizon_ticks": 600,
+    "grid": "24x24 periodic",
+    "input": "Original M6.4 natural creation from unfed-6101 config, no bonds at t0, no added chemistry/particles",
+    "fixed_checkpoints": [
+      {
+        "density": "baseline",
+        "seed": 11001
+      },
+      {
+        "density": "enriched",
+        "seed": 11001
+      }
+    ]
+  },
+  "seven_edge_candidate": {
+    "native_component": "Exactly eight material particle IDs connected by exactly seven original bonds (no external component attachments), degree multiset [1,1,2,2,2,2,2,2]",
+    "geometry": "Exactly all 8 perimeter cells around one toroidal 3x3 center, checked using existing pocket_center",
+    "edge_test": "All seven original bonds follow eight cyclic consecutive lattice perimeter pairs; exactly one of eight perimeter bonds absent",
+    "eligibility": "Missing edge chemically allowed at candidate tick with both endpoints having spare valence and enough energy for formation_cost; report eligible and ineligible separately",
+    "center_strata": [
+      "empty",
+      "free_mobile",
+      "other_occupied"
+    ],
+    "potential_confounders": [
+      "density",
+      "closing pair of species",
+      "closing endpoints current energy eligibility",
+      "tick tercile"
+    ],
+    "grouping": "Episodes keyed by center plus sorted material IDs and seven original edge IDs; if any original edge breaks, stop the episode even if it reforms in same tick; a subsequent reformation starts a new episode."
+  },
+  "measurement": {
+    "primary": "At-risk exposure per post-step tick t in an original seven-edge episode before its first eighth-edge closure, and next-step t+1 native closure of missing original edge only when all seven originals never broke and all eight original material IDs remain at same positions. Compare eligible free_mobile vs eligible empty, stratified by density and missing-edge species pair; do not treat repeated ticks as independent trials.",
+    "independent_worlds": "Number of distinct seed+density worlds with eligible 7-edge episodes, with any free_mobile center and with first valid closure, separated by strata; episodes and tick exposures are dependent.",
+    "barrier_duration": "Count uninterrupted period of exactly same original 7 edge bonds and fixed 8 material perimeter positions, regardless whether eighth edge added/broken; require same original free mobile center ID at all observed steps; terminate on breaking any original edge even if immediately reformed; report 30 tick or more, right censor at end.",
+    "secondary": "First episode per material set within world; controls using all first unique material sets vs repeated episodes; record no-events and zero-denominator groups, and one-tick transition 7 to 8.",
+    "causality": "Observational, no significance tests from per-tick denominators; no survival tests from dependent episodes. Mechanics no catalysis; center occupation is not randomized.",
+    "replay": "Unobserved run for both fixed checkpoints with full world hash, RNG fingerprint/draw counts, energy, dissipation, bond formation/break equal to observed.",
+    "integrity": "No source files, physical laws, historical campaigns, master modifications. Track breaks using native event sink."
+  },
+  "decisions": {
+    "descriptive_closure": "Report per-stratum eligible exposures, valid next-step closure, and per-world exposure summaries; observational differences do not prove causal influence.",
+    "persistent_barrier": "If >=2 independently seeded worlds contain continuous 7-edge barrier and same native free mobile resident for >=30 observed ticks, label repeated_native_geometric_confinement_only; if 1 label single_unreplicated_30tick_confinement; else no_confirmed_30tick_confinement",
+    "limited_power": "If <5 distinct worlds containing free_mobile eligible precursor, label closure_comparison_underpowered regardless of ratio.",
+    "biological_claims": false
+  },
+  "artifacts": {
+    "results": "campaigns/m6_12_precursors/results.json",
+    "report": "reports/M6_12_native_precursors.md",
+    "workflow": ".github/workflows/m6_12_precursors.yml"
+  }
+}
