@@ -1,0 +1,107 @@
+{
+  "schema": "alife-m7-5-preregistered-aged-native-network-cohort-forks-v1",
+  "status": "frozen_before_runner_tests_and_results",
+  "date": "2026-11-16",
+  "parent": "exp/m7-4-native-aggregate-lineage-forks",
+  "rationale": "M7.4 first available component yielded 148/160 young 3-monomer two-edge chains (median t2); select on pre-fork source size and edge age in independent new seeds.",
+  "question": "Does chemical-bond conduction favor coherent growth or original-edge preservation of the SAME native partly aged 5-16-member bonded cohort compared with matched no-transfer forks?",
+  "design": {
+    "seeds_first": 23001,
+    "seeds_last": 23320,
+    "seeds": 320,
+    "parent_scan_start_tick": 120,
+    "parent_scan_stop_tick": 500,
+    "followup_steps": 120,
+    "arms": [
+      "no_transfer",
+      "bond_only",
+      "all_contacts"
+    ],
+    "source_simulation": "Original M7.3 no_transfer world; 264 native particles, 24x24 periodic, movement_cost=1, 16 dispersed sources generating 32 energy/tick, no catalysis, zero initial bonds.",
+    "shards": [
+      {
+        "start": 23001,
+        "end": 23040
+      },
+      {
+        "start": 23041,
+        "end": 23080
+      },
+      {
+        "start": 23081,
+        "end": 23120
+      },
+      {
+        "start": 23121,
+        "end": 23160
+      },
+      {
+        "start": 23161,
+        "end": 23200
+      },
+      {
+        "start": 23201,
+        "end": 23240
+      },
+      {
+        "start": 23241,
+        "end": 23280
+      },
+      {
+        "start": 23281,
+        "end": 23320
+      }
+    ],
+    "independent_unit": "One numeric seed, at most one selected naturally formed source; matched forks not independent units.",
+    "selection": {
+      "component": "At a post-step tick, first eligible maximal bonded connected component; 5<=particle count<=16, >=4 native original bonds, at least one member with spare native valence.",
+      "mature_edge": "At least two currently existing different original material pair edges must each have age >=20 consecutive observed post-step snapshots, resetting age after any native break event even when same pair re-forms within that tick.",
+      "rule": "From tick1 to tick500 update material edge ages using native break event recorder plus present edges. From tick120 choose first eligible component and lowest sorted member-ID tuple within the tick. Never use future outcomes. 20-tick old edges show aged substructure, NOT guaranteed continuous identity of entire component.",
+      "absent": "Retain null seed; no adaptive extension or replacement."
+    }
+  },
+  "measurements": {
+    "source": "At fork save original material IDs, original material edge pairs and their individual edge ages, total size, cyclomatic number, spare-valence members and energy.",
+    "fork": "Three exact clones of full world (positions, per-particle and bond energies, source buffers, total counters, RNG fingerprint/draws); no added atoms, bonds or sources.",
+    "checkpoints": [
+      1,
+      10,
+      30,
+      60,
+      120
+    ],
+    "intact": "No native BREAK event on any original edge through t120, including same-tick reformation.",
+    "coherent_growth": "At t120 same native connected component contains all original IDs plus at least one external ID. Also record ever growth and duration.",
+    "incident_formations": "Native FORM event with precisely one endpoint among original cohort IDs, distinguishing any event before first original edge loss.",
+    "reclosure": "After original edge lost, full original material edge set present again (not necessarily functional repair).",
+    "energy_flux": "Count accepted transfers on original intact pair edges, other present source-internal edges, incoming across source boundary, outgoing across source boundary, within remaining world; total particle energy conserved.",
+    "source_energy": "Energy in original cohort particle IDs and number with enough energy for chemical new-bond formation at fork and predefined checkpoints; IDs persist if network fragments.",
+    "whole_world": "Track global new bonds separately from incident source formations.",
+    "direct_control": "Exactly identical native original-edge BREAK sets at t1 in all matched arms; no-transfer sham direct 120-step clone for first selected seed per shard.",
+    "physics_control": "Verify energy flux tracker gives exact same state as M7.3 original transport on synthetic and native source snapshots and is RNG-free.",
+    "ledgers": "At fixed checkpoints for every fork, sum stored+dissipated+unabsorbed==configured_initial+injected."
+  },
+  "gates": {
+    "primary_growth": "Require >=40 selected independent seeds AND >=25 discordant growth outcomes bond_only vs no_transfer at EXACTLY t120, with >=2/3 of discordant pairs favoring bond_only. Otherwise not_met_or_underpowered.",
+    "secondary_original_survival": "Require >=40 selected and >=25 discordant outcomes for native original edge survival through t120, with >=2/3 favoring bond_only. Otherwise not_met_or_underpowered.",
+    "descriptive_strata": "Tree vs cyclic and size5-8 vs size9-16 are exploratory stratification only, no change of main gate.",
+    "no_posthoc_threshold_changes": true,
+    "no_life_claims": true
+  },
+  "integrity": {
+    "prereg_first": true,
+    "no_src_or_master_changes": true,
+    "full_test_suite_before_runs": true,
+    "all_320_seed_outcomes_including_nulls": true,
+    "eight_fixed_shards_required": true,
+    "protocol_sha256_each_shard": true,
+    "no_genome_or_replicator_insertion": true,
+    "zero_original_initial_bonds": true,
+    "preserve_parent_physics_and_prior_campaigns": true
+  },
+  "artifacts": {
+    "dataset": "campaigns/m7_5_mature/results.json",
+    "report": "reports/M7_5_mature_feedback.md",
+    "workflow": ".github/workflows/m7_5_mature_feedback.yml"
+  }
+}
