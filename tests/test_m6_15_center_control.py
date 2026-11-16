@@ -44,7 +44,7 @@ def test_protocol_frozen_sample():
     assert p["sample"]["seed_start"]==15001
     assert p["sample"]["seed_end_inclusive"]==16000
     assert p["sample"]["seeds"]==1000
-    assert p["integrity"]["no_change_to_master"] is True
+    assert p["integrity"]["no_changes_to_master"] is True
     assert p["sample"]["max_forks_per_world"]==1
     assert len(HORIZONS)==4 and HORIZONS[-1]==120
     observed=[i for shard in p["sample"]["shards"]
