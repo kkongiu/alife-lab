@@ -1,0 +1,85 @@
+name: M7.3 native chemical bond network versus incidental contact energy transport
+
+on:
+  push:
+    branches:
+      - exp/m7-3-bond-network-energy
+    paths:
+      - 'campaigns/m7_3_bond_energy/**'
+      - 'tools/m7_3_bond_energy.py'
+      - 'tests/test_m7_3_bond_energy.py'
+      - '.github/workflows/m7_3_bond_energy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: All regressions and direct verification of bond vs contact vs no transfer
+        run: python -m pytest -q
+
+  shards:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 20001
+            end: 20025
+          - start: 20026
+            end: 20050
+          - start: 20051
+            end: 20075
+          - start: 20076
+            end: 20100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Run 25 paired numeric seeds and 3 original-chemistry transfer regimes
+        run: python -m tools.m7_3_bond_energy shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive all original-world conditions, including null events
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-3-bond-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_3_bond_energy/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-3-bond-shard-*
+          path: campaigns/m7_3_bond_energy/shards
+          merge-multiple: true
+      - name: Require 300/300 worlds, all fixed protocol hashes and 12 bare replays
+        run: python -m tools.m7_3_bond_energy merge
+      - name: Preserve complete M7.3 paired outcomes
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-3-native-bond-energy-complete-results
+          path: campaigns/m7_3_bond_energy/results.json
+          if-no-files-found: error

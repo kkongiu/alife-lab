@@ -1,0 +1,93 @@
+{
+  "schema": "alife-m7-3-bond-only-vs-contact-energy-transport-v1",
+  "status": "preregistered_before_code_and_results",
+  "date": "2026-11-16",
+  "base": "exp/m7-2-energy-topology-diffusion",
+  "question": "Does requiring pre-existing native chemical BONDS to conduct energy produce useful feedback relative to energy transfer across all adjacent contacts? Distinguish energy flowing along naturally emerged networks from generic diffusion.",
+  "design": {
+    "seed_first": 20001,
+    "seed_last": 20100,
+    "seed_count": 100,
+    "arms": [
+      "no_transfer",
+      "bond_only",
+      "all_contacts"
+    ],
+    "worlds": 300,
+    "horizon_ticks": 600,
+    "grid": [
+      24,
+      24
+    ],
+    "density": "enriched 264 native species M7.1",
+    "sources": "dispersed 16 sites x 2 units/tick as M7.1, capacity12, 19200 generated/world",
+    "movement_cost": 1,
+    "catalysis": "off",
+    "initial_bonds": 0,
+    "source_config": "identical to M7.2 dispersed_no_transfer and M7.1 driven_no_catalysis except new seeds",
+    "identical_seed_state": true,
+    "shards": [
+      {
+        "start": 20001,
+        "end": 20025
+      },
+      {
+        "start": 20026,
+        "end": 20050
+      },
+      {
+        "start": 20051,
+        "end": 20075
+      },
+      {
+        "start": 20076,
+        "end": 20100
+      }
+    ]
+  },
+  "transport": {
+    "stage": "after original World.advance(1), no source/core changes",
+    "common_rule": "Snapshot particle energies. Unique undirected pairs sorted by persistent material IDs, gradient>=2 proposes single unit donor rich -> poor; donor budget limits acceptance. Simultaneous deltas, no RNG or energy created.",
+    "all_contacts": "M7.2 original diffuse_contact_energy unchanged, includes bonded and unbonded cardinal neighbors.",
+    "bond_only": "Exactly the currently existing original native chemical bond pairs, sorted by persistent material ID, irrespective of toroidal geometry. Bonds connect adjacent fixed members under M6. Only original chemical edges conduct; no transfer across nonbonded contacts. 1 unit per bond per step maximum.",
+    "no_transfer": "No extra energy transport.",
+    "integrity": "At every transfer pass assert exact particle energy conservation, unchanged RNG/draws, unchanged bonds/positions/species/particle IDs, no negative energy. At 6 checkpoints assert full accounting stored+dissipated+unabsorbed=initial+injected."
+  },
+  "observations": {
+    "checkpoints": [
+      0,
+      100,
+      200,
+      400,
+      500,
+      600
+    ],
+    "late": "tick 501–600 inclusive",
+    "per_world": "Late accepted moves, new native bonds/breaks, bound/free particle energy sum and counts, free energy-qualified mobile monomers, zero-energy particles, particle energy Gini, total transfers broken down across existing chemical vs unbonded contacts, source overflow, native cyclic component count, stored energy.",
+    "one_step_mechanistic_control": "After a transfer from the same native state, no change in current bond-break probability (fixed 0.002 native and no source changes). Flow is NOT active repair.",
+    "independent_units": "100 distinct numeric seeds, 3 matched regimes per seed; no per-tick pseudo-replication.",
+    "sensitivity": "Record whether bonded-only transfer occurs (at least one event), and how much of all-contact transport travels over real chemical bond edges.",
+    "replay": "For first numeric seed of each of 4 frozen shards repeat all 3 arms from scratch, require identical complete final material hash, RNG state and draw count, energy accounting, source overflow, transfers, chemical and movement counters."
+  },
+  "gates": {
+    "network_transport": "At least 70/100 distinct seed worlds with >0 native bond-only energy transfers AND at least 60/100 with more new native bond formations in last 100 ticks than paired no_transfer. Both conditions mandatory.",
+    "generic_contact_advantage": "At least 75/100 seeds have more last-100 movements under all_contacts than bond_only AND at least 70/100 have fewer zero-energy particles at tick600 under all_contacts than bond_only. Both conditions mandatory.",
+    "direct_bond_stabilization": "No primary claim is permitted: base bond-break rate is fixed and independent of bonds/energy; source graphs are not matched after intervention. Report no direct mechanical bond-strength feedback.",
+    "no_posthoc_threshold_change": true,
+    "no_genetics_metabolism_life_claim": true
+  },
+  "integrity": {
+    "no_src_changes": true,
+    "master_unchanged": true,
+    "full_tests_first": true,
+    "all_4_shards_and_300_worlds": true,
+    "protocol_hash_each_shard": true,
+    "all_negative_worlds": true,
+    "source_energy_equal": true
+  },
+  "outputs": {
+    "results": "campaigns/m7_3_bond_energy/results.json",
+    "report": "reports/M7_3_bond_network_energy.md",
+    "workflow": ".github/workflows/m7_3_bond_energy.yml"
+  }
+}
