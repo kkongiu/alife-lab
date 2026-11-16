@@ -1,0 +1,89 @@
+name: M6.13 800 native-world independent-seed replication
+
+on:
+  push:
+    branches:
+      - exp/m6-13-natural-barrier-replication
+    paths:
+      - 'campaigns/m6_13_replication/**'
+      - 'tools/m6_13_replication.py'
+      - 'tests/test_m6_13_replication.py'
+      - '.github/workflows/m6_13_replication.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full pytest incl. fixed seed-level gate and replay tests
+        run: python -m pytest -q
+
+  shard:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - density: baseline
+            start: 12001
+            end: 12200
+          - density: baseline
+            start: 12201
+            end: 12400
+          - density: enriched
+            start: 12001
+            end: 12200
+          - density: enriched
+            start: 12201
+            end: 12400
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: 200 natural worlds, original M6 physics, full bare replays for positives
+        run: python -m tools.m6_13_replication shard --density ${{ matrix.density }} --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Keep every world, including null cases, regardless of other shards
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-13-shard-${{ matrix.density }}-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m6_13_replication/shards/${{ matrix.density }}-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge-and-verify:
+    needs: shard
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m6-13-shard-*
+          path: campaigns/m6_13_replication/shards
+          merge-multiple: true
+      - name: Verify 800/800 independent world combinations, all protocol hashes, positives replays and decision
+        run: python -m tools.m6_13_replication merge
+      - name: Archive merged 800-world dataset and summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-13-800-worlds-merged
+          path: campaigns/m6_13_replication/results.json
+          if-no-files-found: error
