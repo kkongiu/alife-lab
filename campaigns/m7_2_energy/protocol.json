@@ -1,0 +1,134 @@
+{
+  "schema": "alife-m7-2-paired-source-topology-passive-contact-transport-v1",
+  "status": "preregistered_before_new_code_and_results",
+  "date": "2026-11-16",
+  "base": "exp/m7-1-driven-chemistry-factorial",
+  "question": "At fixed 19200-energy generation per world, does spatial distribution of energy sources and/or deterministic passive local particle-contact transfer affect energy absorption, accessibility, mobility and native chemistry?",
+  "scientific_scope": "New external treatment module only; original World/Config/chemistry code unchanged. No organisms, seeded templates, genomes or inherited traits.",
+  "design": {
+    "seed_first": 19001,
+    "seed_last": 19080,
+    "independent_numeric_seeds": 80,
+    "arm_labels": [
+      "dispersed_no_transfer",
+      "clustered_no_transfer",
+      "dispersed_contact_transfer",
+      "clustered_contact_transfer"
+    ],
+    "paired_worlds": 320,
+    "steps": 600,
+    "total_world_ticks": 192000,
+    "grid": [
+      24,
+      24
+    ],
+    "particle_counts": {
+      "S0": 108,
+      "S1": 108,
+      "S2": 28,
+      "S3": 20
+    },
+    "base_config": "M6 unfed-6101 chemistry, no catalysis; movement_cost=1 as M7.1; zero bonds initially",
+    "identical_start": "four arms of each seed have exactly matching initial ids, positions, species, particle energies, RNG fingerprint/draw count",
+    "shards": [
+      {
+        "start": 19001,
+        "end": 19020
+      },
+      {
+        "start": 19021,
+        "end": 19040
+      },
+      {
+        "start": 19041,
+        "end": 19060
+      },
+      {
+        "start": 19061,
+        "end": 19080
+      }
+    ],
+    "all_worlds_required": true,
+    "no_adaptive_stop": true
+  },
+  "controlled_energy": {
+    "sources_count": 16,
+    "generation_per_source_per_tick": 2,
+    "source_capacity_per_site": 12,
+    "total_generated_per_world": 19200,
+    "dispersed": {
+      "xs": [
+        2,
+        8,
+        14,
+        20
+      ],
+      "ys": [
+        2,
+        8,
+        14,
+        20
+      ]
+    },
+    "clustered": {
+      "xs": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "ys": [
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    "source_coordinates": "Cartesian product y-major order",
+    "overflow": "discard as original engine; unchanged injection and dissipation",
+    "no_catalysis": true
+  },
+  "passive_contact_transport": {
+    "when": "After each original M7.1 base World.advance(1) step, once per tick; BEFORE later tick.",
+    "scope": "Every undirected cardinal-neighbor particle contact (including bonded and unbonded) in toroidal lattice. Includes S3. Existing bond strength unchanged. No transport via empty grid sites.",
+    "method": "Snapshot particle energies at the END of base step. Enumerate unique undirected contacting particle index pairs sorted by persistent (id_a,id_b). If snapshot energy gap >=2, propose 1 energy from higher to lower. Accept proposals in that fixed order only while donor remaining energy >=1; simultaneously apply all accepted transfers from accumulator deltas. A recipient can receive multiple units. Do not re-evaluate gradients during one transfer pass.",
+    "no_external_flux": "Moves energy only among existing particle stores. Exact pre/post sum(particle energies) invariant each tick. No RNG draws, no changes to particle positions, species, identity, bonds, world counters or source buffers.",
+    "energy_cost": "0 for transport; an idealized passive exchange, not biological energy-pumping or thermodynamically complete model.",
+    "off": "Skip the entire transfer pass after base World.advance(1); no changes to existing original World.advance.",
+    "check": "Raise on any negative energy, net energy creation, changed RNG state, changed particle positions/IDs/bonds or energy ledger mismatch. Unit test contact, wrap, donor exhaustion, no-contact and no-intervention replay."
+  },
+  "outcomes": {
+    "checkpoints": [
+      0,
+      100,
+      200,
+      400,
+      500,
+      600
+    ],
+    "late_interval": "ticks 501..600 inclusive",
+    "per_world": "Full energy ledger stored+dissipated+unabsorbed=initial+injected; energy-injection, source-overflow, particles at zero-energy, per-particle energy Gini, mobile-energy-eligible count, late accepted moves, late new bond formation, source contact transfers, total particle vs bond energy, final native ring components.",
+    "independent_unit": "Numeric seed: four arms paired by initial particle state; not 320 independent worlds.",
+    "primary_source_comparison": "In no-transfer arms, dispersed vs clustered has strictly lower source overflow in >=60/80 paired seeds AND strictly more accepted late moves (ticks 501..600) in >=48/80 seeds. Both required; if not, not_met.",
+    "primary_transfer_comparison": "In dispersed geometry, passive transport vs no-transfer strictly reduces number of zero-energy particles at tick600 in >=50/80 paired seeds AND has strictly more accepted late moves in >=48/80 seeds. Both required; if not, not_met.",
+    "secondary": "Report paired contrasts for all four arms at 100 and 600 on overflow, zero-energy particle fraction, Gini, late activity and bond formation, native rings. Count ties. Do not choose a posteriori favorable gate.",
+    "no_claim": "A positive gate is a statement about resource access and activity in this model, NOT metabolism, self-maintenance, replication or heredity."
+  },
+  "integrity": {
+    "preregister_first": true,
+    "no_src_changes": true,
+    "master_unmodified": true,
+    "full_pytest_before_runs": true,
+    "exact_80_seed_4_arm_coverage": true,
+    "all_four_shard_protocol_hashes": true,
+    "fixed_replay_each_shard": "Replay all 4 arms for first seed of each 20-seed shard; verify complete world hash, RNG, counters, injection/overflow, source stored-energy and total transfer events.",
+    "passive_off_consistency": "Dispersed no-transfer arm must reproduce exactly M7.1 driven_no_catalysis dynamics if constructed with same seed, grid/particles and sources.",
+    "raw_null_worlds_included": true,
+    "config_hash_recorded": true
+  },
+  "artifacts": {
+    "output": "campaigns/m7_2_energy/merged_results.json",
+    "report": "reports/M7_2_energy_distribution.md",
+    "workflow": ".github/workflows/m7_2_energy_distribution.yml"
+  }
+}
