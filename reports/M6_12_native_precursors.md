@@ -75,12 +75,12 @@ L'unico positivo ammissibile con centro occupato appartiene **a un solo mondo, u
 
 ## Riproducibilità e limiti
 
-L'esecuzione GitHub Actions originale ha superato regressioni e 300/300 mondi; i due replay fissi senza osservatore coincidono in hash/RNG/energia/legami. Una **verifica post-hoc separata** del caso `enriched-11110` è stata aggiunta successivamente in un test: ripete seed 11110 con observer e senza observer, richiede il medesimo episodio di 282 tick e verifica gli hash e gli stati finali; questo controllo **non** modifica la preregistrazione, né la regola di decisione.
+L'esecuzione GitHub Actions originale ha superato regressioni e 300/300 mondi; i due replay fissi senza osservatore coincidono in hash/RNG/energia/legami. Una **verifica post-hoc separata** del caso `enriched-11110` è stata aggiunta successivamente in un test e **superata** in [GitHub Actions #43843649892](https://github.com/kkongiu/alife-lab/actions/runs/43843649892): ripete il seed 11110 con observer e senza observer, richiede il medesimo episodio di 282 tick e verifica gli hash completi, RNG, energia e contatori finali. Anche l'intera campagna dei 300 mondi è stata ripetuta con esito PASS. Questo controllo **non** modifica la preregistrazione, né la regola di decisione.
 
 Questo esperimento non mette alla prova membrane selettive, scambio energetico organizzato, produzione di nuove molecole, ereditarietà o riproduzione di compartimenti. La barriera può essere spiegata interamente dall'immobilità degli aggregati legati e da probabilità locali di rottura/riformazione dei legami. Mancano replicazioni indipendenti di lunga durata.
 
 ## Decisione e passo successivo proposto
 
-**Accettare come osservazione fisica di lunga durata** la barriera passiva `enriched-11110`, purché il controllo post-hoc rimanga verde. **Non accettare** una differenza causale di chiusura per presenza di residente: è fortemente sottocampionata.
+**Accettare come osservazione fisica di lunga durata, ricontrollata post-hoc** la barriera passiva `enriched-11110`. **Non accettare** una differenza causale di chiusura per presenza di residente: è fortemente sottocampionata.
 
 Priorità successiva **M6.13**: preregistrare campione esplicitamente dimensionato per aumentare il numero di precursori con centro occupato *senza introdurre nuove leggi o template*, registrare la durata indipendentemente dal completamento dell'ottavo legame e verificare se esiste almeno una seconda replica di lunga durata su nuovi seed. Solo dopo, separare l'effetto puramente geometrico dal contributo del ciclo di legami con esperimenti controfattuali.
