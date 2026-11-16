@@ -95,9 +95,13 @@ def inspect_case(seed, ep, final_state):
     earlier_shape_ticks=[]
     observed_eighth=None
     break_at_end=[]
+    first_resident_bond_tick=None
+    free_unbonded_prefix_ticks=0
+    max_resident_degree=0
 
     def inspect(world):
         nonlocal original_locations,checked_ticks,observed_eighth,break_at_end
+        nonlocal first_resident_bond_tick,free_unbonded_prefix_ticks,max_resident_degree
         tick=world.step
         broken=rec.pop(tick)
         s=world.store
@@ -128,7 +132,18 @@ def inspect_case(seed, ep, final_state):
         cx,cy=center
         idx=s.grid[cy*s.width+cx]
         assert idx!=-1 and s.ids[idx]==resident,("resident left center",seed,tick)
-        assert s.degree[idx]==0,("center resident bonded",seed,tick)
+        degree=s.degree[idx]
+        max_resident_degree=max(max_resident_degree,degree)
+        if degree==0 and first_resident_bond_tick is None:
+            free_unbonded_prefix_ticks+=1
+        elif degree>0 and first_resident_bond_tick is None:
+            first_resident_bond_tick=tick
+        # Geometry may confine a now-BONDED native resident. The frozen
+        # primary gate requires grade=0 at first sighting and same ID later,
+        # but does not require grade=0 at every subsequent tick. Keep these
+        # scientifically different durations separate.
+        if tick==start:
+            assert degree==0,("resident bonded at birth",seed,tick)
         assert world.config.species[s.species[idx]].move_probability>0
         if observed_eighth is None:
             # Detect missing perimeter edge by computing native shape directly.
@@ -170,6 +185,10 @@ def inspect_case(seed, ep, final_state):
         "initial_material_shapes_before_tick":len(earlier_shape_ticks),
         "original_break_tick":None if ep["right_censored"] else stop,
         "source_edges_broken_on_end":[list(edge) for edge in break_at_end],
+        "first_resident_bond_tick":first_resident_bond_tick,
+        "unbonded_prefix_ticks":free_unbonded_prefix_ticks,
+        "resident_ever_bonded_during_barrier":first_resident_bond_tick is not None,
+        "max_resident_degree":max_resident_degree,
         "identical_final_full_hash_rng_energy_bond_counters":True
     }
 
@@ -195,12 +214,15 @@ def main():
         check=inspect_case(seed,ep,fin)
         details.append(check)
         print(f"M614_PHYSICAL_AUDIT_PASS seed={seed} duration={check['duration_verified']}",flush=True)
+    strictly_unbonded=[x["seed"] for x in details if x["unbonded_prefix_ticks"]>=30]
     result={
-        "schema":"alife-m6-14-independent-posthoc-physical-audit-v1",
+        "schema":"alife-m6-14-independent-posthoc-physical-audit-v2",
         "posthoc":True,
         "not_new_random_seeds":True,
         "original_preregistered_decision_unmodified":True,
         "n_independently_replayed_primary_worlds":len(details),
+        "posthoc_strict_unbonded_first_30_ticks_seed_count":len(strictly_unbonded),
+        "posthoc_strict_unbonded_first_30_ticks_seeds":strictly_unbonded,
         "results":details
     }
     OUT.parent.mkdir(parents=True,exist_ok=True)
@@ -208,6 +230,8 @@ def main():
     print("M614_PHYSICAL_FINAL="+json.dumps({
         "independent_primary_worlds_checked":len(details),
         "max_duration":max(x["duration_verified"] for x in details),
+        "posthoc_strict_unbonded_first_30_ticks_count":len(strictly_unbonded),
+        "strict_seeds":strictly_unbonded,
         "all_passed":True},sort_keys=True),flush=True)
     return result
 
