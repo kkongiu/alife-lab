@@ -50,7 +50,8 @@ def test_partial_shell_with_seven_edges_not_classed_complete():
     w = synthetic_pocket(empty=True)
     s = w.store
     key = next(iter(s.bonds))
-    s.remove_bond(*key)
+    stored_energy = s.remove_bond(*key)
+    s.energy[key[0]] += stored_energy  # maintain exact total energy after synthetic bond removal
     w.check()
     bonds = {tuple(sorted((s.ids[a],s.ids[b]))) for a,b in s.bonds}
     assert shell_edges(s,(3,3),bonds) == 7
