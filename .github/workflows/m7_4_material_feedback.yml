@@ -1,0 +1,84 @@
+name: M7.4 natural aggregate material lineage and paired energy feedback
+
+on:
+  push:
+    branches:
+      - exp/m7-4-native-aggregate-lineage-forks
+    paths:
+      - 'campaigns/m7_4_material/**'
+      - 'tools/m7_4_material_feedback.py'
+      - 'tests/test_m7_4_material_feedback.py'
+      - '.github/workflows/m7_4_material_feedback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Complete suite including material ID cohorts and M7.3 exact transport equivalence
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 22001
+            end: 22040
+          - start: 22041
+            end: 22080
+          - start: 22081
+            end: 22120
+          - start: 22121
+            end: 22160
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Native first-source material selection and matched three-arm forks for 40 seeds
+        run: python -m tools.m7_4_material_feedback shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive complete native source cohorts and null worlds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-4-source-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_4_material/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-4-source-shard-*
+          path: campaigns/m7_4_material/shards
+          merge-multiple: true
+      - name: Require 160/160 native source seeds and four fixed prereg protocol hashes
+        run: python -m tools.m7_4_material_feedback merge
+      - name: Archive full per-material raw source forks and preregistered decisions
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-4-native-source-material-forks
+          path: campaigns/m7_4_material/results.json
+          if-no-files-found: error
