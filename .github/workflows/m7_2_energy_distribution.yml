@@ -1,0 +1,85 @@
+name: M7.2 fixed-budget spatial sources and passive contact transfer
+
+on:
+  push:
+    branches:
+      - exp/m7-2-energy-topology-diffusion
+    paths:
+      - 'campaigns/m7_2_energy/**'
+      - 'tools/m7_2_energy_distribution.py'
+      - 'tests/test_m7_2_energy_distribution.py'
+      - '.github/workflows/m7_2_energy_distribution.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Complete regression tests and transport energy/RNG invariants
+        run: python -m pytest -q
+
+  shards:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 19001
+            end: 19020
+          - start: 19021
+            end: 19040
+          - start: 19041
+            end: 19060
+          - start: 19061
+            end: 19080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Run 20 seeds across 4 matched regimes, preserving complete energy ledger
+        run: python -m tools.m7_2_energy_distribution shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive every world and negative result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-2-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_2_energy/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-2-shard-*
+          path: campaigns/m7_2_energy/shards
+          merge-multiple: true
+      - name: Verify complete 320 worlds, paired seeds, protocol hash and all bare replays
+        run: python -m tools.m7_2_energy_distribution merge
+      - name: Preserve merged results
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-2-fixed-energy-complete-results
+          path: campaigns/m7_2_energy/merged_results.json
+          if-no-files-found: error
