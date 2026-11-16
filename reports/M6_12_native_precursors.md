@@ -1,8 +1,8 @@
 # M6.12 — Una barriera naturale persistente per 282 tick: protocellula NO, confinamento geometrico SÌ
 
-**Data:** 16 novembre 2026. **Esperimento preregistrato completo:** [protocollo congelato prima del runner, commit \`a64f518\`](https://github.com/kkongiu/alife-lab/commit/a64f51811aee4b89732e3179b9f18e128222365e) · [GitHub Actions originale, PASS #43842973287](https://github.com/kkongiu/alife-lab/actions/runs/43842973287) · [dati grezzi completi: 300 mondi, artifact #14214645568](https://github.com/kkongiu/alife-lab/actions/runs/43842973287/artifacts/14214645568).
+**Data:** 16 novembre 2026. **Esperimento preregistrato completo:** [protocollo congelato prima del runner, commit `a64f518`](https://github.com/kkongiu/alife-lab/commit/a64f51811aee4b89732e3179b9f18e128222365e) · [GitHub Actions originale, PASS #43842973287](https://github.com/kkongiu/alife-lab/actions/runs/43842973287) · [dati grezzi completi: 300 mondi, artifact #14214645568](https://github.com/kkongiu/alife-lab/actions/runs/43842973287/artifacts/14214645568).
 
-**Verdetto preregistrato: \`single_unreplicated_30tick_confinement\` e \`closure_comparison_underpowered=true\`.** Nessuna prova di autoreplicazione, metabolismo, ereditarietà, protezione attiva o vita.
+**Verdetto preregistrato: `single_unreplicated_30tick_confinement` e `closure_comparison_underpowered=true`.** Nessuna prova di autoreplicazione, metabolismo, ereditarietà, protezione attiva o vita.
 
 ## Domanda e correzione concettuale
 
@@ -11,11 +11,11 @@ In M6.11 la particella ID98 era presente quando la struttura aveva già sette de
 ## Disegno fisso e falsificabilità
 
 - **300 configurazioni native**: 150 seed nuovi, dal 11001 al 11150, due densità (200 particelle baseline; 264 enriched); 600 tick per mondo, 180.000 tick-mondo.
-- Universo M6: griglia periodica 24×24, zero legami iniziali, senza modifiche alla chimica, alle particelle, a \`src/\`, a \`master\` e agli esperimenti storici.
+- Universo M6: griglia periodica 24×24, zero legami iniziali, senza modifiche alla chimica, alle particelle, a `src/`, a `master` e agli esperimenti storici.
 - Precursore valido: **esattamente otto particelle** nei siti del perimetro 3×3, collegate fra loro da **esattamente sette legami nativi** consecutivi, un solo legame mancante, due estremi di grado 1 e sei membri di grado 2; niente legami esterni nel componente. Un semplice guscio di otto siti occupati non basta.
-- \`empty\`: centro vuoto; \`free_mobile\`: monomero nativo grado 0 con probabilità di movimento non nulla; \`other_occupied\`: altri occupanti.
+- `empty`: centro vuoto; `free_mobile`: monomero nativo grado 0 con probabilità di movimento non nulla; `other_occupied`: altri occupanti.
 - Episodio di barriera: **stesse sette connessioni originali**, stessi otto ID materiali, stessi siti. Si conclude alla prima rottura reale di uno dei sette legami originali, anche se viene ricostituito nello stesso tick; l'ottavo legame può comparire o rompersi senza interrompere la barriera di partenza.
-- Rischio di chiusura: dal tick \`t\` con sette legami a \`t+1\` con l'ottavo, solo se gli originali non si rompono e la configurazione rimane in posizione. Si riportano esposizioni chimicamente ammissibili, separate per densità, specie della coppia terminale e occupazione del centro. I tick ripetuti **non sono campioni indipendenti**.
+- Rischio di chiusura: dal tick `t` con sette legami a `t+1` con l'ottavo, solo se gli originali non si rompono e la configurazione rimane in posizione. Si riportano esposizioni chimicamente ammissibili, separate per densità, specie della coppia terminale e occupazione del centro. I tick ripetuti **non sono campioni indipendenti**.
 - Due mondi fissi sono riprodotti senza osservatore per verificare hash completo, RNG/draws, energia, dissipazione e contatori; tutti i 300 mondi e i casi nulli sono conservati nell'artefatto.
 
 **Nota:** i due regimi usano gli stessi 150 numeri di seed con condizioni iniziali diverse; sono mondi distinti ma non necessariamente campioni statisticamente indipendenti tra densità.
@@ -34,13 +34,13 @@ In M6.11 la particella ID98 era presente quando la struttura aveva già sette de
 
 L'unico mondo positivo da almeno trenta tick è dettagliato qui sotto. La condizione preregistrata per parlare di fenomeno ripetuto richiedeva **almeno due mondi**, non raggiunta.
 
-### Evento positivo \`enriched-11110\`: barriera naturale durata 282 tick
+### Evento positivo `enriched-11110`: barriera naturale durata 282 tick
 
 Il nuovo dato documentato nel JSON originale è:
 
 | Proprietà | Valore |
 |---|---|
-| Mondo, seed | \`enriched / 11110\` |
+| Mondo, seed | `enriched / 11110` |
 | Nascita del precursore | tick **225** |
 | Posizione del centro | **(20, 6)** |
 | Residente mobile libero | **ID 244** |
@@ -56,9 +56,9 @@ Il nuovo dato documentato nel JSON originale è:
 
 La particella ID244 non ha una funzione di controllo della struttura: il movimento cardinalmente impedito è una conseguenza passiva del modello. Il risultato è interessante per una ricerca sulla **compartimentazione geometrica primitiva**, non è una cellula.
 
-### Controllo positivo secondario: \`baseline-11102\`
+### Controllo positivo secondario: `baseline-11102`
 
-Un secondo precursore naturale con residente mobile libero si trova nel mondo \`baseline-11102\`, centro (1,11), residente **ID184**. Il bordo a sette legami rimane integro per **9 tick**, senza chiudere l'ottava connessione. La coppia terminale è \`S1–S2\`, non chimicamente ammissibile nelle condizioni misurate: il mancato ottavo legame **non** deve essere attribuito alla presenza della particella centrale.
+Un secondo precursore naturale con residente mobile libero si trova nel mondo `baseline-11102`, centro (1,11), residente **ID184**. Il bordo a sette legami rimane integro per **9 tick**, senza chiudere l'ottava connessione. La coppia terminale è `S1–S2`, non chimicamente ammissibile nelle condizioni misurate: il mancato ottavo legame **non** deve essere attribuito alla presenza della particella centrale.
 
 ### Probabilità di chiusura: controllo insufficiente
 
@@ -75,12 +75,12 @@ L'unico positivo ammissibile con centro occupato appartiene **a un solo mondo, u
 
 ## Riproducibilità e limiti
 
-L'esecuzione GitHub Actions originale ha superato regressioni e 300/300 mondi; i due replay fissi senza osservatore coincidono in hash/RNG/energia/legami. Una **verifica post-hoc separata** del caso \`enriched-11110\` è stata aggiunta successivamente in un test: ripete seed 11110 con observer e senza observer, richiede il medesimo episodio di 282 tick e verifica gli hash e gli stati finali; questo controllo **non** modifica la preregistrazione, né la regola di decisione.
+L'esecuzione GitHub Actions originale ha superato regressioni e 300/300 mondi; i due replay fissi senza osservatore coincidono in hash/RNG/energia/legami. Una **verifica post-hoc separata** del caso `enriched-11110` è stata aggiunta successivamente in un test: ripete seed 11110 con observer e senza observer, richiede il medesimo episodio di 282 tick e verifica gli hash e gli stati finali; questo controllo **non** modifica la preregistrazione, né la regola di decisione.
 
 Questo esperimento non mette alla prova membrane selettive, scambio energetico organizzato, produzione di nuove molecole, ereditarietà o riproduzione di compartimenti. La barriera può essere spiegata interamente dall'immobilità degli aggregati legati e da probabilità locali di rottura/riformazione dei legami. Mancano replicazioni indipendenti di lunga durata.
 
 ## Decisione e passo successivo proposto
 
-**Accettare come osservazione fisica di lunga durata** la barriera passiva \`enriched-11110\`, purché il controllo post-hoc rimanga verde. **Non accettare** una differenza causale di chiusura per presenza di residente: è fortemente sottocampionata.
+**Accettare come osservazione fisica di lunga durata** la barriera passiva `enriched-11110`, purché il controllo post-hoc rimanga verde. **Non accettare** una differenza causale di chiusura per presenza di residente: è fortemente sottocampionata.
 
 Priorità successiva **M6.13**: preregistrare campione esplicitamente dimensionato per aumentare il numero di precursori con centro occupato *senza introdurre nuove leggi o template*, registrare la durata indipendentemente dal completamento dell'ottavo legame e verificare se esiste almeno una seconda replica di lunga durata su nuovi seed. Solo dopo, separare l'effetto puramente geometrico dal contributo del ciclo di legami con esperimenti controfattuali.
