@@ -98,3 +98,29 @@ def test_empty_outcome_and_non_independence_gate():
     assert summarize([x],p)["decision"]=="single_unreplicated_30tick_confinement"
     y={**x,"seed":11002}
     assert summarize([x,y],p)["decision"]=="repeated_native_geometric_confinement_only"
+
+
+def test_posthoc_target_11110_reproduces_full_282_tick_barrier():
+    """Result-informed independent rerun: not part of original preregistered gate."""
+    p=natural_protocol()
+    tracked=create_natural(11110,"enriched",p)
+    observed=study_world(tracked,600)
+    positive=[e for e in observed["episodes"] if e["resident_mobile"]]
+    assert len(positive)==1
+    ep=positive[0]
+    assert ep["start_tick"]==225
+    assert ep["resident_id"]==244
+    assert ep["center"]==[20,6]
+    assert ep["duration_ticks"]==282
+    assert ep["first_closure_tick"]==231
+    assert ep["ended_by"]=="original_edge_broken"
+    bare=create_natural(11110,"enriched",p)
+    bare.advance(600)
+    bare.check()
+    assert bare.state_hash_full()==observed["final"]["hash"]
+    assert bare.rng.fingerprint()==observed["final"]["rng"]
+    assert bare.rng.draws==observed["final"]["draws"]
+    assert bare.energy()==observed["final"]["energy"]
+    assert bare.dissipated==observed["final"]["dissipated"]
+    assert bare.bonds_formed_total==observed["final"]["formed"]
+    assert bare.bonds_broken_total==observed["final"]["broken"]
