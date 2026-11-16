@@ -1,0 +1,93 @@
+name: M7.5 preregistered aged natural networks and matched structural-energy feedback
+
+on:
+  push:
+    branches:
+      - exp/m7-5-mature-network-cohorts
+    paths:
+      - 'campaigns/m7_5_mature/**'
+      - 'tools/m7_5_mature_feedback.py'
+      - 'tests/test_m7_5_mature_feedback.py'
+      - '.github/workflows/m7_5_mature_feedback.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Complete test suite and exact historical native-conduction equivalence
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 23001
+            end: 23040
+          - start: 23041
+            end: 23080
+          - start: 23081
+            end: 23120
+          - start: 23121
+            end: 23160
+          - start: 23161
+            end: 23200
+          - start: 23201
+            end: 23240
+          - start: 23241
+            end: 23280
+          - start: 23281
+            end: 23320
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Select older native cohorts without outcome knowledge then fork three matched energy regimes
+        run: python -m tools.m7_5_mature_feedback shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive complete full-cohort outcomes and all null source worlds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-5-source-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_5_mature/shards/seeds-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-5-source-shard-*
+          path: campaigns/m7_5_mature/shards
+          merge-multiple: true
+      - name: Require exactly all 320 source worlds and eight preregistration-matching shards
+        run: python -m tools.m7_5_mature_feedback merge
+      - name: Archive complete independent-source seed sample including nulls and three matched forks
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-5-mature-native-cohort-complete-results
+          path: campaigns/m7_5_mature/results.json
+          if-no-files-found: error
