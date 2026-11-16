@@ -1,0 +1,87 @@
+name: M6.15 counterfactual position-only native cage experiment
+
+on:
+  push:
+    branches:
+      - exp/m6-15-paired-center-causal
+    paths:
+      - 'campaigns/m6_15_center_control/**'
+      - 'tools/m6_15_center_control.py'
+      - 'tests/test_m6_15_center_control.py'
+      - '.github/workflows/m6_15_center_control.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: All tests, position-only sham forks and original next-step bond-break invariant
+        run: python -m pytest -q
+
+  shards:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 15001
+            end: 15200
+          - start: 15201
+            end: 15400
+          - start: 15401
+            end: 15600
+          - start: 15601
+            end: 15800
+          - start: 15801
+            end: 16000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Explore fixed 200 native worlds, take first eligible 7-edge source and compare two world clones
+        run: python -m tools.m6_15_center_control shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive every seed, including empty/no-pair source worlds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-15-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m6_15_center_control/shards/enriched-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m6-15-shard-*
+          path: campaigns/m6_15_center_control/shards
+          merge-multiple: true
+      - name: Verify 1000/1000 source worlds, frozen protocol SHA and paired break invariants
+        run: python -m tools.m6_15_center_control merge
+      - name: Archive complete causal fork outcomes and caveats
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-15-paired-center-results
+          path: campaigns/m6_15_center_control/results.json
+          if-no-files-found: error
