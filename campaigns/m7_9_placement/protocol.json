@@ -1,0 +1,137 @@
+{
+  "schema": "alife-m7-9-frozen-root-energy-placement-ablation-v1",
+  "status": "preregistered_before_implementation_and_results",
+  "date": "2026-11-17",
+  "parent": "exp/m7-8-frozen-pairwise-chemistry",
+  "motivation": "M7.8 demonstrated a small direct fixed-geometry energy effect of native bond conduction versus sham, but generic nonbonded conduction led to more recruitment. Is the specific particle-by-particle energy PLACEMENT produced by the naturally bonded network advantageous compared to counterfactual placements with EXACTLY the same post-conduction energy multiset within that same native aggregate?",
+  "sample": {
+    "seed_first": 27001,
+    "seed_last": 27640,
+    "count": 640,
+    "independent_unit": "one numeric native source seed; four permutation placements and 32 pair-keyed chemistry lotteries share the same native original geometry and are repeated within-seed conditions, not independent samples",
+    "shards": [
+      {
+        "start": 27001,
+        "end": 27040
+      },
+      {
+        "start": 27041,
+        "end": 27080
+      },
+      {
+        "start": 27081,
+        "end": 27120
+      },
+      {
+        "start": 27121,
+        "end": 27160
+      },
+      {
+        "start": 27161,
+        "end": 27200
+      },
+      {
+        "start": 27201,
+        "end": 27240
+      },
+      {
+        "start": 27241,
+        "end": 27280
+      },
+      {
+        "start": 27281,
+        "end": 27320
+      },
+      {
+        "start": 27321,
+        "end": 27360
+      },
+      {
+        "start": 27361,
+        "end": 27400
+      },
+      {
+        "start": 27401,
+        "end": 27440
+      },
+      {
+        "start": 27441,
+        "end": 27480
+      },
+      {
+        "start": 27481,
+        "end": 27520
+      },
+      {
+        "start": 27521,
+        "end": 27560
+      },
+      {
+        "start": 27561,
+        "end": 27600
+      },
+      {
+        "start": 27601,
+        "end": 27640
+      }
+    ],
+    "source": "Use exact unchanged M7.5 first eligible original material-ID source: native original M7.3 no_transfer parent with 264 native particles, zero initial bonds, 24x24 periodic, dispersed external sources; first maximal bonded 5..16 material component ≥4 native bonds and ≥1 free-valence member, ≥2 source edges continuously unbroken ≥20 ticks, first selection from tick120 through tick500, lexicographically lowest IDs, retain all nulls.",
+    "source_first_eligible_tick": 120,
+    "source_last_tick": 500,
+    "no_adaptive_sampling": true
+  },
+  "interventions": {
+    "sham": "Clone parent, no energy conduction. Controls baseline untransferred energy state.",
+    "bond_only": "Clone parent and apply EXACTLY ONE native M7.3 energy_transfer(...,'bond_only') pass with no World.advance, movement, injection, bond formation/breaking or RNG draw.",
+    "root_scramble": "Start from the SAME post-bond_only complete world. Take EXACT vector of all source-original-ID particle energy values, and assign those values to the same original ID set according to a frozen deterministic per-seed rank permutation. This preserves EXACT per-original-cohort energy multiset, mean, sum, nonnegative energies; all outside original-source energy values, all pre-reaction positions/species/bonds/degree, native total energy and M7.3 number of transfers. Only mapping ENERGY→material ID differs. This is an artificial spatial placement ABLATION, not an implementable native energy-routing physical law.",
+    "permutation_ranks": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "permutation_key": "For each original material ID independently compute SHA256 ASCII 'alife-m7-9|'+seed+'|'+rank+'|'+material_id, sort by (digest_bytes, material_id); use this ordered target-ID list to assign the source energies listed in ascending original-ID order. The identity permutation is possible; report unchanged-energy placebo counts.",
+    "frozen": "Never mutate actual native source world; no material movements, additions, removals, topology/degree edits, or RNG consumption before chemistry."
+  },
+  "chemistry": {
+    "mode": "EXACT isolated M7.8 experimental one-sweep formation_only_pair_keyed using native M6 chemistry candidate iteration, formation_threshold/cost/rechecks, with SAME pair-specific SHA256 draw across conditions; NO original World.advance. No changes to original M6 physics.",
+    "seeds_for_pair_draw": "unchanged M7.8 pair_draw using new numeric seed 27001..27640, salt0..31, original unordered material IDs",
+    "lottery_salts": "exact integers 0..31, fixed before data, every seed+intervention uses the same paired draws for identical original material pairs",
+    "outcome": "Count original-to-outside new bond formations, not global bonds; keep all 32 lottery-level outcomes and full final hashes. Same source is a single independent unit."
+  },
+  "measurements": {
+    "static": "pre original source, sham, post bond conduction, post each root-scramble: native unbonded original–external cardinal contacts, chemically permitted species/valence subset, energy-qualified subset requiring BOTH endpoints sufficient native formation_cost; compare original bond_only to average four scrambles.",
+    "budget": "Record exact original-root energy vector + posttransfer root vector, original bond-pass count, original-root total and sorted energy multiset, exterior energy vector checksum, root mapping and actual changed-target count for each scramble.",
+    "real_chemical": "Each of sham/bond_only/4 scrambles undergo 32 paired M7.8 isolated native-chemistry sweeps; original-to-external new bonds in each, all new bonds, final hashes, same-pair lottery matching by fixed SHA key.",
+    "reporting": "Per source difference bond_only energetic qualified contact count minus mean four shuffled positions, and bond_only 32-salt actual new original–external formation count minus four-rank mean. Do NOT count 4×32 attempts as extra independent worlds.",
+    "invariance": "All five conduction-descended arms must preserve entire M7.3 post-conduction particle-energy multiset for root, total root energy, all non-root energy exact, all IDs/species/positions/chemical bonds, full original RNG/draw counts. Formation sweeps conserve world ledger. Sham total energy also same though per-particle distribution differs.",
+    "controls": "First selected native source of each shard independently regenerated from seed and replays original M7.3 one-pass + one M7.8 lottery on sham/bond and first scramble to confirm raw hashes. Four shuffled ranks deterministic and preregistered; all 640 worlds including nulls archived."
+  },
+  "gates": {
+    "primary": "At least 40 naturally selected independent seed worlds and 25 non-tied seed-level cases on 4*bond_only_energetically_qualified_external_pairs minus SUM(ranks0to3_qualified_external_pairs). ≥2/3 non-tied must favor original bond-only placement. Else no_success (explicitly flag sample insufficiency if <25).",
+    "secondary": "At least 40 selected source worlds and 20 non-tied seed-level cases on 4*SUM_32[bond_only_new_original-external_bonds] minus SUM_over_4rank_SUM_32[scrambled_new_original-external_bonds]. ≥2/3 non-tied favorable original bond-only placement. Else no_success, distinguish underpowered when <20.",
+    "sham_comparison": "Original bond_only vs sham and pooled scramble vs sham remain DESCRIPTIVE and must NOT replace primary/secondary.",
+    "max_two_confirmatory_endpoints": true,
+    "no_posthoc_changes_to_seed_horizon_thresholds_permutation_or_lottery_count": true,
+    "no_claim_of_selfmaintenance_metabolism_reproduction_or_life": true
+  },
+  "integrity": {
+    "original_native_src_master_all_history_unchanged": true,
+    "preregister_first": true,
+    "strict_16_shards_and_640_seeds": true,
+    "zero_initial_bonds_no_seed_selection_on_outcomes": true,
+    "full_pytest_before_shards": true,
+    "protocol_sha256_and_original_m75_source_sha256_in_every_shard": true,
+    "source_world_full_hash_rng_invariant": true,
+    "root_energy_multiset_equal_across_bond_and_scrambles": true,
+    "all_chemistry_reactions_pair_keyed_and_32_salt": true,
+    "full_energy_ledger_each_sweep": true,
+    "preserve_negative_and_tie_seeds": true,
+    "draft_stacked_PR_only_no_merge": true
+  },
+  "output": {
+    "data": "campaigns/m7_9_placement/results.json",
+    "report": "reports/M7_9_energy_placement.md",
+    "workflow": ".github/workflows/m7_9_energy_placement.yml"
+  }
+}
