@@ -1,0 +1,129 @@
+{
+  "schema": "alife-m7-11-natural-aged-cycle-fault-tolerance-v1",
+  "status": "frozen_before_runner_tests_and_results",
+  "date": "2026-11-17",
+  "parent_branch": "exp/m7-10-recruited-bond-function",
+  "question": "Does first spontaneous chemically connected and aged native ring show fault tolerance after one controlled ring bond cut, and does original passive energy conduction along surviving ring edges cause exact native reclosure of the cut edge?",
+  "sample": {
+    "seed_first": 29001,
+    "seed_last": 29640,
+    "seed_count": 640,
+    "shards": [
+      {
+        "start": 29001,
+        "end": 29040
+      },
+      {
+        "start": 29041,
+        "end": 29080
+      },
+      {
+        "start": 29081,
+        "end": 29120
+      },
+      {
+        "start": 29121,
+        "end": 29160
+      },
+      {
+        "start": 29161,
+        "end": 29200
+      },
+      {
+        "start": 29201,
+        "end": 29240
+      },
+      {
+        "start": 29241,
+        "end": 29280
+      },
+      {
+        "start": 29281,
+        "end": 29320
+      },
+      {
+        "start": 29321,
+        "end": 29360
+      },
+      {
+        "start": 29361,
+        "end": 29400
+      },
+      {
+        "start": 29401,
+        "end": 29440
+      },
+      {
+        "start": 29441,
+        "end": 29480
+      },
+      {
+        "start": 29481,
+        "end": 29520
+      },
+      {
+        "start": 29521,
+        "end": 29560
+      },
+      {
+        "start": 29561,
+        "end": 29600
+      },
+      {
+        "start": 29601,
+        "end": 29640
+      }
+    ],
+    "original_world": "Original unchanged M7.3 config_for(seed,'no_transfer'): 264 native particles on periodic 24x24 grid, dispersed 16 energy sources, 0 initial bonds, no catalysis, movement cost1, ORIGINAL native reversible M6 chemistry; one original M7.3 bond_only energy transfer pass AFTER every World.advance(1).",
+    "first_scan_tick": 120,
+    "last_scan_tick": 600,
+    "minimum_continuous_ring_age": 20,
+    "first_native_ring": "At every tick, use ORIGINAL M6.4 analyze_cycle for every maximal native bonded component: exact simple unbranched closed cycle 4,6,or8 material IDs, all native degrees2, exactly N bonds. Age ring by exact same persistent IDs AND exact same bonded edge set continuously present in poststep snapshots, resetting age if ANY real native break event on those edges (even same-tick reformation). At first tick >=120 with episode age>=20 choose smallest sorted IDs lexicographically; never select using future outcomes. Keep all null worlds.",
+    "independent_statistical_unit": "one seed-world with at most one selected FIRST mature ring; four forked treatments are paired, not independent."
+  },
+  "interventions": {
+    "cut_edge": "Lexicographically smallest persistent native ID pair among ORIGINAL ring edges at selected checkpoint. No posthoc selection.",
+    "intact_normal": "Unmodified native parent clone with first original ring intact and native M6 advance plus ORIGINAL M7.3 bond_only energy transfer.",
+    "intact_ring_conduction_suppressed": "Physically identical intact parent clone, but after each future native step skip energy transfers ONLY across original ring persistent-ID edges that remain currently bonded, with all other bond transports in ORIGINAL M7.3 donor-snapshot ordering; no change to native M6 chemistry.",
+    "opened_normal": "Clone native parent, remove ONLY chosen ring chemical bond and refund its FULL stored chemical energy to smaller/larger ID endpoints using original deterministic M6 break split, WITHOUT additional dissipation, RNG draws or a forced native break event. Continue normal M6 world and original M7.3 bond_only transfer; removed edge may naturally re-form.",
+    "opened_surviving_ring_conduction_suppressed": "Same exact opened/refunded clone as opened_normal; suppress M7.3 energy transfer across ONLY the other ORIGINAL ring edges that remain bonded. If cut edge spontaneously re-forms it may conduct. Other bonds transport normally.",
+    "physical_integrity": "Intact siblings exactly identical full world/RNG at t0; opened siblings exactly identical after cut. Original full world unchanged. All four world ENERGY totals identical after cut, no added particle/bond, original formation dissipation retained, same RNG at fork. Opened vs intact differ in bond count, valence, individual particle energies and future RNG streams. Selective conduction skip is experimental non-native transfer ablation, not native chemistry.",
+    "followup_ticks": 120,
+    "checkpoints": [
+      1,
+      10,
+      30,
+      60,
+      120
+    ]
+  },
+  "endpoints": {
+    "primary": "Among opened siblings, did ORIGINAL M6 emit a REAL FORM BondEvent for the exact selected cut material-ID pair while NO OTHER original ring edge experienced ANY native BREAK BondEvent in any prior OR SAME followup tick? Formed edge must exist after native step. Native same-tick break/reformation of a surviving edge invalidates. Strict pre-other-break reclosure, not active directed repair.",
+    "secondary": "At tick120, are ALL original ring material IDs in ONE chemically bonded connected component, in intact_normal vs opened_normal? May be connected through other links: passive mechanical robustness, not evidence of active reclosure or life.",
+    "descriptive": "All exact cut-edge and ring edge break FORM events, any-time reclosure, original whole ring closure, original ID material connectivity at t1,10,30,60,120, native retained ring cycle and mean ring energy, accepted energy transports on surviving original edges, full RNG/world hash/ledger.",
+    "gates": {
+      "primary": "Selected >=40 seed-world rings AND >=25 discordant independent source worlds on primary exact prebreak pair reclosure; >=2/3 favorable opened_normal over opened_surviving_ring_conduction_suppressed. Otherwise not_met (state low sample explicitly).",
+      "secondary": "Selected >=40 seed-world rings AND >=25 discordant on full original ring-ID material connectivity at t120; >=2/3 favorable intact_normal over opened_normal. Otherwise not_met (state low sample).",
+      "no_modified_thresholds_posthoc": true,
+      "no_life_or_repair_claim_from_passive_connectivity": true
+    }
+  },
+  "integrity": {
+    "frozen_protocol_before_implementation": true,
+    "no_change_to_master_core_src_or_prior_M6_M7": true,
+    "strict_640_seed_worlds_and_16_shards": true,
+    "all_nulls_retained": true,
+    "all_start_zero_bonds": true,
+    "frozen_protocol_and_original_M73_and_M64_source_hashes_per_shard": true,
+    "identical_first_native_step_before_poststep_transfer_for_intact_siblings_and_opened_siblings": true,
+    "all_fork_energy_ledgers_world_check_and_source_RNG_invariance": true,
+    "no_artificial_chemistry_or_repair": true,
+    "independent_from_seed_source_and_120_tick_replay_first_selected_in_each_shard": true,
+    "draft_PR_no_merge": true
+  },
+  "output": {
+    "results": "campaigns/m7_11_ring_resilience/results.json",
+    "report": "reports/M7_11_native_ring_fault_tolerance.md",
+    "workflow": ".github/workflows/m7_11_native_ring_resilience.yml"
+  }
+}
