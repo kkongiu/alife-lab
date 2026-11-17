@@ -1,0 +1,109 @@
+{
+  "schema": "alife-m7-12-native-cut-edge-chemical-opportunity-audit-v1",
+  "status": "preregistered_before_new_runner_and_observed_outcomes",
+  "date": "2026-11-17",
+  "parent": "exp/m7-11-native-cyclic-fault-tolerance",
+  "question": "Does high apparent ring healing arise from repeated native adjacency and energy-qualified ordinary M6 pair-formation lottery, rather than a structure-aware repair mechanism?",
+  "sample": {
+    "seed_first": 30001,
+    "seed_last": 30640,
+    "n": 640,
+    "shards": [
+      {
+        "start": 30001,
+        "end": 30040
+      },
+      {
+        "start": 30041,
+        "end": 30080
+      },
+      {
+        "start": 30081,
+        "end": 30120
+      },
+      {
+        "start": 30121,
+        "end": 30160
+      },
+      {
+        "start": 30161,
+        "end": 30200
+      },
+      {
+        "start": 30201,
+        "end": 30240
+      },
+      {
+        "start": 30241,
+        "end": 30280
+      },
+      {
+        "start": 30281,
+        "end": 30320
+      },
+      {
+        "start": 30321,
+        "end": 30360
+      },
+      {
+        "start": 30361,
+        "end": 30400
+      },
+      {
+        "start": 30401,
+        "end": 30440
+      },
+      {
+        "start": 30441,
+        "end": 30480
+      },
+      {
+        "start": 30481,
+        "end": 30520
+      },
+      {
+        "start": 30521,
+        "end": 30560
+      },
+      {
+        "start": 30561,
+        "end": 30600
+      },
+      {
+        "start": 30601,
+        "end": 30640
+      }
+    ],
+    "native_ring": "exact existing unchanged M7.11 scan_first_native_aged_ring(seed), original M6.4 simple 4/6/8 rings, >=20 uninterrupted same original material edge snapshots, first eligible >=120, by tick600, all noneligible seeds retained",
+    "unit": "one numeric seed-world, one first naturally aged ring per seed. Native pair events are NOT independent units"
+  },
+  "intervention": {
+    "method": "Clone frozen first natural aged ring, cut lexicographically first native bond and refund exact stored bond energy via ORIGINAL M7.11 excise_refund, no extra dissipation or RNG, one arm only. Resume native M6 steps and unchanged original M7.3 bond_only poststep conduction 120 ticks.",
+    "followup": 120,
+    "endpoint": "Actual native original M6 FORM event of exact first cut pair before any other original ring edge actually breaks, including same-tick break events",
+    "instrumentation": "A no-side-effect observer wraps alife.chemistry._candidate_pairs ONLY for the duration of each native World.advance(1), records each true target pair yielded by original native candidate generator at the exact formation stage; no extra RNG or modified candidates. Restore original function in finally, compare original world hash and RNG across shadow replay of first eligible source in each shard.",
+    "separation": "At every pre-formation tick record whether target endpoints remain von-Neumann adjacent and each still has another original surviving ring bond; two endpoints of an opened unbranched ring remain anchored by surviving edges until a real original break. Log actual candidate counts, initial target species/energy/valence eligibility, and native formation events, never infer events just from final snapshots.",
+    "frozen_single_step": "At exact original post-cut state run 32 preregistered M7.8 pair-keyed single formation sweeps on clones with same geometry/energy, for mechanistic cross-check; these are NOT independent native worlds, NOT native future trajectory, and should never replace native reclosure result."
+  },
+  "preregistered_decisions": {
+    "primary_exposure_mechanism": ">=40 eligible native ring source worlds, >=100 observed target original pair native candidate events across selected worlds before target first FORM or other-original-edge break, >=95% of ALL actual exact target early native FORM events must have a recorded TRUE _candidate_pairs target event in SAME native step. This is a MECHANISTIC CORRECTNESS/COVERAGE gate (almost guaranteed by correct native physics), not statistical discovery or independent evidence of active repair. If fails report implementation/anomaly; if passes merely confirms no extra hidden repair route.",
+    "secondary_native_probability": "Compute number of actual FIRST native target FORM successes per total target-pair candidate opportunity events before first target FORM or other edge break. Report empirical event ratio and native unmodified formation_probability (0.05), 95% Wilson interval. Preregister simple descriptive model adequacy band 0.03..0.07 if >=100 attempts; NOT a statistical test for adaptive repair because time-censoring and native coupled RNG streams make IID assumptions approximate. No posthoc threshold change.",
+    "geometry": "Report fraction of at-risk ticks with adjacency, anchored endpoints, energy-eligible target and native candidate; fraction where only energy/valence blocks target. Contrast descriptive, not causal isolation of movement.",
+    "no_active_repair_or_life_claim": true
+  },
+  "integrity": {
+    "strict_640_and_16_shards": true,
+    "preregister_first": true,
+    "no_change_to_src_master_or_M711": true,
+    "full_pytest_before_shards": true,
+    "all_null_worlds": true,
+    "exact_same_physics_rng_hash_with_vs_without_observer_sentinel": true,
+    "original_ring_age_unchanged": true,
+    "ledger_at_all_forks": true,
+    "source_file_hashes": true
+  },
+  "output": {
+    "report": "reports/M7_12_native_reclosure_mechanism.md",
+    "results": "campaigns/m7_12_reclosure/results.json"
+  }
+}
