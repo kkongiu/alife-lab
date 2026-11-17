@@ -211,10 +211,6 @@ def follow(parent,ring,validate=False):
         if not h["second_target_chemically_cut_at_t120"]:
             assert h["second_challenge_ITT_success"] is False
     if validate:
-        shadow=clone_world(parent)
-        for _ in range(240):
-            shadow.advance(1)
-            energy_transfer(shadow,"bond_only")
         final=track["no_first_lesion"]
         # The untreated reference is cut ONLY at t120 when second edge exists;
         # replay the complete alternative native path, including that cut.
