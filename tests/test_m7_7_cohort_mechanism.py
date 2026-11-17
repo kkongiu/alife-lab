@@ -161,3 +161,16 @@ def test_real_original_M75_source_same_three_arm_physics_with_new_tracer():
         assert h["final"]["injected"]>=0
         assert h["final"]["stored_energy"]>=0
     assert r["frozen_t0_energy_only_mechanism"]["original_full_world_unchanged"]
+
+
+def test_existing_native_bond_is_not_a_new_boundary_form_opportunity():
+    # Native chemistry._candidate_pairs has a "precheck" that can include
+    # an existing bond when both endpoints have spare native valence, but
+    # form_bonds refuses to recreate it AFTER the RNG check. The M7.7
+    # prospective NEW boundary opportunity must exclude that bond.
+    w=tiny()
+    assert (0,1) in w.store.bonds
+    status=interface_potential(w,(0,))
+    assert status["unbonded_geometrical_boundary_contacts"]==0
+    assert status["species_valence_qualified_boundary_contacts"]==0
+    assert status["energy_qualified_boundary_contacts"]==0
