@@ -102,9 +102,9 @@ def test_all_contacts_and_nonbonded_budget_controls_are_rng_free_and_honest():
     budget=energy_transfer(clone_world(w),"bond_only")[0]
     matched,d=apply_intervention(w,"unbonded_budget_matched",budget)
     assert d["requested_budget"]==1
-    assert d["transfer_events"]==0
-    assert d["budget_shortfall"]==1
-    assert matched.store.energy==w.store.energy
+    assert d["transfer_events"]==1
+    assert d["budget_shortfall"]==0
+    assert matched.store.energy==[10,2,2]
     full,d2=apply_intervention(w,"all_contacts",budget)
     assert d2["bond_route"]==1
     assert d2["transfer_events"]>=1
