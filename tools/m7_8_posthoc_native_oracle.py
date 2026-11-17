@@ -165,8 +165,8 @@ def main():
         assert w.state_hash_full()==row["source_parent_hash"],(row["seed"],"parent hash")
         assert w.rng.fingerprint()==row["source_rng"]
         assert w.rng.draws==row["source_rng_draws"]
-        assert found["ids"]==row["source"]["ids"]
-        assert found["edges"]==row["source"]["edges"]
+        assert list(found["ids"])==row["source"]["ids"]
+        assert [list(pair) for pair in found["edges"]]==row["source"]["edges"]
         if row["seed"] in informative:
             lotteries=compare_original_case(row,w)
             output.append({"seed":row["seed"],"native_form_bonds_oracle_lotteries_checked":lotteries})
