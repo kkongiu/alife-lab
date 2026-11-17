@@ -1,0 +1,43 @@
+name: M7.8 posthoc ORIGINAL native M6 chemistry pair-oracle audit
+
+on:
+  push:
+    branches:
+      - exp/m7-8-frozen-pairwise-chemistry
+    paths:
+      - 'tools/m7_8_posthoc_native_oracle.py'
+      - 'tests/test_m7_8_posthoc_native_oracle.py'
+      - '.github/workflows/m7_8_posthoc_native_oracle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  native-m6-oracle-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Test original native M6 form_bonds oracle against paired M7.8 chemistry sweeps
+        run: python -m pytest -q tests/test_m7_8_posthoc_native_oracle.py
+      - name: Fetch FROZEN already completed M7.8 640-world results (no new statistical data)
+        uses: actions/download-artifact@v4
+        with:
+          name: m7-8-complete-640-source-pair-coupled-frozen-chemistry
+          run-id: 44115455468
+          github-token: ${{ github.token }}
+          path: campaigns/m7_8_frozen
+      - name: Rebuild ALL 640 parent states and verify every informative native M6 formation oracle case
+        run: python -m tools.m7_8_posthoc_native_oracle
+      - name: Archive separate independent native M6 formation oracle replay evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-8-posthoc-original-native-m6-oracle-audit
+          path: campaigns/m7_8_frozen/posthoc_original_native_form_bonds_oracle.json
+          if-no-files-found: error

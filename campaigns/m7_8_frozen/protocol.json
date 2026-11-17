@@ -1,0 +1,128 @@
+{
+  "schema": "alife-m7-8-frozen-native-pairwise-chemistry-v1",
+  "status": "preregistered_before_runner_and_outcomes",
+  "date": "2026-11-17",
+  "base": "exp/m7-7-cohort-mechanism-audit",
+  "objective": "Causal isolation: holding spatial geometry, native bonds, native species, valence and chemical pair lottery fixed, can ONE previously introduced passive energy-conduction pass along naturally formed native chemical bonds directly enable and cause real ORIGINAL-cohort-to-external native bonds? Distinguish generic diffusion and matched-count unbonded transport; no 120-step trajectory or global RNG divergence.",
+  "sample": {
+    "start": 26001,
+    "end_inclusive": 26640,
+    "seed_count": 640,
+    "source_selection": "EXACT unchanged M7.5 natural no_transfer source selection (first maximal connected 5..16 member native component, >=4 native bonds, >=1 spare native valence, >=2 original material edge pairs continuously present for >=20 ticks, source scan tick1..500, first eligible from tick120, lexicographically smallest IDs). At most one cohort per independent numeric seed; retain all missing sources.",
+    "shards": [
+      {
+        "start": 26001,
+        "end": 26040
+      },
+      {
+        "start": 26041,
+        "end": 26080
+      },
+      {
+        "start": 26081,
+        "end": 26120
+      },
+      {
+        "start": 26121,
+        "end": 26160
+      },
+      {
+        "start": 26161,
+        "end": 26200
+      },
+      {
+        "start": 26201,
+        "end": 26240
+      },
+      {
+        "start": 26241,
+        "end": 26280
+      },
+      {
+        "start": 26281,
+        "end": 26320
+      },
+      {
+        "start": 26321,
+        "end": 26360
+      },
+      {
+        "start": 26361,
+        "end": 26400
+      },
+      {
+        "start": 26401,
+        "end": 26440
+      },
+      {
+        "start": 26441,
+        "end": 26480
+      },
+      {
+        "start": 26481,
+        "end": 26520
+      },
+      {
+        "start": 26521,
+        "end": 26560
+      },
+      {
+        "start": 26561,
+        "end": 26600
+      },
+      {
+        "start": 26601,
+        "end": 26640
+      }
+    ],
+    "source_native_world": "unchanged M7.3 dispersed energy source config: 264 particles, 24x24 periodic, movement energy cost1, zero initial bonds, native reversible chemistry no catalysis",
+    "independent_statistical_unit": "one numeric source seed. 32 paired exogenous lotteries per source are repeated trials on same physical snapshot, NOT independent world units."
+  },
+  "interventions": {
+    "sham": "Deep clone complete original native fork state; apply no transfer.",
+    "bond_only": "Deep clone same original native fork state; apply exactly ONE existing M7.3 energy_transfer(world,'bond_only') pass. No advance() and no native reaction beforehand.",
+    "all_contacts": "Deep clone same fork state; apply exactly ONE existing M7.3 energy_transfer(world,'all_contacts') pass, positive comparator with added unbonded routes; not cost-matched to bond_only.",
+    "unbonded_budget_matched": "Deep clone same fork state; perform one snapshot-gradient >=2 single quantum per cardinal NON-BONDED pair, sorted by persistent material IDs; donor budgeted and simultaneous, stop after at most N accepted transfers where N is the accepted bond_only M7.3 events for same snapshot. If insufficient eligible nonbonded edges, explicitly record shortfall; matching event count does NOT match recipients/transport locations or equality of effects.",
+    "physical_freeze": "No movement, breaking, decay, source injection or topology change during transfer. Per-particle energies can change; total sum remains exactly fixed, original world RNG fingerprint/draws unchanged."
+  },
+  "chemistry": {
+    "coupled_lottery_count": 32,
+    "lottery_salts": "integers 0..31",
+    "draw_key": "SHA256 ASCII of 'alife-m7-8|'+source_numeric_seed+'|'+lottery_salt+'|'+smaller_persistent_material_ID+'|'+larger_persistent_material_ID, take 64-bit unsigned first 8 digest bytes in big endian. This DRAW is identical for a given unordered material pair across all four arm clones and irrespective of whether other candidate pairs are enumerated.",
+    "operator": "A separate one-sweep FORMATION ONLY from frozen post-transfer state: exactly original chemistry._candidate_pairs candidate iterator, same canonical particle index neighbor sweep, same M6 native formation_threshold and subsequent rechecks for valence/energy/existing bonds, same costs and stored bond energy+native dissipation. The ONLY change from M6 form_bonds is replacing global rng.raw() with deterministic pair-keyed draw. No native advance, movement, breaking, sources or decay. Report this as an EXPERIMENTAL ISOLATED CHEMISTRY COUNTERFACTUAL, NOT native full-step outcome.",
+    "physical_checks": "Every chemistry variant starts as clone of same post-transfer arm state. Verify original bonds and positions/species unchanged before formation, same pair hashed draw in every arm. Verify exact energy accounting and invariants after native bond payments. Check per-arm original complete world and RNG unchanged.",
+    "endpoint": "For each salt, observe number and existence of newly formed chemical bonds with exactly one endpoint among ORIGINAL source persistent IDs; separately all new bonds and coherent attachment of outsiders. Do not attribute internal/new outside bonds to source recruitment."
+  },
+  "measures": {
+    "static_interface": "Before/after one energy pass, count native geometrically adjacent unbonded original-to-external contacts; species and unused valence-eligible subset; those with BOTH endpoints >=native formation_cost. Verify species/valence geometry invariant across arms and energy qualification alone varies.",
+    "bond_original_energy": "Original root particle energy change and total world particle energy before/after. Bond-only flux is wholly internal for maximal source cohort and must not change original root total energy.",
+    "paired_actual_reaction": "Per-seed mean over 32 COUPLED pair-hash lotteries of NEW original-cohort-to-outside bonded attachments; compare bond_only vs sham. Record casewise per-salt event counts, first material IDs and world hash in raw data.",
+    "negative_control": "Matched-budget unbonded contact energy routing; record if exact budget matched and any shortfalls. Even a matched transfer count is not equal topology/recipient matching.",
+    "full_hashes": "Per parent selected, sha256 full state and RNG/draws, per arm post-transfer full state hash, per lottery post-reaction hash, original source IDs/edges, exact transfer budget and donor/recipient counts, ledgers."
+  },
+  "preregistered_decisions": {
+    "primary_direct_eligibility": "For >=40 eligible independent source worlds and >=20 NON-TIED source-level pairs comparing ORIGINAL-to-EXTERNAL energy-qualified interface counts after ONE bond_only pass vs untouched sham, at least 4/5 of discordant source worlds must favor bond_only. Also require at least 15 source worlds with strictly positive bond_only-sham difference. Otherwise not_met_or_underpowered; no revised seed/sample/time constraints.",
+    "secondary_direct_actual_formation": "For >=15 non-tied independent SOURCE seeds comparing mean original-to-external native bond formations over the 32 PAIR-COUPLED hash lotteries after one energy-only intervention, at least 2/3 of non-tied seeds must favor bond_only over sham. Means are per seed, NOT per 32 independent units. Otherwise not_met_or_underpowered.",
+    "tertiary_specificity": "Report bond-only vs budget-matched NONBONDED transfer and all-contacts controls, both outcome rates and coverage of requested matched transfer counts; NO confirmatory superiority threshold for structural specificity in M7.8. A sham gain alone does not mean topology-specific superiority.",
+    "no_posthoc_threshold_or_arms_changes": true,
+    "no_life_selfmaintenance_replication_claim": true
+  },
+  "integrity": {
+    "frozen_preregistration_before_code": true,
+    "original_world_native_core_untouched": true,
+    "historical_M7_3_M7_5_M7_6_M7_7_modules_and_protocols_untouched": true,
+    "master_untouched": true,
+    "no_handplanted_bonds_or_particles": true,
+    "exact_640_worlds_all_nulls_and_16_fixed_shards": true,
+    "full_pytest_before_simulations": true,
+    "original_source_unchanged_before_after_each_intervention_and_lottery": true,
+    "independently_replay_first_selected_seed_each_shard": true,
+    "serialize_sha256_of_current_protocol_and_M7_5_selection_script_into_each_shard": true,
+    "no_RNG_use_in_pairwise_lottery_or_transfer": true
+  },
+  "output": {
+    "raw": "campaigns/m7_8_frozen/results.json",
+    "report": "reports/M7_8_frozen_reaction_causality.md",
+    "workflow": ".github/workflows/m7_8_frozen_chemistry.yml"
+  }
+}
