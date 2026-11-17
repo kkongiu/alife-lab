@@ -1,0 +1,43 @@
+name: M7.11 independent all-native physical ring-age and fault-tolerance replay
+
+on:
+  push:
+    branches:
+      - exp/m7-11-native-cyclic-fault-tolerance
+    paths:
+      - 'tools/m7_11_independent_posthoc.py'
+      - 'tests/test_m7_11_independent_posthoc.py'
+      - '.github/workflows/m7_11_independent_posthoc.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-native-ring-age-and-forks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Independent native original M6.4 ring, one-edge refund and M7.3 conductivity oracle tests
+        run: python -m pytest -q tests/test_m7_11_independent_posthoc.py
+      - name: Download ALREADY-FROZEN primary M7.11 640-world sample, no new experimental draws
+        uses: actions/download-artifact@v4
+        with:
+          name: m7-11-complete-640-native-aged-rings-fault-tolerance
+          run-id: 44171645566
+          github-token: ${{ github.token }}
+          path: campaigns/m7_11_ring_resilience
+      - name: Independently replay all 640 original source worlds and all 2504 four-arm native fault-tolerance trajectories
+        run: python -m tools.m7_11_independent_posthoc
+      - name: Archive independent full physical source and 2504-fork correctness evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-11-independent-640-source-2504-fork-native-replay
+          path: campaigns/m7_11_ring_resilience/posthoc_independent_full_physical_audit.json
+          if-no-files-found: error
