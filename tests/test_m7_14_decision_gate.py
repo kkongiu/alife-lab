@@ -13,7 +13,7 @@ def test_frozen_research_direction_without_new_laws_or_hundreds_simulations():
     assert p["integrity"]["no_new_native_physics"]
     assert "M8_preflight_acceptance" in p["decision_gate"]
     assert len(p["decision_gate"]["stop_conditions"])==3
-    assert len(p["verification"]["original_law_source"]) if False else True
+    assert len(p["original_law_source"])==5
 
 
 def test_three_generation_lineage_synthetic_positive_never_claims_native_life():
