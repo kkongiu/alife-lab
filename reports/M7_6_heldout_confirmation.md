@@ -103,3 +103,17 @@ Questa aggregazione è informativa sulla stabilità della direzione dell'effetto
 Un eventuale M7.7 dovrebbe preregistrare un audit meccanicistico di flussi energetici, contatti/forme e primo nuovo legame **sullo stesso materiale**, con controlli per topologia, composizione, opportunità di reclutamento e divergenza del RNG. Si può anche valutare una nuova conferma ancora identica per quantificare la robustezza, ma senza cambiare retroattivamente la soglia M7.6.
 
 **Finora nessuna prova di organismo digitale o replicazione ereditaria.**
+
+## Audit fisico indipendente POST-HOC — tutti i 960 fork riprodotti
+
+Dopo la conclusione e l'archiviazione della decisione M7.6 ho eseguito una verifica indipendente sugli **stessi 320 seed già preregistrati**. Non seleziona nuovi campioni, né modifica un solo criterio o dato primario:
+
+- [GitHub Actions audit #44037373097 — PASS](https://github.com/kkongiu/alife-lab/actions/runs/44037373097).
+- [Artefatto originale post-hoc #14308026509](https://github.com/kkongiu/alife-lab/actions/runs/44037373097/artifacts/14308026509).
+- [Script audit separato `tools/m7_6_posthoc_independent_replay.py`](../tools/m7_6_posthoc_independent_replay.py).
+
+Il controllo ricalcola da zero **320 stati sorgente** fino al tick di fork ed esegue **960 evoluzioni** usando la routine di trasferimento **M7.3 originale** al posto del tracciatore M7.5. Classifica indipendentemente la crescita tramite attraversamento del grafo dei legami delle particelle materiali originali, anziché richiamare il criterio software del simulatore principale.
+
+**960/960 verifiche PASS**: corrispondono esattamente hash finali completi, RNG e conteggio estrazioni, energia, sorgenti/overflow/dissipazione, formazione e rottura dei legami, timing della prima rottura originale, connettività dello stesso materiale e classificazione dell'esito. Ricontate indipendentemente le coppie discordanti: crescita **43 conduzione / 22 controllo / 6 entrambi / 249 nessuno**; sopravvivenza originale **65 / 56 / 20 / 179**.
+
+Questo audit accerta che il **mancato raggiungimento del criterio dei due terzi** è un risultato numerico reale del modello e non un artefatto del nuovo tracciatore, ma **non è una terza replica statistica** su nuovi seed.
