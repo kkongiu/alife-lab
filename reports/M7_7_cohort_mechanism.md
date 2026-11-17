@@ -140,3 +140,18 @@ Questo suggerisce che la crescita potrebbe dipendere da **dove e quando** un ato
 Il passo scientifico più rigoroso ora è un test causale **a geometria invariata e con tentativi di legame controllati**. Bisognerebbe misurare, sullo stesso stato nativo naturale e senza cambiare posizioni/valenze o consumare RNG prima dell'intervento, se redistribuire un quanto lungo un legame aumenta effettivamente il **numero di nuove coppie reattive** al successivo istante di formazione. Un controllo parallelo con la **stessa distribuzione energetica complessiva ma energia riassegnata lungo coppie non legate** separerebbe i vantaggi del grafo dei legami dalla semplice levigatura dell'energia. Una seconda prova dovrebbe osservare formazione effettiva con una sorgente di numeri casuali **accoppiata per coppia/ID**, non mediante uno stream globale che diverge tra i mondi dopo il fork. Ciò richiede un banco meccanicistico sperimentale esterno, non alterazioni retroattive della chimica M6.
 
 Fino a tali verifiche, abbiamo soltanto un **candidato concreto a feedback organizzativo**, non un organismo digitale.
+
+
+## Audit fisico post-hoc indipendente dei 960 fork — PASS
+
+Dopo il completamento e la pubblicazione del dataset preregistrato è stato avviato un **secondo programma di verifica**, separato dal rilevatore M7.7:
+
+- [Workflow GitHub Actions #44110743985 — PASS](https://github.com/kkongiu/alife-lab/actions/runs/44110743985).
+- [Dati audit indipendente: artifact #14340976405](https://github.com/kkongiu/alife-lab/actions/runs/44110743985/artifacts/14340976405).
+- [Script `tools/m7_7_independent_posthoc.py`](../tools/m7_7_independent_posthoc.py).
+
+L'audit ricostruisce da zero **tutti i 320 mondi sorgente** fino al tick del fork e ricalcola le **960 evoluzioni** usando soltanto il trasferimento energetico originale M7.3. Non utilizza il tracciatore di opportunità o il classificatore di eventi M7.7: conta direttamente le coppie della chimica nativa, escludendo gli eventuali legami già presenti, e registra gli eventi reali di formazione/rottura attraverso un osservatore indipendente. La crescita originale viene verificata con un attraversamento del grafo degli ID materiali.
+
+L'esito è **960/960 PASS**, con corrispondenza esatta di tutti i 120 valori di opportunità energetica per fork, dei nuovi legami originali–esterni precedenti alla prima rottura, degli hash materiali, dello stato RNG e dei numeri di estrazione, dell'energia e dei contatori fisici finali. Le differenze appaiate sono ricalcolate indipendentemente e risultano identiche: **47 contro 10** per il reclutamento pre-rottura e **33 contro 11** per la crescita coerente.
+
+**Non è un nuovo campione indipendente:** verifica la correttezza di quello esistente, senza aggiungere seed né cambiare il mancato raggiungimento del criterio primario.
