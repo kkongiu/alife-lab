@@ -159,3 +159,20 @@ Un esperimento più informativo isolerebbe il **motore fisico della richiusura**
 3. Una definizione più forte e non tautologica di autoriparazione: riconoscimento locale del danno o causalità del materiale originale nel favorire la **stessa reazione** rispetto a un sistema chimicamente ed energeticamente comparabile non organizzato.
 
 Un controllo specifico sulla **frequenza e sull'ordine delle collisioni native**, oltre che sull'esito energetico, potrebbe spiegare perché la semplice conduzione dei legami superstiti non sembra determinante. Fino ad allora, nessun risultato M7.11 dimostra vita digitale.
+
+
+## Audit fisico indipendente completo POST-HOC — PASS
+
+Dopo la conclusione del dataset principale ho completato un **replay indipendente di tutti i 640 mondi sorgente e di tutte le 2.504 evoluzioni sperimentali**, senza modificare il protocollo, le osservazioni e le leggi originali:
+
+- [GitHub Actions audit completo #44172364641 — **PASS**](https://github.com/kkongiu/alife-lab/actions/runs/44172364641).
+- [Artefatto di audit completo #14367484728](https://github.com/kkongiu/alife-lab/actions/runs/44172364641/artifacts/14367484728).
+- [Script indipendente `tools/m7_11_independent_posthoc.py`](../tools/m7_11_independent_posthoc.py) e [test `tests/test_m7_11_independent_posthoc.py`](../tests/test_m7_11_independent_posthoc.py).
+
+Il nuovo audit **non chiama** la routine M7.11 di selezione degli anelli, il suo tracciatore di eventi, il classificatore di connettività o le sue routine di trasporto e rimborso energetico. Rigenera tutti gli stati da seed con `World.create`, riconosce gli anelli tramite l'osservatore originale M6.4 e ricostruisce autonomamente la continuità degli stessi materiali e legami usando un proprio registratore dei veri eventi di rottura. Ritrova **626** primi anelli idonei ed esattamente **14** mondi null, con identici tick di selezione, età, insieme dei materiali, coppie dei legami, hash originali e stato RNG.
+
+Sulle **626** sorgenti positive, il replay ricalcola indipendentemente tutti e **quattro** gli interventi, la restituzione dell'energia chimica del singolo legame aperto e i trasporti poststep su legami ammessi, richiamando la funzione **M7.3 originale** nei due bracci di conduzione normale. Il confronto di **2.504/2.504** fork a 120 passi verifica esattamente hash materiali finali, stato RNG e conteggio estrazioni, energia globale e dissipazione, contatori chimici, tutti i veri eventi di rottura/formazione del target e dei legami originali, connettività degli ID materiali e tutti e cinque i checkpoint per braccio.
+
+L'audit principale ha terminato **PASS**. Un secondo esperimento di puro calcolo che divide lo stesso replay in sedici shard è disponibile soltanto come verifica ridondante: non crea nuovi campioni ed è scientificamente irrilevante rispetto al verdetto già raggiunto.
+
+**Le decisioni preregistrate non cambiano:** primo criterio `0` favorevoli / `4` contrari, troppo pochi discordanti; secondo `59` favorevoli / `36` contrari, quota del `62,1%` sotto i due terzi. L'audit non è una nuova replica statistica.
