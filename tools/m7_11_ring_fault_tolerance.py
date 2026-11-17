@@ -228,7 +228,10 @@ def transport_with_optional_suppression(world,arm,original_edges,cut):
         assert official==(proposals,proposals,0)
         assert store.energy==[v+d for v,d in zip(original,delta)]
     assert (world.energy(),world.rng.fingerprint(),world.rng.draws)==old
-    assert not (set(original_edges) & suppressed)==set() or original_edge_transfers==0
+    if arm=="intact_ring_conduction_suppressed":
+        assert original_edge_transfers==0
+    if arm=="opened_surviving_ring_conduction_suppressed":
+        assert original_edge_transfers==cut_edge_transfers
     return {
         "native_original_ring_edges_conduction":original_edge_transfers,
         "native_cut_pair_conduction":cut_edge_transfers,
