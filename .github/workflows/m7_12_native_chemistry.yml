@@ -1,0 +1,109 @@
+name: M7.12 native ring reclosure chemistry candidate exposure mechanism audit
+
+on:
+  push:
+    branches:
+      - exp/m7-12-native-reclosure-exposure
+    paths:
+      - 'campaigns/m7_12_reclosure/**'
+      - 'tools/m7_12_native_opportunity_audit.py'
+      - 'tests/test_m7_12_native_opportunity_audit.py'
+      - '.github/workflows/m7_12_native_chemistry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full regressions, native chemical candidate oracle and new heldout seed no-observer replay
+        run: python -m pytest -q
+
+  shards:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 30001
+            end: 30040
+          - start: 30041
+            end: 30080
+          - start: 30081
+            end: 30120
+          - start: 30121
+            end: 30160
+          - start: 30161
+            end: 30200
+          - start: 30201
+            end: 30240
+          - start: 30241
+            end: 30280
+          - start: 30281
+            end: 30320
+          - start: 30321
+            end: 30360
+          - start: 30361
+            end: 30400
+          - start: 30401
+            end: 30440
+          - start: 30441
+            end: 30480
+          - start: 30481
+            end: 30520
+          - start: 30521
+            end: 30560
+          - start: 30561
+            end: 30600
+          - start: 30601
+            end: 30640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Recreate new first aged native ring then audit true M6 chemical candidate and 120-step reclosure
+        run: python -m tools.m7_12_native_opportunity_audit shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve all positive and null native source worlds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-12-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_12_reclosure/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-12-shard-*
+          path: campaigns/m7_12_reclosure/shards
+          merge-multiple: true
+      - name: Require original 640 source seeds all 16 frozen shards and candidate chemistry coverage
+        run: python -m tools.m7_12_native_opportunity_audit merge
+      - name: Preserve full 640 new native ring chemistry exposure histories
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-12-full-640-original-native-reclosure-exposure
+          path: campaigns/m7_12_reclosure/results.json
+          if-no-files-found: error
