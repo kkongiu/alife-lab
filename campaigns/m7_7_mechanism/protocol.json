@@ -1,0 +1,95 @@
+{
+  "schema": "alife-m7-7-native-cohort-energy-opportunity-audit-v1",
+  "status": "preregistered_before_runner_tests_and_outcomes",
+  "date": "2026-11-17",
+  "base": "exp/m7-6-heldout-confirmation",
+  "question": "What microscopic mechanism accompanies the ~6-7 percentage-point M7.5/M7.6 increase in SAME-material native-cohort growth under experimental bond-energy conduction: increased energy-qualified boundary contacts, incident bond formations prior to old-edge breakage, or a purely global chemistry effect?",
+  "design": {
+    "seeds_first": 25001,
+    "seeds_last": 25320,
+    "worlds": 320,
+    "shards": [
+      {
+        "start": 25001,
+        "end": 25040
+      },
+      {
+        "start": 25041,
+        "end": 25080
+      },
+      {
+        "start": 25081,
+        "end": 25120
+      },
+      {
+        "start": 25121,
+        "end": 25160
+      },
+      {
+        "start": 25161,
+        "end": 25200
+      },
+      {
+        "start": 25201,
+        "end": 25240
+      },
+      {
+        "start": 25241,
+        "end": 25280
+      },
+      {
+        "start": 25281,
+        "end": 25320
+      }
+    ],
+    "origination": "Use unchanged M7.5 original.select_parent() with original.protocol() (5..16 particles, >=4 native bonds, 2 age>=20, tick120..500) and exactly one first eligible cohort per numeric seed, all null worlds retained.",
+    "arm_types": [
+      "no_transfer",
+      "bond_only",
+      "all_contacts"
+    ],
+    "follow_steps": 120,
+    "initial_state": "All arms exact clones of source native microstate, identical RNG state and chemistry/sources. Native code remains unchanged.",
+    "physics": "Use original M7.3 energy_transfer for arm application; no energy rules modified; only additional external, RNG-free observations.",
+    "measure_times": "Every post-transport tick t=0..120 for energetic boundary *potential*, original bond events collected on next simulation step.",
+    "entity": "Source=original persistent material IDs, regardless of later fragmentation. A growing coherent component must contain all original IDs and at least one extra member at tick120, exactly as M7.5.",
+    "budget": "264 original native particles, 24x24 periodic, 16 dispersed sources 2/tick, movement cost1, no catalysis, zero original bonds at world creation, 120-tick followup."
+  },
+  "observable": {
+    "potential_geometry": "At end of each native step AFTER optional energy transfer, count all cardinal contact pairs with exactly one original source ID and one external ID and that are not currently chemically bonded; this counts geometrical proximity, not native formation candidates.",
+    "potential_species": "Subset of geometrical pairs compatible with native chemical allowed_pairs and still having spare native valence on both ends. Excludes pairs already bonded. Does NOT enforce energy; separates geometric/species/valence blockade.",
+    "potential_energy": "Subset of potential_species with BOTH particle energies >= world.formation_cost. Should exactly equal original native _candidate_pairs intersection original-to-external on that POSTSTEP snapshot. It is NOT a contemporaneous count of the earlier native step formation lottery (which occurs before transport).",
+    "potential_energy_blocked": "potential_species minus potential_energy (unfulfilled energy requirements). Distinguish lack of contact/valence from energy shortage.",
+    "source_ready": "Count original root IDs with free valence and >=formation_cost energy, and original ID total particle energy; energy within bonds excluded.",
+    "transfer": "Transport per arm uses EXACT unchanged tools.m7_3_bond_energy.energy_transfer; independent pre/post energy conservation and RNG check, and source boundary net particle energy change per transfer, never confusing internal with imported energy.",
+    "native_form_events": "After the native step count actual original-external BondEvent form events, including before first original-pair break, and original source bond-break events (same-tick reformation still a break).",
+    "timing": "Track per-step first original break and first external formation. Poststep eligible opportunities are *prospective* static conditions for next step, not causal mediation proof.",
+    "first_step_invariant": "Original pair breaking events in first subsequent native step identical across three arms, before transport.",
+    "replay": "First selected seed per shard: native no-transfer same-hash sham replay; additionally verify full 3-arm 120-tick M7.5 followup matches independent observation-free outcomes for final hash/RNG/energy and classified growth, for that seed. Separate codepath reference follow() should never be imported into new experimental code except verification.",
+    "dataset": "Store per-source metadata, paired 120-step micro-observation checkpoints, sums of opportunities over t1..120 and original/material bond events, total transfer count, final hashes, RNG, ledger, and all absent seed records."
+  },
+  "preregistered_gates": {
+    "primary_energetic_interface": "Among >=40 selected source seeds AND >=40 non-tied paired bond_only vs no_transfer seed worlds, >=2/3 non-tied worlds must have strictly greater SUM of poststep energy-qualified original-to-external chemical boundary pair opportunities over t1..120 under bond_only. Otherwise not_met_or_underpowered. Independent unit is source-world seed; no per-tick pseudo-replication.",
+    "secondary_prebreak_recruitment": "For at least 25 discordant seed worlds with >=1 actual ORIGINAL-to-EXTERNAL bond FORM event BEFORE first original source bond BREAK event, require >=2/3 discordants favor bond_only vs no_transfer; else not_met_or_underpowered. This explicitly separates recruitment while source original edges intact from late rebuilt chemistry.",
+    "secondary_growth": "Repeat exact M7.5 coherent growth t120 comparison, no change to M7.5 gate, DESCRIPTIVE independent new cohort sample not promoted if energetic gate fails. Report paired contrasts.",
+    "mechanistic_frozen_state": "At t0 take separate clones (identical full world) and make one bond-only transfer pass (no native step); report root energy, root-boundary geometry/valence/energy eligibility before vs after. This is an immediate energy-only mechanism check; not a causal claim about 120-step growth.",
+    "no_threshold_change": true,
+    "no_life_or_reproduction_claim": true
+  },
+  "integrity": {
+    "original_src_untouched": true,
+    "all_prior_protocols_and_original_M7_5_runner_untouched": true,
+    "master_untouched": true,
+    "record_source_seed_nulls": true,
+    "full_pytest_before_shards": true,
+    "eight_shards_and_all_320_seeds": true,
+    "each_shard_original_M7_5_source_sha256_and_new_protocol_sha256": true,
+    "all_arms_same_initial_world_full_hash_rng_draws": true,
+    "single_step_transfer_conserves_energy_draws_and_particle_ids_bonds_positions": true,
+    "every_endpoint_ledger_valid": true,
+    "first_original_source_break_events_identical_t1": true
+  },
+  "output": "campaigns/m7_7_mechanism/results.json",
+  "report": "reports/M7_7_cohort_mechanism.md",
+  "workflow": ".github/workflows/m7_7_cohort_mechanism.yml"
+}
