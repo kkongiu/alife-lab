@@ -1,0 +1,93 @@
+name: M7.7 native cohort mechanistic energy eligibility and prebreak recruitment
+
+on:
+  push:
+    branches:
+      - exp/m7-7-cohort-mechanism-audit
+    paths:
+      - 'campaigns/m7_7_mechanism/**'
+      - 'tools/m7_7_cohort_mechanism.py'
+      - 'tests/test_m7_7_cohort_mechanism.py'
+      - '.github/workflows/m7_7_cohort_mechanism.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full regressions and native candidate-pair equality plus original three-arm replay
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 25001
+            end: 25040
+          - start: 25041
+            end: 25080
+          - start: 25081
+            end: 25120
+          - start: 25121
+            end: 25160
+          - start: 25161
+            end: 25200
+          - start: 25201
+            end: 25240
+          - start: 25241
+            end: 25280
+          - start: 25281
+            end: 25320
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Trace actual native chemical formation, local energetic opportunities and source flux 40 seeds
+        run: python -m tools.m7_7_cohort_mechanism shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve all matched source forks, null worlds and original M7.5 cross-replays
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-7-mechanism-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_7_mechanism/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-7-mechanism-shard-*
+          path: campaigns/m7_7_mechanism/shards
+          merge-multiple: true
+      - name: Require 320/320 independent source seeds, identical protocol and original M7.5 source SHA256
+        run: python -m tools.m7_7_cohort_mechanism merge
+      - name: Preserve complete 320-world mechanism observations and all negative results
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-7-complete-cohort-mechanism-audit
+          path: campaigns/m7_7_mechanism/results.json
+          if-no-files-found: error
