@@ -131,3 +131,19 @@ M7.8 ha separato con successo la **causalità locale della redistribuzione energ
 Per M7.9 sarebbe più utile progettare un meccanismo di **allocazione energetica localmente selettiva e causalmente dipendente dalla struttura**, confrontando budget **esattamente equiparati e destinazioni comparabili**, anziché aggiungere genericamente altre forme di diffusione. Occorre però distinguere rigorosamente le nuove regole programmate dall'esperimentatore dalle proprietà emergenti, e prima di parlare di organismi misurare davvero il mantenimento del materiale originale, la riparazione e la produzione di un discendente con informazione trasmessa.
 
 **Esito scientifico:** una rete chimica spontanea può essere il percorso fisico lungo cui un quanto si redistribuisce, cambiando la reattività di un contatto esterno in modo causalmente verificato. **Non** emerge una prova che tale percorso sia specificamente favorito rispetto a qualsiasi altro sistema di diffusione passiva.
+
+
+## Audit indipendente post-hoc usando il motore chimico M6 ORIGINAL — PASS
+
+Dopo la chiusura del dataset primario, ho eseguito un audit che **non** richiama la funzione sperimentale M7.8 di formazione dei legami, ma la routine originale **`alife.chemistry.form_bonds`** con una sorgente `raw()` accoppiata per coppia e un wrapper temporaneo sull'iteratore dei candidati. Il wrapping è ripristinato subito dopo ciascuno sweep; il motore originale `src/` non viene modificato e nessun evento aggiunge seed ai criteri scientifici.
+
+- [GitHub Actions #44116475310 — verifica PASS](https://github.com/kkongiu/alife-lab/actions/runs/44116475310).
+- [Artifact completo dell'audit post-hoc #14341984655](https://github.com/kkongiu/alife-lab/actions/runs/44116475310/artifacts/14341984655).
+- [Script indipendente `tools/m7_8_posthoc_native_oracle.py`](../tools/m7_8_posthoc_native_oracle.py).
+- [Test sintetico di equivalenza con `form_bonds` originale](../tests/test_m7_8_posthoc_native_oracle.py).
+
+Il programma rigenera da zero **tutti e 640 gli stati sorgente naturali**, verificandone hash completi, IDs, legami, stato RNG e conteggio delle estrazioni. Poi identifica, nel dataset già congelato, tutti i seed con un **confronto discordante** nel numero di opportunità energetiche o di formazioni originali–esterne fra conduzione e controllo, più il primo seed selezionato in ognuno dei 16 shard. Per questi **46 seed**, ripete **tutte le quattro condizioni e tutte le 32 lotterie accoppiate**, cioè **5.888 sweep di formazione con il codice M6 originale**.
+
+**5.888/5.888 PASS:** totale di coppie candidate, identità e ordine dei nuovi legami, reazioni originali–esterne, hash completo dopo lo sweep, energia, dissipazione e stato casuale coincidono con le osservazioni M7.8. Gli altri 594 seed hanno comunque stato sorgente ricostruito e risultati originari conservati; l'audit fisico degli sweep M6 è concentrato sui casi che determinano le decisioni e sulle sentinelle preregistrate dei 16 shard.
+
+Si tratta di una **verifica post-hoc di correttezza sul medesimo campione**, non di una nuova replica con 46 o 640 universi indipendenti supplementari. **Il criterio primario resta 26/32 e quello secondario resta 25/30**, senza modifiche.
