@@ -1,0 +1,93 @@
+name: M7.6 exact M7.5 preregistered heldout confirmation
+
+on:
+  push:
+    branches:
+      - exp/m7-6-heldout-confirmation
+    paths:
+      - 'campaigns/m7_6_confirmation/**'
+      - 'tools/m7_6_heldout_replication.py'
+      - 'tests/test_m7_6_heldout_replication.py'
+      - '.github/workflows/m7_6_confirmation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: All regression tests including unchanged M7.5 selector/decisions and real new-seed fork
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 24001
+            end: 24040
+          - start: 24041
+            end: 24080
+          - start: 24081
+            end: 24120
+          - start: 24121
+            end: 24160
+          - start: 24161
+            end: 24200
+          - start: 24201
+            end: 24240
+          - start: 24241
+            end: 24280
+          - start: 24281
+            end: 24320
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Execute 40 independent HELDOUT new-seed worlds with ORIGINAL M7.5 rules
+        run: python -m tools.m7_6_heldout_replication shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve every heldout original world and all nulls
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-6-heldout-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_6_confirmation/shards/seeds-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-6-heldout-shard-*
+          path: campaigns/m7_6_confirmation/shards
+          merge-multiple: true
+      - name: Require 320/320 HELDOUT worlds, unchanged original M7.5 code and pre-registered decisions
+        run: python -m tools.m7_6_heldout_replication merge
+      - name: Archive exact M7.5 decision on new sample with full raw cohorts
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-6-heldout-complete-320-worlds
+          path: campaigns/m7_6_confirmation/results.json
+          if-no-files-found: error
