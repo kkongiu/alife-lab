@@ -68,6 +68,12 @@ def interface_potential(w,material):
     geometrical=chemical=energy_ready=0
     actual=set()
     for ia,ib in _candidate_pairs(w):
+        # _candidate_pairs deliberately includes EXISTING bonded neighbors
+        # if both still have spare valence. Native form_bonds rejects them
+        # only later, after the probabilistic draw. Our preregistered
+        # eligible *NEW* boundary pairs explicitly exclude existing bonds.
+        if (ia,ib) in s.bonds or (ib,ia) in s.bonds:
+            continue
         if (s.ids[ia] in roots)!=(s.ids[ib] in roots):
             actual.add((ia,ib))
     energy_set=set()
