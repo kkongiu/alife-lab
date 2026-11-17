@@ -1,0 +1,40 @@
+name: M7.6 independent posthoc 960-fork physical replay
+
+on:
+  push:
+    branches:
+      - exp/m7-6-heldout-confirmation
+    paths:
+      - 'tools/m7_6_posthoc_independent_replay.py'
+      - '.github/workflows/m7_6_posthoc_replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Read FROZEN PRIMARY M7.6 artifact, not newly selected worlds
+        uses: actions/download-artifact@v4
+        with:
+          name: m7-6-heldout-complete-320-worlds
+          run-id: 44036962278
+          github-token: ${{ github.token }}
+          path: campaigns/m7_6_confirmation
+      - name: Independent M7.3-physics replay of 320 sources and 960 arms with separate growth classification
+        run: python -m tools.m7_6_posthoc_independent_replay
+      - name: Preserve separate posthoc evidence without changing original preregistered decisions
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-6-posthoc-complete-320-source-audit
+          path: campaigns/m7_6_confirmation/posthoc_independent_replay.json
+          if-no-files-found: error
