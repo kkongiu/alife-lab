@@ -1,0 +1,109 @@
+name: M7.13 first native ring lesion history versus energy-only sham and second challenge
+
+on:
+  push:
+    branches:
+      - exp/m7-13-first-lesion-history
+    paths:
+      - 'campaigns/m7_13_history/**'
+      - 'tools/m7_13_damage_history.py'
+      - 'tests/test_m7_13_damage_history.py'
+      - '.github/workflows/m7_13_damage_history.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full regression suite plus 240-tick exact native M6/M7.3 shadow replay and energy-only sham integrity
+        run: python -m pytest -q
+
+  shards:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 31001
+            end: 31040
+          - start: 31041
+            end: 31080
+          - start: 31081
+            end: 31120
+          - start: 31121
+            end: 31160
+          - start: 31161
+            end: 31200
+          - start: 31201
+            end: 31240
+          - start: 31241
+            end: 31280
+          - start: 31281
+            end: 31320
+          - start: 31321
+            end: 31360
+          - start: 31361
+            end: 31400
+          - start: 31401
+            end: 31440
+          - start: 31441
+            end: 31480
+          - start: 31481
+            end: 31520
+          - start: 31521
+            end: 31560
+          - start: 31561
+            end: 31600
+          - start: 31601
+            end: 31640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: New native aged ring first lesion vs energy sham vs no first cut, fixed second cut after 120 ticks
+        run: python -m tools.m7_13_damage_history shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Save all 40 original natural ring worlds, second challenges and failure-to-recover cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-13-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_13_history/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-13-shard-*
+          path: campaigns/m7_13_history/shards
+          merge-multiple: true
+      - name: Assert strict all 640 original seed worlds, no survivor filtering and 16 preregistered fixed shards
+        run: python -m tools.m7_13_damage_history merge
+      - name: Persist full 640 world three-arm 240-tick history and second-challenge raw outcomes
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-13-complete-640-native-first-lesion-history-and-second-challenge
+          path: campaigns/m7_13_history/results.json
+          if-no-files-found: error

@@ -1,0 +1,114 @@
+name: M7.13 independent original M6/M7.3 three-arm native damage-history physical replay
+
+on:
+  push:
+    branches:
+      - exp/m7-13-first-lesion-history
+    paths:
+      - 'tools/m7_13_independent_posthoc.py'
+      - 'tests/test_m7_13_independent_posthoc.py'
+      - '.github/workflows/m7_13_independent_posthoc.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-oracles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Verify independently reconstructed t0 lesions and exact all three 240-tick native outcomes
+        run: python -m pytest -q tests/test_m7_13_independent_posthoc.py
+
+  audit-shards:
+    needs: independent-oracles
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 31001
+            end: 31040
+          - start: 31041
+            end: 31080
+          - start: 31081
+            end: 31120
+          - start: 31121
+            end: 31160
+          - start: 31161
+            end: 31200
+          - start: 31201
+            end: 31240
+          - start: 31241
+            end: 31280
+          - start: 31281
+            end: 31320
+          - start: 31321
+            end: 31360
+          - start: 31361
+            end: 31400
+          - start: 31401
+            end: 31440
+          - start: 31441
+            end: 31480
+          - start: 31481
+            end: 31520
+          - start: 31521
+            end: 31560
+          - start: 31561
+            end: 31600
+          - start: 31601
+            end: 31640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Download ORIGINAL immutable complete 640-world M7.13 outcome dataset
+        uses: actions/download-artifact@v4
+        with:
+          name: m7-13-complete-640-native-first-lesion-history-and-second-challenge
+          run-id: 44177201548
+          github-token: ${{ github.token }}
+          path: campaigns/m7_13_history
+      - name: Independently rebuild 40 native rings and their three actual original M6/M7.3 240-step physical histories
+        run: python -m tools.m7_13_independent_posthoc shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive 40 independent original full physical replay assertions
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-13-independent-native-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_13_history/independent_shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: error
+
+  audit-merge:
+    needs: audit-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-13-independent-native-shard-*
+          path: campaigns/m7_13_history/independent_shards
+          merge-multiple: true
+      - name: Require exact same 640 natural sources, 627 aged rings, 1881 original physics forks and original prereg endpoints
+        run: python -m tools.m7_13_independent_posthoc merge
+      - name: Preserve full independent M7.13 intervention verification and original native chemistry endstates
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-13-full-independent-640-native-sources-1881-physical-forks
+          path: campaigns/m7_13_history/posthoc_independent_1881_forks.json
+          if-no-files-found: error

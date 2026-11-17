@@ -1,0 +1,129 @@
+{
+  "schema": "alife-m7-13-first-damage-history-and-second-challenge-v1",
+  "status": "preregistered_before_M712_outcomes_and_M713_runner",
+  "date": "2026-11-17",
+  "base": "exp/m7-12-native-reclosure-exposure",
+  "research_question": "Does experiencing an actual first bond lesion increase probability of surviving and recovering a SECOND precommitted different ring-edge lesion after the same recovery interval, compared with an undamaged history and a first-step energy-refund-only sham? Distinguish history-effects from true adaptation.",
+  "sample": {
+    "seed_first": 31001,
+    "seed_last": 31640,
+    "n": 640,
+    "shards": [
+      {
+        "start": 31001,
+        "end": 31040
+      },
+      {
+        "start": 31041,
+        "end": 31080
+      },
+      {
+        "start": 31081,
+        "end": 31120
+      },
+      {
+        "start": 31121,
+        "end": 31160
+      },
+      {
+        "start": 31161,
+        "end": 31200
+      },
+      {
+        "start": 31201,
+        "end": 31240
+      },
+      {
+        "start": 31241,
+        "end": 31280
+      },
+      {
+        "start": 31281,
+        "end": 31320
+      },
+      {
+        "start": 31321,
+        "end": 31360
+      },
+      {
+        "start": 31361,
+        "end": 31400
+      },
+      {
+        "start": 31401,
+        "end": 31440
+      },
+      {
+        "start": 31441,
+        "end": 31480
+      },
+      {
+        "start": 31481,
+        "end": 31520
+      },
+      {
+        "start": 31521,
+        "end": 31560
+      },
+      {
+        "start": 31561,
+        "end": 31600
+      },
+      {
+        "start": 31601,
+        "end": 31640
+      }
+    ],
+    "source": "Same untouched original M7.11 scan_first_native_aged_ring, zero initial bonds, originally physically native 4/6/8 simple ring with >=20 continuously present snapshots, select first eligible by tick>=120 <=600, keep every null original seed",
+    "unit": "one numeric native universe, three matched regime-level experimental histories NOT independent universes",
+    "no_future_outcome_selection": true
+  },
+  "arms": {
+    "first_lesion": "At first eligible naturally aged ring t0, remove lexicographically FIRST original ring pair and refund full stored bond energy to its endpoints with exact original M6 ID-order split and zero extra dissipation/RNG, as in M7.11. Resume original native M6 dynamics + M7.3 bond conduction for 120 ticks.",
+    "energy_only_first_sham": "At t0 retain same first ring physical bond and all degrees but set only that bond's currently stored chemical energy to ZERO, refund all its previously stored energy to endpoints in same split, no RNG, total energy conserved. This DELIBERATE non-native zero-energy-bond ablation matches exact t0 particle energies of first_lesion while retaining connectivity and valence (original M6 allows bonds with zero stored energy through decay). Future RNG trajectories can diverge. It is NOT an ordinary spontaneous physical action.",
+    "no_first_lesion": "At t0 no intervention whatsoever; same original state. Evolve the same 120 ticks on native M6 plus original M7.3 bond transport.",
+    "same_second_challenge": "Before looking at outcomes, choose lexicographically SECOND pair among ORIGINAL ring edges as the predetermined different second target, fixed for each seed across arms. At t120 (after equal prechallenge followup) if target exists in an arm, remove JUST that edge and refund all stored energy as for first physical lesion. If already absent, that arm is explicitly ineligible for the second challenge, recorded as FAILURE for the intention-to-treat primary/secondary endpoints; never replace with other bond or select future good states. Whether first original target has reclosed is recorded, never used to exclude.",
+    "second_followup": "Continue original M6+M7.3 physics for 120 additional ticks even if no target edge existed at the checkpoint, record exact native event timing and material ID connectivity. Deliberate intervention ONLY first step, chemical bond refund, no new repair rule or custom catalysis.",
+    "timepoints": [
+      1,
+      30,
+      60,
+      120,
+      121,
+      150,
+      180,
+      240
+    ],
+    "conservation": "At t0 all initial physical worlds and RNG equal before intervention. First lesion/energy-only sham have EXACT same t0 energy per particle, same complete world ENERGY total, but different bond energy/count/degrees; uninjured control has same total world energy and RNG but different particle energy. After second lesion ALL arms conserve own full world energy and historical dissipation. Native physics and M7.3 conduction unchanged in ALL arms."
+  },
+  "endpoints": {
+    "primary": "INTENTION TO TREAT binary among all naturally selected rings: second target edge exists at t120, is cut then experiences a REAL original M6 FORM event for that same persistent-ID pair within 120 post-second-cut ticks BEFORE any OTHER original ring edge has a REAL BREAK event (same-tick breaks invalidate). Compare first_lesion vs no_first_lesion. Ineligible at second checkpoint count FALSE; no survivor selection. ≥40 native source rings, ≥25 discordant seed-level cases, ≥2/3 discordants favor first_lesion. A pass would be a regimen-specific improvement, not sufficient proof of adaptive learning.",
+    "secondary": "SAME primary endpoint comparing first_lesion vs energy_only_first_sham, SAME minimum thresholds. Distinguishes first topology lesion from pure particle-energy placement at t0, but future states/RNG still diverge.",
+    "descriptive": "t120 first target spontaneously reclosed, all original edges present at t120, second target eligibility, t240 exact original ring reformed, all original material IDs still connected after two potential lesions, first/second real reformation times, any native original ring edge breaks during both 120-step periods, total particle/bond energy, original M7.3 energy transport, full hashes/RNG and five time checkpoints.",
+    "caveat": "No a priori matching of energies or geometry at t120; this is a controlled random-world paired treatment history, not an isolated memory mechanism. No conditioning on successful first repair. Native stochastic RNG can diverge after first intervention. Physical first damage may decrease performance even without any memory mechanism.",
+    "gates": {
+      "primary": "selected>=40, discordant>=25, favorable first_lesion>=2/3; otherwise not_met/underpowered",
+      "secondary": "same frozen thresholds versus energy_only_first_sham",
+      "no_favorable_reverse_posthoc_claim": true,
+      "no_claim_of_learning_organism_or_life": true
+    }
+  },
+  "integrity": {
+    "preregister_first": true,
+    "full_pytest_before_shards": true,
+    "all_640_seeds_16_shards_and_nulls": true,
+    "no_change_to_master_src_or_M6_M7_history": true,
+    "frozen_source_hashes": true,
+    "both_damaged_t0_energy_vectors_identical": true,
+    "all_world_energy_ledgers_and_RNG_original_source_hashes": true,
+    "first_shard_positive_full_original_native_sham_replay": true,
+    "never_filter_first_repair_success": true,
+    "report_all_missed_second_targets_as_failures": true,
+    "draft_stacked_PR_only": true
+  },
+  "output": {
+    "report": "reports/M7_13_damage_history.md",
+    "data": "campaigns/m7_13_history/results.json",
+    "workflow": ".github/workflows/m7_13_damage_history.yml"
+  }
+}
