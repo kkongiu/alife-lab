@@ -1,0 +1,59 @@
+{
+  "schema": "alife-m7-14-mechanism-capability-and-decision-gate-v1",
+  "status": "frozen_before_gate_implementation_or_results",
+  "date": "2026-11-17",
+  "branch_base": "master",
+  "scope": "Research reset and an executable go/no-go decision. Not a new-life claim, not 640 more random worlds, and not a modification to old M6/M7 research laws.",
+  "questions": [
+    "Does unchanged master physics represent a material variable capable of structural inheritance and a microscopic reaction whose conditional rate reads that variable, beyond species/energy/valence/local catalyst species?",
+    "Can native original physics transform a spatially organized parent into a physically disjoint child with a corresponding causal heritable configuration (not a duplicated visualization/detector inference)?",
+    "Which least-biased new law would make that possibility testable, and which placebo removes its information channel while leaving resources and rates comparable?"
+  ],
+  "original_law_source": [
+    "src/alife/config.py",
+    "src/alife/particles.py",
+    "src/alife/chemistry.py",
+    "src/alife/dynamics.py",
+    "src/alife/world.py"
+  ],
+  "verification": {
+    "simulation": "On unchanged master original configs/m2_quick.json, 12 fixed fresh numerical seeds 41001–41012, advance 40 native ticks each; assert exact original persistent particle ID tuple AND type tuple and count unchanged; verify full world invariants. This is an implementation capability audit, NOT a proof of impossible emergent structural replication.",
+    "source_and_schema": "Read frozen native source AST using the standard library and verify immutable SpeciesConfig schema fields; original _candidate_pairs and _catalysis_factor explicit inputs: species, energy, valence, local contacts; read existing chemical reactions and species/types; source hash each. Missing explicit heritable marker or sequence template machinery is an engineering fact, NOT a theorem ruling out unimplemented emergence.",
+    "selfcontained_controls": "Implement deterministic detector calibration with synthetically supplied event traces: a designed 3-generation directed disjoint-material positive reference, a negative with only same-shape events but no causal parent ID linkage, a negative with shared material IDs, a negative of only a first generation, and a parent-mutated but child-unaffected negative. These are CALIBRATIONS not emergent simulation outcomes.",
+    "no_reuse_of_M7_12_M7_13_results_as_independent_data": true
+  },
+  "decision_gate": {
+    "keep_M7_original_physics_for_structural_chemistry_only": "If old law audit finds no explicit sequence/templating heredity channel and no observed causal transfer of sequence to a separate material product, mark M7 as COMPLETED FOR PASSIVE CHEMISTRY and STOP additional topology, edge, or energy-only Monte Carlo sweeps unless a specific counterexample hypothesis is preregistered.",
+    "start_M8_new_physics_sandbox": "Allow ONLY an explicit separately versioned proposed microscopic, local information-transfer reaction law (e.g. species sequence-dependent template-assisted monomer attachment) with no hardcoded organism, genome or pre-seeded template replicator, tested separately against rate-matched shuffled-template and no-template physical controls.",
+    "M8_preflight_acceptance": [
+      "All material and energy mass ledgers explicit, consumed monomer stock and reaction/dissipation budgets; stationary parent alone is not called life.",
+      "Natural unbiased assembly of sequence-bearing candidate structures from raw monomers WITHOUT injecting a prebuilt organism; distinguish artificial synthetic positive control.",
+      "At least one real sequence-dependent change in child product caused by a parent material sequence edit while keeping external substrate/energy/chemical random draws matched.",
+      "Distinct persistent parent/child material-ID sets, verified temporal causal order and structural independence, no pre-coded Copy() instruction; first and second generation events are NOT counted as independent seed-worlds.",
+      "Negative controls: shuffled parent sequence identity, same resource/rate with channel disabled, pseudo-parent of same species/material size without coherent sequence, and unpowered control.",
+      "Minimum 3 successive unforced informational generations before claims of inheritance; explicit noise/mutation/noise-resilience measurement; hold-out new seeds and preregistered threshold before examining outcome."
+    ],
+    "stop_conditions": [
+      "If independent false-positive control is classified as inherited information, STOP and fix detector BEFORE running science.",
+      "If candidate mechanism cannot produce the intended positive control on closed microscopic test, STOP and revise rules explicitly, not search more seeds.",
+      "If positive and rate-matched shuffled controls are indistinguishable after preregistered sufficient information-bearing events, STOP that mechanism and document negative result; do NOT add energy sources or catalysis without a new protocol."
+    ],
+    "language": "All successful synthetic detector tests are CODE CORRECTNESS only; all native M7 observations are chemical structure persistence, not synthetic life. No unsupported claim that fixed particle count makes copying of a pattern impossible."
+  },
+  "deliverables": {
+    "protocol": "campaigns/m7_14_decision/protocol.json",
+    "script": "tools/m7_14_decision_gate.py",
+    "tests": "tests/test_m7_14_decision_gate.py",
+    "workflow": ".github/workflows/m7_14_decision_gate.yml",
+    "report": "reports/M7_14_decision_gate.md",
+    "result": "campaigns/m7_14_decision/result.json"
+  },
+  "integrity": {
+    "branch_off_master": true,
+    "no_master_or_native_source_mutation": true,
+    "no_new_native_physics": true,
+    "no_posthoc_threshold_reversal": true,
+    "all_native_nulls_retained": true,
+    "draft_PR_only": true
+  }
+}
