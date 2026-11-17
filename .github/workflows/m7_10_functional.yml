@@ -1,0 +1,109 @@
+name: M7.10 native first recruited bond functional feedback and energy-route forks
+
+on:
+  push:
+    branches:
+      - exp/m7-10-recruited-bond-function
+    paths:
+      - 'campaigns/m7_10_functional/**'
+      - 'tools/m7_10_recruited_link_function.py'
+      - 'tests/test_m7_10_recruited_link_function.py'
+      - '.github/workflows/m7_10_functional.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Complete regression suite and 3-way matched native energy-refund and suppression tests
+        run: python -m pytest -q
+
+  shards:
+    needs: regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 28001
+            end: 28040
+          - start: 28041
+            end: 28080
+          - start: 28081
+            end: 28120
+          - start: 28121
+            end: 28160
+          - start: 28161
+            end: 28200
+          - start: 28201
+            end: 28240
+          - start: 28241
+            end: 28280
+          - start: 28281
+            end: 28320
+          - start: 28321
+            end: 28360
+          - start: 28361
+            end: 28400
+          - start: 28401
+            end: 28440
+          - start: 28441
+            end: 28480
+          - start: 28481
+            end: 28520
+          - start: 28521
+            end: 28560
+          - start: 28561
+            end: 28600
+          - start: 28601
+            end: 28640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Observe FIRST spontaneously acquired external source bond, then follow 3 physical forks
+        run: python -m tools.m7_10_recruited_link_function shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve all forty seed worlds including pre-recruit bond-break negative cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-10-first-native-link-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_10_functional/shards/seeds-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-10-first-native-link-shard-*
+          path: campaigns/m7_10_functional/shards
+          merge-multiple: true
+      - name: Require ALL 640 original seed worlds and exactly 16 identical-protocol shards
+        run: python -m tools.m7_10_recruited_link_function merge
+      - name: Archive ALL selected, negative and null native source worlds and causal forks
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-10-complete-first-native-bond-functional-results
+          path: campaigns/m7_10_functional/results.json
+          if-no-files-found: error
