@@ -1,0 +1,109 @@
+name: M7.8 frozen geometry pairwise common-RNG chemistry test
+
+on:
+  push:
+    branches:
+      - exp/m7-8-frozen-pairwise-chemistry
+    paths:
+      - 'campaigns/m7_8_frozen/**'
+      - 'tools/m7_8_frozen_reactions.py'
+      - 'tests/test_m7_8_frozen_reactions.py'
+      - '.github/workflows/m7_8_frozen_chemistry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full tests, native formation equivalence and first real seed pairwise 32-draw replay
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 26001
+            end: 26040
+          - start: 26041
+            end: 26080
+          - start: 26081
+            end: 26120
+          - start: 26121
+            end: 26160
+          - start: 26161
+            end: 26200
+          - start: 26201
+            end: 26240
+          - start: 26241
+            end: 26280
+          - start: 26281
+            end: 26320
+          - start: 26321
+            end: 26360
+          - start: 26361
+            end: 26400
+          - start: 26401
+            end: 26440
+          - start: 26441
+            end: 26480
+          - start: 26481
+            end: 26520
+          - start: 26521
+            end: 26560
+          - start: 26561
+            end: 26600
+          - start: 26601
+            end: 26640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Freeze natural source geometry then conduct four-arm pair-coupled one-sweep chemistry
+        run: python -m tools.m7_8_frozen_reactions shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Preserve 40 frozen-native source worlds and all 32 paired chemistry lotteries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-8-frozen-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_8_frozen/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-8-frozen-shard-*
+          path: campaigns/m7_8_frozen/shards
+          merge-multiple: true
+      - name: Demand strict all 640 seed worlds, 16 shards, original M7.5 SHA and exact frozen gates
+        run: python -m tools.m7_8_frozen_reactions merge
+      - name: Preserve all null worlds and full 32-lottery four-arm frozen-world results
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-8-complete-640-source-pair-coupled-frozen-chemistry
+          path: campaigns/m7_8_frozen/results.json
+          if-no-files-found: error
