@@ -1,0 +1,109 @@
+name: M7.11 native aged ring fault tolerance and exact reclosure
+
+on:
+  push:
+    branches:
+      - exp/m7-11-native-cyclic-fault-tolerance
+    paths:
+      - 'campaigns/m7_11_ring_resilience/**'
+      - 'tools/m7_11_ring_fault_tolerance.py'
+      - 'tests/test_m7_11_ring_fault_tolerance.py'
+      - '.github/workflows/m7_11_native_ring_resilience.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full native regression suite and preregistered exact-edge damage and reclosure tests
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 29001
+            end: 29040
+          - start: 29041
+            end: 29080
+          - start: 29081
+            end: 29120
+          - start: 29121
+            end: 29160
+          - start: 29161
+            end: 29200
+          - start: 29201
+            end: 29240
+          - start: 29241
+            end: 29280
+          - start: 29281
+            end: 29320
+          - start: 29321
+            end: 29360
+          - start: 29361
+            end: 29400
+          - start: 29401
+            end: 29440
+          - start: 29441
+            end: 29480
+          - start: 29481
+            end: 29520
+          - start: 29521
+            end: 29560
+          - start: 29561
+            end: 29600
+          - start: 29601
+            end: 29640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Scan 600 original M7.3 natural ticks per seed for first aged native ring and four fixed physical causal forks
+        run: python -m tools.m7_11_ring_fault_tolerance shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive all 40 source seed worlds including absent rings and complete causal fork negative outcomes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-11-native-ring-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_11_ring_resilience/shards/${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-11-native-ring-shard-*
+          path: campaigns/m7_11_ring_resilience/shards
+          merge-multiple: true
+      - name: Demand 640 native worlds, all 16 fixed shards and identical frozen source-code hashes and outcome criteria
+        run: python -m tools.m7_11_ring_fault_tolerance merge
+      - name: Persist complete raw native ring events, break/refund fork results and null original seed worlds
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-11-complete-640-native-aged-rings-fault-tolerance
+          path: campaigns/m7_11_ring_resilience/results.json
+          if-no-files-found: error
