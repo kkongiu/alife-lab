@@ -1,0 +1,36 @@
+name: M7.14 independent capability and information-channel research go-no-go decision
+
+on:
+  push:
+    branches:
+      - research/m7-14-mechanism-decision-gate
+    paths:
+      - 'campaigns/m7_14_decision/**'
+      - 'tools/m7_14_decision_gate.py'
+      - 'tests/test_m7_14_decision_gate.py'
+      - '.github/workflows/m7_14_decision_gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scientific-guardrails:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full existing M6 physics regressions and M7.14 no-false-positive causal lineage tests
+        run: python -m pytest -q
+      - name: Execute deterministic native fixed-material and explicit microscopic information-channel capability audit
+        run: python -m tools.m7_14_decision_gate
+      - name: Publish all 12 native audit world hashes, physical code hashes and synthetic-only calibrated decision evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-14-decision-original-native-law-and-information-readiness
+          path: campaigns/m7_14_decision/result.json
+          if-no-files-found: error
