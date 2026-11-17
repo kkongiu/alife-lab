@@ -1,0 +1,109 @@
+name: M7.9 fixed native source energy-placement ablation (matched cohort multiset)
+
+on:
+  push:
+    branches:
+      - exp/m7-9-matched-root-energy-placement
+    paths:
+      - 'campaigns/m7_9_placement/**'
+      - 'tools/m7_9_energy_placement.py'
+      - 'tests/test_m7_9_energy_placement.py'
+      - '.github/workflows/m7_9_energy_placement.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Full regression suite incl unchanged native M7.5 selector and M7.8 chemical draws
+        run: python -m pytest -q
+
+  shards:
+    needs: regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - start: 27001
+            end: 27040
+          - start: 27041
+            end: 27080
+          - start: 27081
+            end: 27120
+          - start: 27121
+            end: 27160
+          - start: 27161
+            end: 27200
+          - start: 27201
+            end: 27240
+          - start: 27241
+            end: 27280
+          - start: 27281
+            end: 27320
+          - start: 27321
+            end: 27360
+          - start: 27361
+            end: 27400
+          - start: 27401
+            end: 27440
+          - start: 27441
+            end: 27480
+          - start: 27481
+            end: 27520
+          - start: 27521
+            end: 27560
+          - start: 27561
+            end: 27600
+          - start: 27601
+            end: 27640
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Six-arm frozen energy multiset matched original native cohort with 32 common pair draws
+        run: python -m tools.m7_9_energy_placement shard --start ${{ matrix.start }} --end ${{ matrix.end }}
+      - name: Archive all 40 original source worlds, nulls and 32 chemistry draws per original and scramble arm
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-9-placement-shard-${{ matrix.start }}-${{ matrix.end }}
+          path: campaigns/m7_9_placement/shards/seeds-${{ matrix.start }}-${{ matrix.end }}.json
+          if-no-files-found: warn
+
+  merge:
+    needs: shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: m7-9-placement-shard-*
+          path: campaigns/m7_9_placement/shards
+          merge-multiple: true
+      - name: Require ALL 640 source seed worlds, protocol SHA and 16 fixed shards
+        run: python -m tools.m7_9_energy_placement merge
+      - name: Archive complete post-conduction original and 4 energy-placement permutation results
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-9-complete-640-root-energy-placement-results
+          path: campaigns/m7_9_placement/results.json
+          if-no-files-found: error
