@@ -80,7 +80,11 @@ def test_transfer_audit_equals_original_m73_native_bond_energy_operation():
         assert status[0]==status[3]+status[4]+status[5]+(
             status[0]-status[3]-status[4]-status[5]
         )
-        assert status[4]==status[5]==0
+        if arm=="bond_only":
+            assert status[4]==status[5]==0
+        if arm=="all_contacts":
+            # An unbonded outside particle can transfer toward a root member.
+            assert status[4]==1 and status[5]==0
 
 
 def fake(seed,delta,prebreak_bond,prebreak_none,growth_bond=False,growth_none=False):
