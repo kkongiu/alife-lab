@@ -127,3 +127,18 @@ Il prossimo esperimento dovrebbe abbandonare la pretesa che **un singolo link pa
 Una alternativa preliminare, prima di molti nuovi universi, sarebbe un **audit formale di raggiungibilità** della fisica M6 (quali strutture cicliche e rami di feedback sono effettivamente generabili nelle densità osservate), per non preregistrare campioni che il modello può difficilmente raggiungere.
 
 **Conclusione:** il primo legame naturale ha una funzione meccanica plausibile di **ritenzione del primo materiale**; non abbiamo però evidenza che quel legame o la sua capacità di condurre energia **causi un secondo reclutamento più frequente** o un fenomeno di auto-mantenimento.
+
+
+## Audit indipendente post-hoc — PASS di tutti i 640 universi e 366 fork
+
+Dopo aver completato l'analisi preregistrata è stato eseguito un replay fisico **separato**, che non usa il selettore di primo legame, il tracciatore degli eventi, il codice di ablazione energetica o il classificatore del programma M7.10:
+
+- [GitHub Actions #44166533672 — **PASS**](https://github.com/kkongiu/alife-lab/actions/runs/44166533672).
+- [Dataset sintetico di verifica post-hoc, artifact #14365697602](https://github.com/kkongiu/alife-lab/actions/runs/44166533672/artifacts/14365697602).
+- [Implementazione indipendente `tools/m7_10_independent_posthoc.py`](../tools/m7_10_independent_posthoc.py) e [test dedicati](../tests/test_m7_10_independent_posthoc.py).
+
+L'audit ricostruisce da zero tutti i **640** mondi nativi fino al primo aggregato M7.5 e, con un proprio osservatore di eventi, individua autonomamente il primo legame originale–esterno precedente alla prima rottura originale. Gli **122** risultati idonei, e le ragioni di mancata selezione degli altri **518**, coincidono con il dataset originale, inclusi l'ID della coppia, il tick di nascita, hash completo e stato RNG.
+
+Per i **122** casi selezionati, l'audit riproduce autonomamente l'intervento che restituisce l'energia del primo legame rimosso e la soppressione del solo trasferimento sul legame mantenuto; usa la **funzione originale M7.3 di conduzione** negli altri due bracci. Le **366/366** evoluzioni di 120 tick risultano esattamente identiche sui seguenti aspetti: hash fisico finale, RNG/draws, bilancio totale energia e dissipazione, contatori delle reazioni, primo evento di rottura dei legami originali, eventuale nuova formazione verso ID esterni distinti, connettività del materiale originale, trasporti sul primo legame selezionato e cinque checkpoint per braccio.
+
+**Esiti preregistrati immutati:** confronto primario **0 seed discordanti**; confronto secondario **12 favorevoli al mantenimento / 21 favorevoli all'escissione**. L'audit è una validazione dei **medesimi** 640 mondi e non costituisce una nuova replica statistica.
