@@ -1,0 +1,135 @@
+{
+  "schema": "alife-m7-10-native-first-recruited-bond-functional-forks-v1",
+  "status": "frozen_before_experimental_code_or_results",
+  "date": "2026-11-17",
+  "parent": "exp/m7-9-matched-root-energy-placement",
+  "hypothesis": "Does the FIRST naturally added source-cohort-to-outsider bond causally favor acquisition of a SECOND distinct outsider while preserving its original source material structure, and is any effect attributable specifically to energy passing across that new bond rather than the mechanical bond itself?",
+  "sampling": {
+    "seed_first": 28001,
+    "seed_last": 28640,
+    "seed_count": 640,
+    "shards": [
+      {
+        "start": 28001,
+        "end": 28040
+      },
+      {
+        "start": 28041,
+        "end": 28080
+      },
+      {
+        "start": 28081,
+        "end": 28120
+      },
+      {
+        "start": 28121,
+        "end": 28160
+      },
+      {
+        "start": 28161,
+        "end": 28200
+      },
+      {
+        "start": 28201,
+        "end": 28240
+      },
+      {
+        "start": 28241,
+        "end": 28280
+      },
+      {
+        "start": 28281,
+        "end": 28320
+      },
+      {
+        "start": 28321,
+        "end": 28360
+      },
+      {
+        "start": 28361,
+        "end": 28400
+      },
+      {
+        "start": 28401,
+        "end": 28440
+      },
+      {
+        "start": 28441,
+        "end": 28480
+      },
+      {
+        "start": 28481,
+        "end": 28520
+      },
+      {
+        "start": 28521,
+        "end": 28560
+      },
+      {
+        "start": 28561,
+        "end": 28600
+      },
+      {
+        "start": 28601,
+        "end": 28640
+      }
+    ],
+    "source": "Exact unchanged original M7.5 first eligible native maximal connected 5–16-material-ID aggregate with ≥4 native edges, valence slot, ≥2 existing material edges each continuously present >=20 ticks; first eligible tick120..500. Native original M7.3 physics 264 particles on 24×24 periodic, 16 dispersed sources, 0 initial bonds, no catalysis. Include all 640 seed worlds and null samples.",
+    "event_selection": "After exact original source selection, continue ONE baseline source state for up to 120 ticks with unchanged original M7.3 bond_only transfer applied after EACH original native World.advance(1). An observation-only BondEvent tape records breaks and formations. Abort source eligibility permanently at FIRST observed BREAK of ANY original source edge, even if reformed same tick. Select at first poststep tick with at least one native FORM event with exactly one endpoint in original root IDs and the other outside, IF no original source edge BREAK has yet occurred (including this tick) and new pair is still present in chemical bond graph after step. If >1 same-tick qualifying event, choose lexicographically smaller persistent ID pair. No future-outcome selection. The event itself is from native M6, not an injected bond.",
+    "selection_horizon_steps": 120,
+    "followup_steps": 120,
+    "source_independent_unit": "One numeric native seed-world, at most one selected first recruited native original-to-outside pair. Three subsequent forks are matched interventions, not independent worlds.",
+    "nulls": "Retain all seeds lacking an eligible source, forming no qualified incident bond, or first losing original material edges."
+  },
+  "forks": {
+    "native_intact": "Clone selected complete native poststep state (after native M7.3 bond-only conduction), keep newly formed recruited chemical bond and allow ordinary unchanged M6 break/form/movement/energy injection/decay plus original M7.3 bond_only energy transfer each following tick.",
+    "bond_intact_conduction_ablated": "Exact same full native poststep state, keep recruited chemical bond physically intact (identical positions, valences, energies, bond energy and RNG) but suppress ONLY energy transfers ACROSS THAT ONE SELECTED PERSISTENT PAIR during future poststep conduction passes. Other bonds conduct according to the exact original M7.3 algorithm. If first bond breaks and reforms, future conduction over same pair remains suppressed. This is an experiment-specific selective nonphysical transport ablation, not a change to native M6 chemistry. Does not affect formation or original native break probabilities before transfer in the first next step.",
+    "recruited_edge_excised_refunded": "Clone same complete native poststep state, remove JUST selected newly recruited bond; return its current stored chemical bond energy to its endpoints using the same deterministic ID-order split as native M6 break_bonds, but WITHOUT any additional dissipation and without consuming RNG. Formation dissipation has already occurred IN BOTH ARMS and is not undone. Total world energy and prior dissipation remain exact and identical, but particle-energy placement, degrees, chemical graph and future global RNG trajectories differ. The bond is free to reform later under ORIGINAL M6 chemistry.",
+    "followup_source_physics": "All three forks continue unchanged native World.advance(1) plus original M7.3 bond_only energy transfer, except the single-edge transport suppression only for the intact ablation arm; no additional sources/particles/altered chemical probability.",
+    "timepoints": [
+      1,
+      10,
+      30,
+      60,
+      120
+    ],
+    "on_first_step": "native_intact and bond_intact_conduction_ablated MUST have identical first native step state/events and RNG BEFORE different poststep conduction; recruited_edge_excised_refunded is not expected to match due to changed bond count, valence, RNG draw ordering.",
+    "energy_balance": "Before interventions, both intact arms identical full hash/RNG. Excised arm world.energy identical and stored bond energy fully restored to endpoints, no extra dissipation/creation, original edges unchanged. Every subsequent arm must satisfy native World.check and complete full energy ledger."
+  },
+  "measurements": {
+    "primary": "Binary per selected source: formation of ≥1 SECOND DISTINCT external material ID via a real native FORM bond event from an ID in {original root IDs OR first recruited ID} to an ID outside that initial extended set, while NO original root bond BREAK event has occurred since selected acquisition (including the tick of new formation). The initial selected pair's own reformation is never second recruitment. Count formation by actual event, even if short-lived; also record whether new recruited ID joins a chemically connected component containing ALL original root IDs immediately after poststep (separate strict coherent indicator).",
+    "secondary": "Binary same second distinct external material recruitment endpoint comparing native_intact vs recruited_edge_excised_refunded, subject to same original-edge no-break qualification within each fork.",
+    "additional": "All original root bonds never broken over 120 ticks; continuous originally recruited attachment never broken (intact arms only); originally recruited ID in coherent root component at t30,t60,t120; at least one additional distinct external ID in coherent root component at t120; final extended component size; source material energy; world bond formation; original-to-outsider chemical FORM events.",
+    "conduction_mechanism": "Count accepted single-unit energy transfers over selected physical pair (as donor vs recipient direction) and across initial original-source-ID boundary (root→external and external→root), distinguishing net transfers from internal exchange. In intact-conduction ablated arm selected-pair accepted transfers must be exactly zero while physical bond may remain.",
+    "events": "Record exact actual BondEvent break/form even same-tick bond reformation. Track original edge preservation and timing, distinct outside IDs and observed second acquisition before original bond damage, without treating world-ticks or multiple events as independent worlds.",
+    "rng_limit": "Selective removal of a physical bond changes native break lottery consumption and future RNG stream, so intact-vs-excised contrast is a regime-level intervention, not a pairwise coupled chemical micro-reaction experiment. Intact-vs-intact conduction-ablation begins physically identical, but future global RNG streams can still diverge after energy transports."
+  },
+  "frozen_decisions": {
+    "primary": "Among ≥40 naturally eligible source-seed worlds and ≥25 matched discordant native_intact vs bond_intact_conduction_ablated seed-level binary SECOND DISTINCT pre-original-break recruitment outcomes, ≥2/3 of discordant seeds must favor native_intact. Otherwise NOT_MET; explicitly indicate underpowered if fewer than 25 discordants.",
+    "secondary": "Among ≥40 naturally eligible source-seed worlds and ≥25 discordant native_intact vs recruited_edge_excised_refunded cases on the SAME second-recruitment endpoint, ≥2/3 discordants favor native_intact. Otherwise NOT_MET; report underpowered if fewer than 25.",
+    "descriptive": "Original bond survival, acquired edge persistence, later connectivity, accepted selected-edge flow and all topology metrics are descriptive; no posthoc substitute endpoints. The pure first recruited-link retention advantage cannot count as a meaningful endpoint because intact arms start with a link and excised does not.",
+    "two_biological_gates_only": true,
+    "no_posthoc_seed_selection_changes": true,
+    "no_posthoc_threshold_changes": true,
+    "no_life_claim": true
+  },
+  "integrity": {
+    "full_test_suite_before_sampling": true,
+    "exact_640_seed_records_and_16_fixed_shards": true,
+    "protocol_sha256_and_untouched_M7_5_and_M7_3_source_sha256_per_shard": true,
+    "zero_initial_natural_world_bonds": true,
+    "no_inserted_particles_or_chosen_structure": true,
+    "no_change_to_src_or_prior_M6_M7_files": true,
+    "all_null_outcomes_archived": true,
+    "original_native_root_source_state_hash_unchanged": true,
+    "forks_identical_full_hash_before_one_link_intervention": true,
+    "complete_ledger_and_firststep_intact_arm_native_equivalence": true,
+    "independent_first_selected_seed_replay_per_nonempty_shard": true,
+    "draft_stacked_PR_no_merge": true
+  },
+  "output": {
+    "data": "campaigns/m7_10_functional/results.json",
+    "report": "reports/M7_10_recruited_bond_function.md",
+    "workflow": ".github/workflows/m7_10_functional.yml"
+  }
+}
