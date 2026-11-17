@@ -1,0 +1,40 @@
+name: M7.7 fixed-data independent physical mechanism posthoc replay
+
+on:
+  push:
+    branches:
+      - exp/m7-7-cohort-mechanism-audit
+    paths:
+      - 'tools/m7_7_independent_posthoc.py'
+      - '.github/workflows/m7_7_independent_posthoc.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  all-forks-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Read IMMUTABLE original complete M7.7 320-world results only
+        uses: actions/download-artifact@v4
+        with:
+          name: m7-7-complete-cohort-mechanism-audit
+          run-id: 44109230919
+          github-token: ${{ github.token }}
+          path: campaigns/m7_7_mechanism
+      - name: Independently replay original M7.3 physics, candidate and chemical event counts for all 960 forks
+        run: python -m tools.m7_7_independent_posthoc
+      - name: Preserve full separate posthoc correctness audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: m7-7-independent-320-source-960-fork-physical-audit
+          path: campaigns/m7_7_mechanism/independent_posthoc.json
+          if-no-files-found: error
