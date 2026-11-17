@@ -144,3 +144,22 @@ Continuare a variare il numero di mondi o a rimescolare energia senza un'ipotesi
 - Un controllo causale con **legame neoformato presente vs assente** in uno stato sorgente altrimenti identico, bilanciando esplicitamente l'energia chimica pagata e conservata nel legame, senza alterare la fisica successiva.
 
 Questa sarebbe una prova di **funzionalità strutturale del legame acquisito**, più vicina al concetto di auto-organizzazione, benché ancora distinta da ereditarietà, replicazione e vita.
+
+
+## Audit fisico indipendente post-hoc — PASS
+
+Dopo aver congelato il dataset dei 640 seed, un secondo programma di verifica ha **ricalcolato da zero tutti gli stati sorgente nativi** ed effettuato **quattro riassegnazioni energetiche per ognuno**, implementando autonomamente la permutazione SHA256 senza utilizzare la funzione originale M7.9. L'audit è dunque un controllo di correttezza della trasformazione energetica, non una nuova raccolta di dati.
+
+- [GitHub Actions #44121975730, PASS](https://github.com/kkongiu/alife-lab/actions/runs/44121975730).
+- [Dataset post-hoc dell'audit #14346281499](https://github.com/kkongiu/alife-lab/actions/runs/44121975730/artifacts/14346281499).
+- [Script `tools/m7_9_original_M6_oracle_audit.py`](../tools/m7_9_original_M6_oracle_audit.py).
+- [Test indipendente `tests/test_m7_9_original_M6_oracle_audit.py`](../tests/test_m7_9_original_M6_oracle_audit.py).
+
+Risultati del controllo:
+
+1. **640/640** mondi fisici originali ricostruiti da seed e selettore M7.5 invariato, con hash materiale completo e stato RNG identici al dato pubblicato.
+2. **2.560/2.560** collocazioni energetiche alternative ricostruite separatamente, con uguaglianza esatta degli hash, del multinsieme energetico e della somma di energia del gruppo originale, senza toccare le particelle esterne.
+3. Identificati **87 seed informativi** con un confronto non pari in almeno uno dei due criteri preregistrati. Aggiunti i primi seed di ciascuno dei 16 shard come controlli predefiniti; in totale **100 seed distinti** per l'audit chimico.
+4. Su questi 100 seed, ripetuti **100 × 6 condizioni × 32 lotterie = 19.200 sweep**, richiamando direttamente `alife.chemistry.form_bonds` M6 originale con un estrattore `raw()` per coppia iniettato temporaneamente (non la funzione sperimentale M7.8). Tutti i **19.200/19.200** sweep coincidono su identità dei nuovi legami, lotterie consumate, energia chimica, dissipazione, stato RNG e hash completi.
+
+L'audit comprende quindi **tutti i mondi e tutti i rimescolamenti**, mentre le reazioni con l'implementazione M6 originale sono verificate **sui casi informativi e sulle sentinelle**, non sui 640×6×32 sweep. Non introduce campioni statisticamente indipendenti e non cambia i due esiti preregistrati **NON RAGGIUNTI**.
