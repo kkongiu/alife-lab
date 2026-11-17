@@ -21,7 +21,7 @@ def prepared():
         }
     )
     world=world_with(cfg,positions=[(0,0),(1,0),(2,0),(4,4)],
-                     species=[0]*4,energy=[16,2,0,6],
+                     species=[0]*4,energy=[8,2,0,6],
                      bonds=[(0,1,4),(1,2,4)])
     world.check()
     return world
