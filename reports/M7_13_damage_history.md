@@ -114,3 +114,20 @@ M7.13 aggiunge un risultato negativo sull'ipotetico **rafforzamento tramite espe
 Per un M7.14 davvero diverso, servirebbe uno studio mirato di una **variabile interna di memoria** causalmente misurabile e trasmissibile: ad esempio variazione strutturale che persista, regoli le probabilità future di ricostituzione e si riproduca in un nuovo gruppo, confrontata con una perturbazione placebo fisicamente equiparata. In assenza di tale meccanismo non si può chiamare `adattamento` il semplice ritorno stocastico ad un legame precedente.
 
 **Conclusione:** la simulazione mostra chimica reversibile e reti di materia stabili; non ha ancora generato organismo digitale, metabolismo, eredità, replica o apprendimento emergente.
+
+
+## Audit indipendente integrale dei 640 mondi e 1.881 fork — PASS
+
+Dopo il congelamento del dataset M7.13, è stato eseguito un **secondo programma di verifica** con una propria implementazione di rimozione del legame, rimborso energetico, azzeramento della sola energia di legame, registrazione degli eventi chimici e ricostruzione degli indicatori. Questo programma **non importa il codice sperimentale M7.13 di intervento o valutazione**; continua a chiamare soltanto il simulatore fisico M6 e la conduzione M7.3 originari e il selettore di anelli M7.11 già verificato indipendentemente nella campagna precedente.
+
+- [GitHub Actions #44178238047 — **PASS**](https://github.com/kkongiu/alife-lab/actions/runs/44178238047).
+- [Dati di audit indipendente #14371365904](https://github.com/kkongiu/alife-lab/actions/runs/44178238047/artifacts/14371365904).
+- [Script separato `tools/m7_13_independent_posthoc.py`](../tools/m7_13_independent_posthoc.py) e [test sintetico](../tests/test_m7_13_independent_posthoc.py).
+
+Sedici shard di audit (i medesimi gruppi numerici prestabiliti) hanno ricostruito da seed tutti i **640** mondi, ritrovando esattamente i **627** primi anelli selezionati e tutti i **13** mondi negativi. Per ciascuno dei 627 positivi hanno rifatto le **tre storie complete di 240 tick**, ovvero **1.881/1.881 fork fisici originali**, con esito **PASS**.
+
+Coincidono esattamente ogni checkpoint temporale di energia, posizioni, specie, connessioni, hash fisico, stato RNG/numero delle estrazioni, formazione e rottura native del primo e del secondo bersaglio, eleggibilità del secondo taglio, tutta l'energia dissipata e immagazzinata e gli endpoint intention-to-treat.
+
+L'audit recupera in modo indipendente gli stessi risultati: **366** successi su **566** secondi tagli possibili nel primo danno, **421/583** nello sham energetico, **399/577** nel controllo non danneggiato, con i target già assenti conteggiati come fallimenti. I confronti binari preregistrati restano **121 contro 154** e **111 contro 166**, entrambi sotto il requisito prefissato dei due terzi.
+
+**Non è una nuova replica statistica:** tutti i replay validano gli **stessi** seed e non aumentano la numerosità del campione. I due giudizi preregistrati restano **NON RAGGIUNTI**.
