@@ -1,0 +1,48 @@
+name: M8.0 explicit NEW local polymer physics and prereg 32 paired causal information controls
+
+on:
+  push:
+    branches:
+      - exp/m8-0-local-templating-sandbox
+    paths:
+      - 'campaigns/m8_0/**'
+      - 'src/alife_m8/**'
+      - 'tools/m8_0_preflight.py'
+      - 'tests/test_m8_0_sandbox.py'
+      - '.github/workflows/m8_0_local_polymer_preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Run all unchanged native M6 chemistry regressions and NEW M8.0 exact mass/energy causal controls
+        run: python -m pytest -q
+
+  fixed-32-laboratory-fixtures:
+    needs: full-regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Execute preregistered 32 paired real M8 synthetic-template reaction traces and informationally scrambled controls
+        run: python -m tools.m8_0_preflight
+      - name: Publish ALL matched bit-edit physical events, new monomer IDs, B/H reactions, ledgers and prereg gates
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-0-complete-synthetic-template-32-paired-causal-controls
+          path: campaigns/m8_0/preflight.json
+          if-no-files-found: error
