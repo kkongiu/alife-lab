@@ -1,0 +1,40 @@
+name: M8.0 independent strict physical product observer and all 192 full native M8 traces
+
+on:
+  push:
+    branches:
+      - exp/m8-0-local-templating-sandbox
+    paths:
+      - 'tools/m8_0_independent_observer.py'
+      - '.github/workflows/m8_0_independent_observer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independent-real-reaction-and-physical-product-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Download frozen prior M8.0 original 192-real-physics-case results, not new seed discovery
+        uses: actions/download-artifact@v4
+        with:
+          name: m8-0-complete-synthetic-template-32-paired-causal-controls
+          run-id: 44255549853
+          github-token: ${{ github.token }}
+          path: campaigns/m8_0
+      - name: Independently detect full B-components, persistent H-detached material and replay all 192 microphysics worlds
+        run: python -m tools.m8_0_independent_observer
+      - name: Archive full independent observer results including M8.1 no-natural-nucleation restriction
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-0-independent-192-physical-world-replay-and-natural-nucleation-audit
+          path: campaigns/m8_0/independent_observer_audit.json
+          if-no-files-found: error
