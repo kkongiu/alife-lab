@@ -1,0 +1,67 @@
+{
+  "schema": "alife-m8-0-local-polymer-information-preflight-v1",
+  "status": "frozen_before_new_law_implementation_or_result",
+  "date": "2026-11-18",
+  "parent_branch": "master",
+  "historical_M6_M7_unchanged": true,
+  "physical_law_version": "M8.0-new-physics-not-M6",
+  "scope": "Microscopic synthetic-template feasibility preflight ONLY. Not spontaneous-origin search, adaptive evolution, or digital life; do not plant templates in later unbiased M8.1 discovery.",
+  "model": {
+    "lattice": "closed rectangular 10 x 5; single occupancy/cell; at most two horizontal backbone B bonds/monomer, at most two vertical weak H interactions/monomer; physically distinct B vs H valence",
+    "materials": "two monomer species 0/1; finite bath initially 40 of EACH species; particles added only by consuming corresponding bath units; particle IDs persistent and never reused",
+    "energy": "integer available energy initially 500 + preexisting laboratory template B stored energies; each background adsorption dissipates 1; each H capture consumes 2 (one dissipated plus one H stored); B bond formation consumes 2 (1 dissipated plus 1 stored); spontaneous H release dissipates its stored 1; B break refunds stored energy 1. No external injection; exact available + bond stores + dissipated = initial total.",
+    "native_laws": "new M8 local stochastic reactions ONLY; original M6 fixed population physics remains unchanged; no global fitness and no clone instruction. Horizontal B creation between adjacent free-valence particles; if both B-candidate monomers have separate vertically adjacent H partners whose B is present, raise B formation probability; otherwise baseline B rate.",
+    "template_contact": "A first monomer may recruit a monomer from bath into a vertical neighboring empty cell when it currently has >=1 horizontal B bond and free H valence. Reaction probability independent of source bit (p_capture=0.55), while acquired monomer's species is selected by local chemical affinity: match source bit with probability 0.90, mismatch 0.10; H contact stores energy 1 and may detach. Competing monomer capture is kinetic/energetic, not a copy() instruction.",
+    "control_modes": {
+      "templated": "recruited monomer preferentially matches physical adjacent bonded monomer species",
+      "shuffled_identity": "for each capture location, use independently hashed pseudo-template identity unrelated to physical source species; same aggregate capture attempt rate, physical H count and energetic costs, and same pair-keyed stochastic draws. This is information-channel-scrambled rate-matched placebo, not a no-contact control.",
+      "no_template": "disable template-mediated adsorption, retains optional background reactions; with fixture p_background=0 expected no additional monomers",
+      "unpowered": "set available energy to 0, leave stored bonds, no adsorption and no backbone creation"
+    },
+    "probabilities": {
+      "capture_given_near_B_polymer": 0.55,
+      "matching_mononer_given_capture": 0.9,
+      "background_adsorption": 0,
+      "backbone_base": 0.03,
+      "backbone_if_double_H_aligned": 0.9,
+      "weak_H_release": 0.035,
+      "backbone_B_break": 0.0005
+    },
+    "random": "Counter-based deterministic draws keyed by (seed,tick,chemistry-step,x,y,lane) independent of event count. Exact same random draws between genotype-edit forks and between active-vs-scrambled control.",
+    "time": "Order each tick: weak H release, backbone B break, local adsorption/capture, backbone B formation, ledger validation; no seed adaptation based on observed outcomes.",
+    "geometry_limitation": "This is intentionally an anisotropic 1D horizontal polymer lattice embedded in 2D, with vertical H contacts. It is a simplification, NOT a physical universal artificial chemistry. Monomers are stationary once captured; no open-ended organism behavior."
+  },
+  "controls": {
+    "seeds": "32 fixed paired synthetic laboratory template fixtures, integers 50001..50032, no selection or retries",
+    "artificial_template": "Explicitly plant only a four-monomer B-bonded artificial polymer at x=3,4,5,6, y=1, sequence 0101. This is NOT spontaneous origin; only a software positive control.",
+    "edit": "Genotype-edit a single parent material bit at x=5,y=1 (0101 -> 0111) without moving material or changing energy or bath inventory. Compare first genuinely reaction-captured monomer identity at exact neighbor x=5,y=2 across identical paired seeds, no manufactured daughter.",
+    "fixed_product_observer": "At y=2,x3..x6, native-formed material IDs distinct from all original parent IDs; contiguous three real B bonds, no H tether to original parent and persisted >=20 consecutive ticks during 120 steps; sequence must be read from the actually adsorbed species. Observer never creates molecules.",
+    "simulation_horizon": 120,
+    "preregistered_minimums": {
+      "physical_integrity": "32/32 templates keep exact particle + bath mass and energy ledger each tick; no native M6 file change; full identical same-seed repeat hash",
+      "causal_edit": "At least 20/32 paired edit controls change the species of the FIRST captured actual daughter-position monomer at (5,2) in templated mode; in shuffled_identity with the identical paired seed the edit must change species 0/32 times. All physical x5,y2 capture events must be true local adsorption events.",
+      "product": "At least 8/32 templated starting 0101 fixtures produce a complete detached and at-least-20-tick-persistent exact matching sequence 0101 polymer at y2 x3..x6, and at least 5 MORE exact matching products than scrambled-identity mode (same resources and reaction rate). No positive discovery claim from this artificial fixture.",
+      "no_template": "With p_background=0, no_template control must make 0 extra material particles over 120 ticks; with unavailable energy, unpowered makes 0 extra particles; any failures STOP."
+    },
+    "stopping": "If any gate fails, record not_met and do NOT start unbiased seed search; DO NOT lower thresholds after examining data.",
+    "research_limit": "Even passing is evidence of an implemented designed information-bearing local reaction, not spontaneous generation of an organism. Spontaneous origin is a separate heldout M8.1 gate; heritable 3-generation lineages and functional metabolism are separately required."
+  },
+  "integrity": {
+    "strict_32_seeds_and_negatives": true,
+    "all_controls_paired": true,
+    "real_local_reaction_events_no_direct_child_creation": true,
+    "no_spontaneous_life_claim": true,
+    "branch_off_master": true,
+    "no_historical_M6_edits": true,
+    "full_original_pytest": true,
+    "no_merge": true
+  },
+  "outputs": {
+    "runner": "tools/m8_0_preflight.py",
+    "new_physics": "src/alife_m8/sandbox.py",
+    "tests": "tests/test_m8_0_sandbox.py",
+    "protocol": "campaigns/m8_0/protocol.json",
+    "result": "campaigns/m8_0/preflight.json",
+    "report": "reports/M8_0_preflight.md"
+  }
+}
