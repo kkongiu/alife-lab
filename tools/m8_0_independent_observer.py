@@ -100,7 +100,7 @@ def replay(seed,mode,sequence,stored):
     assert stored["native_local_chemistry_event_counts"]==dict(Counter(e["kind"] for e in w.events))
     assert stored["total_matter_initial"]==w.initial_matter
     assert stored["total_energy_initial"]==w.initial_energy
-    assert stored["final"]==w.physical_metrics()
+    assert json.dumps(stored["final"],sort_keys=True)==json.dumps(w.physical_metrics(),sort_keys=True), (seed,mode,sequence,"full final metrics")
     original=stored["physically_distinct_detached_products_persisting_at_least_20_ticks"]
     assert strong20==original,(seed,mode,sequence,"independently stricter B-component detached product")
     copy=any(x["sequence"]==sequence for x in strong20)
