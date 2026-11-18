@@ -105,3 +105,29 @@ M8.0 autorizza, secondo i gate congelati, **la progettazione e la validazione di
 M8.1 richiederà una fisica specificamente versionata che introduca la possibilità di **prima nucleazione senza template**, un benchmark positivo microscopico che non si affidi a un organismo precostruito, nuovi seed e controlli a tassi realizzati comparabili, un endpoint di origine spontanea indipendente dalla posizione, e un rilevatore di eventuali catene figlie per ID completamente diversi. Quando M8.1 funziona, **M8.2** potrà chiedere se un'alterazione informativa viene trasmessa oltre una generazione, e se questa differenza influenza causalmente la persistenza/produzione di una struttura.
 
 **Conclusione:** la fisica M8.0 trasferisce *per progettazione* un'informazione di composizione con reazioni locali reali e costi finiti, e il preflight corrisponde ai controlli. **Non è emersa vita.** Adesso la domanda scientifica realmente nuova è se, con un meccanismo di nucleazione dichiarato e senza template preimpostati, possano comparire spontaneamente strutture che diano origine a materiale informativamente correlato.
+
+
+## Audit indipendente POST-HOC — PASS
+
+Un **secondo osservatore scritto separatamente** ha rieseguito le **192** evoluzioni del medesimo campione, senza usare `execute_case()`, `product_state()` o `summary()` del programma che ha prodotto i risultati originari. Verifica gli eventi di cattura, i legami B prodotti, la prima particella reale al sito fissato e i 120 checkpoint energetici. Applica inoltre una condizione più severa: **l'intera componente connessa dai legami B** del prodotto deve contenere **esattamente quattro nuovi ID**, e deve essere completamente priva di contatti H con il template iniziale per almeno 20 passi, non soltanto contenere la sottocatena specificata.
+
+- [GitHub Actions #44256458281 — **PASS**](https://github.com/kkongiu/alife-lab/actions/runs/44256458281).
+- [Dati sintetici di audit #14406068135](https://github.com/kkongiu/alife-lab/actions/runs/44256458281/artifacts/14406068135).
+- [Osservatore indipendente `tools/m8_0_independent_observer.py`](../tools/m8_0_independent_observer.py).
+
+**Risultati indipendentemente verificati:**
+
+| Su 32 mondi per regime, 120 passi ciascuno | Templating attivo | Identità del template rimescolata |
+|---|---:|---:|
+| Catture effettive totali di materiale | **512** | **512** |
+| Formazioni B effettive totali | **409** | **409** |
+| Catene 0101 complete, componente B ESATTAMENTE di 4 monomeri, prive di H verso il genitore e persistenti ≥20 tick | **18** | **0** |
+| Cambiamenti alla prima specie catturata in seguito a edit del bit parentale con stessi sorteggi | **32** | **0** |
+
+Tutte le verifiche di identità degli eventi, hash fisici finali, energia e monomeri hanno **corrispondenza esatta** rispetto ai dati congelati. L'audit conferma dunque che non siamo di fronte a un artefatto del primo osservatore di sottocatene.
+
+**Limite dell'indipendenza:** il secondo programma riutilizza **il medesimo simulatore fisico M8**; implementa soltanto una lettura indipendente delle traiettorie e dei prodotti. Non è un'implementazione indipendente delle leggi M8, non aggiunge seed, non accresce la forza statistica delle 32 coppie di controllo.
+
+**Problema di nucleazione confermato con test diretto:** un mondo M8.0 che inizia **senza template e senza particelle occupanti**, con `background_adsorption=0`, rimane vuoto dopo 120 passi. Non possiamo chiamarlo "origine spontanea fallita per caso": la fisica non ha proprio una via di ingresso del primo monomero. **M8.1 richiede una nuova legge esplicita di nucleazione basale o monomeri liberi iniziali**; i quattro PASS di M8.0 non autorizzano a sostituire questo requisito con altri seed.
+
+Il primo tentativo dell'audit [#44256173000](https://github.com/kkongiu/alife-lab/actions/runs/44256173000) fallì per una differenza di serializzazione: le chiavi numeriche del serbatoio materiale nell'oggetto Python diventavano stringhe al passaggio JSON. La comparazione è stata corretta normalizzando la rappresentazione JSON, senza cambiare fisica, dati principali, protocolli o criteri. Il replay conclusivo #44256458281 è **PASS**.
