@@ -1,0 +1,52 @@
+name: M8.1a retrospective audit of frozen 192 native traces, NO new simulations
+
+on:
+  push:
+    branches:
+      - analysis/m8-1a-frozen-trace-bottleneck
+    paths:
+      - 'tools/m8_1a_trace_audit.py'
+      - '.github/workflows/m8_1a_posthoc_audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  only-read-archived-physical-events:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download frozen original complete M8.1a source artifact from exact run id
+        uses: actions/download-artifact@v4
+        with:
+          name: m8-1a-preregistered-64-seeds-192-worlds-all-native-traces
+          run-id: 44412124197
+          github-token: ${{ github.token }}
+          path: .
+      - name: Verify input belongs to original frozen completed 192-world campaign
+        shell: bash
+        run: |
+          test -s campaigns/m8_1a/results.json
+          test -s campaigns/m8_1a/protocol.json
+          python - <<'PY'
+          import json
+          d = json.load(open("campaigns/m8_1a/results.json"))
+          assert len(d["all_worlds"]) == 64
+          assert d["summary"]["physical_worlds_including_controls"] == 192
+          assert d["summary"]["ticks_per_world"] == 200
+          assert d["summary"]["frozen_decision_gates"]["informational_active_at_least_4_and_delta_at_least_3"] == "NO_GO"
+          print("FROZEN_SOURCE_VERIFIED: archived 192-world M8.1a campaign, NO_GO kept")
+          PY
+      - name: Replay solely the archived chemistry event log; NO WorldM8 or simulator invocation
+        run: python tools/m8_1a_trace_audit.py
+      - name: Publish read-only diagnostic and descriptive report
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-1a-posthoc-archived-events-audit-no-new-physical-runs
+          path: |
+            reports/M8_1a_posthoc_diagnostic.md
+            campaigns/m8_1a/posthoc_diagnostic.json
+          if-no-files-found: error
