@@ -6,7 +6,8 @@ from tools.m8_0_preflight import protocol,product_state,execute_case
 def test_frozen_preflight_and_synthetic_only_scope():
     p=protocol()
     assert p["status"]=="frozen_before_new_law_implementation_or_result"
-    assert p["physical_law_version"]==LAW_VERSION
+    assert p["physical_law_version"]=="M8.0-new-physics-not-M6"
+    assert LAW_VERSION.startswith("M8.0-local-B-H-")
     assert p["controls"]["simulation_horizon"]==120
     assert p["integrity"]["no_historical_M6_edits"]
     assert p["integrity"]["real_local_reaction_events_no_direct_child_creation"]
