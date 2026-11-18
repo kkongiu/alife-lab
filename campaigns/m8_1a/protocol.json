@@ -1,0 +1,53 @@
+{
+  "schema": "alife-m8-1a-unbound-monomer-origin-v1",
+  "status": "preregistered_before_implementation_or_outcomes",
+  "date": "2026-11-18",
+  "parent_branch": "exp/m8-0-local-templating-sandbox",
+  "issue": 45,
+  "scope": "Unbiased source-free-start native origin under EXACT unchanged M8.0 B/H laws; no artificial B/H bonds at t0, no planted template, no engineered offspring, no spontaneous-life claims.",
+  "physics": {
+    "law": "M8.0-local-B-H-sandbox-v1",
+    "same_src_alife_m8_sandbox_py": true,
+    "unchanged_probabilities": true,
+    "unchanged_energy_and_matter_ledgers": true,
+    "unchanged_lattice": "10x5 closed; adsorbed monomers stationary",
+    "background_adsorption": 0,
+    "initial_condition": "20 independent free UNBONDED monomers (10 of species 0, 10 of species 1) uniformly assigned without replacement to 20 of 50 lattice cells by deterministic blake2b site ranking; bits randomly assigned with deterministic blake2b rank at same numeric seed; remove 10 of each from finite bath of 40 each. No initial B/H, all initial IDs at tick 0, initial total mass 80 and energy 500. No genome/template chosen; no post hoc seeding. Exactly same starting state for each paired control seed."
+  },
+  "frozen_campaign": {
+    "seeds": {
+      "start": 610001,
+      "end_inclusive": 610064,
+      "count": 64
+    },
+    "modes": [
+      "templated",
+      "shuffled_identity",
+      "no_template"
+    ],
+    "ticks_per_world": 200,
+    "total_worlds": 192,
+    "units_of_independence": "64 numeric source seed worlds, not daughter events or different control arms",
+    "run_all_nulls": true,
+    "never_retry_or_replace_seed": true,
+    "random_lottery": "M8.0 keyed draws; independent initialization hash only at tick 0, same positions/species across all three modes"
+  },
+  "endpoints": {
+    "first_native_4": "At each tick after native physics step, scan each horizontal contiguous 4-site window on all rows lexicographically by (y,x). Count source if all 4 persistent IDs were placed as FREE unbonded initial material, and all 3 currently extant B edges were native B_form events with no seeded bonds. Choose earliest tick, then y,x and material IDs; save full species sequence. Do not choose an advantageous candidate retrospectively. No initial bonds are permitted.",
+    "first_native_4_rate": "World-level count of at least one first-native-4 in no_template arm; all 64 seeds included.",
+    "material_product": "Only AFTER first source formation, for a row directly above or below source and exactly aligned four x positions: four DIFFERENT material IDs, each created by a real adsorb event AFTER source origin with source_material_id equal to source ID at matching x, physically B-connected by 3 real B_form edges, no H contact between any daughter material and ANY source material at observation, and the entire B-connected daughter component is EXACTLY 4 material IDs. All four stay the same IDs and species with that isolated topology at least 20 consecutive ticks. Count at most once per source world, no manual offspring assignment.",
+    "informative_product": "material_product plus exact 4-bit daughter species string equals original first source species string; provide H/capture/B formation provenance and mismatch counts, no visual-similarity-only ancestry.",
+    "opportunity_audit": "Record first source tick, B-form events, number of genuine source->daughter monomer H captures, and total material captures/B forms; note mode opportunity imbalance without making rate-match claims from global totals alone."
+  },
+  "frozen_decision": {
+    "integrity": "All 192 worlds finish with full exact matter/energy invariants each tick, 0 t0 B/H, fixed 20 monomers 10/10, deterministic replay; a failure means implementation invalid, not scientific NO_GO.",
+    "origin_go": "At least 12 of 64 no_template seed worlds display first_native_4 by tick 200. If not, report nucleation barrier NO_GO, do not enlarge seed list without a new protocol.",
+    "informational_go": "At least 4/64 templated source worlds have informative_product, and at least 3 more worlds than shuffled_identity have informative_product. If not, report NO_GO / unproven informative origin even if ordinary native B structures appear.",
+    "null_logic": "All zero cases stay in denominator; success thresholds never relaxed after outcomes. No interpretation as three-generation inheritance or life."
+  },
+  "notes": [
+    "M8.1a tests static adsorption-surface nucleation only, NOT mobile diffusion, metabolism, heritable multigeneration or natural chemistry realism.",
+    "M8.0 files, historical M6/M7 physics, and master must remain untouched.",
+    "Any revised initial geometry/density, new diffusion rule or more seeds requires a separately versioned preregistration; never modify this frozen protocol."
+  ]
+}
