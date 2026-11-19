@@ -1,0 +1,54 @@
+name: 'M8.1b archived 256-world event audit - NO new physical simulation'
+
+on:
+  push:
+    branches:
+      - analysis/m8-1b-archived-spatial-bottleneck
+    paths:
+      - 'tools/m8_1b_frozen_trace_audit.py'
+      - '.github/workflows/m8_1b_posthoc_bottleneck.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  independently-replay-only-original-events:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download exact frozen 256-world M8.1b original artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: m8-1b-64-paired-seeds-256-native-worlds-single-hop-frozen-protocol
+          run-id: 44491013828
+          github-token: ${{ github.token }}
+          path: .
+      - name: Verify complete frozen science input and original NO_GO gates
+        run: |
+          test -s campaigns/m8_1b/results.json
+          python - <<'PY'
+          import json
+          d = json.load(open('campaigns/m8_1b/results.json'))
+          assert len(d['all_256_physical_worlds']) == 64
+          assert d['summary']['physical_worlds'] == 256
+          assert d['summary']['ticks_per_world'] == 240
+          assert d['summary']['gates'] == {
+              'physics_integrity': 'PASS',
+              'mobility_corridor_effect': 'NO_GO',
+              'informative_persistent_offspring': 'NO_GO'
+          }
+          print('M81B_FROZEN_SOURCE_VALID_256_WORLD_ORIGINAL_NO_GO')
+          PY
+      - name: Replay all 256 old event transcripts and diagnose irreversible blockers; NO WorldM8 calls
+        run: python tools/m8_1b_frozen_trace_audit.py
+      - name: Publish complete read-only per-seed diagnostic and scientific report
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-1b-posthoc-bottleneck-256-archived-traces-no-new-worlds
+          path: |
+            campaigns/m8_1b/posthoc_geometry.json
+            reports/M8_1b_posthoc_geometry.md
+          if-no-files-found: error
