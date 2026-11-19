@@ -1,0 +1,41 @@
+name: M8.1b frozen 64 paired seeds × 4 native physical modes: isolated local hopping
+
+on:
+  push:
+    branches:
+      - exp/m8-1b-free-monomer-diffusion
+    paths:
+      - 'campaigns/m8_1b/**'
+      - 'src/alife_m8/hopping_v1.py'
+      - 'tools/m8_1b_campaign.py'
+      - 'tests/test_m8_1b_hopping.py'
+      - '.github/workflows/m8_1b_local_hop.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-regression-and-physical-campaign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned project package and test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Full unchanged M6 M8.0 M8.1a and new M8.1b tests
+        run: python -m pytest -q
+      - name: 64 fixed independent source seeds × 4 paired 240-tick physical universes
+        run: python -m tools.m8_1b_campaign
+      - name: Archive ALL seed worlds physical event logs and nulls, original protocol, and report
+        uses: actions/upload-artifact@v4
+        with:
+          name: m8-1b-64-paired-seeds-256-native-worlds-single-hop-frozen-protocol
+          path: |
+            campaigns/m8_1b/protocol.json
+            campaigns/m8_1b/results.json
+            reports/M8_1b_results.md
+          if-no-files-found: error
