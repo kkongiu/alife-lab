@@ -1,4 +1,4 @@
-name: M8.1b frozen 64 paired seeds × 4 native physical modes: isolated local hopping
+name: 'M8.1b frozen 64 paired seeds x 4 native physical modes - isolated local hopping'
 
 on:
   push:
