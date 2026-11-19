@@ -1,0 +1,61 @@
+{
+  "schema": "alife-m8-1b-single-local-hop-v1",
+  "status": "frozen_before_m8_1b_physics_implementation_or_result",
+  "frozen_date": "2026-11-19",
+  "scientific_question": "Does exactly one new law—finite-energy local diffusion of B/H-unbound monomers—create geometrically available four-cell corridors and physically distinct informative offspring from the first spontaneous native B4 chain under otherwise unchanged M8.0 local chemistry?",
+  "provenance": {
+    "baseline": "M8.0 existing src/alife_m8/sandbox.py untouched",
+    "previous_negative": "M8.1a native source YES, offspring NO_GO; retrospective audit: 0/30 first sources had fully vacant four-site adjacent corridor in active mode",
+    "not_a_confirmatory_replication": "Exploratory mechanism test designed after seeing M8.1a null; new fixed numeric seed set, preregistered prospectively."
+  },
+  "physics": {
+    "new_law_version": "M8.1b-local-isolated-monomer-hop-v1",
+    "inherited_law": "M8.0-local-B-H-sandbox-v1",
+    "only_physical_extension": "At each new tick after existing H/B breaks and before existing M8.0 local capture and B formation, loop persistent material IDs in increasing order. If particle is currently free of ALL B and H bonds, and free-energy budget ≥1, with probability 0.25 attempt a hop to one of four cardinal directions chosen uniformly by a second keyed draw. Only execute when destination is inside the existing closed 10x5 lattice and unoccupied. Each successful hop consumes 1 available energy unit irreversibly dissipated, changes x/y of the SAME material ID, never changes species, bath, atom count, B/H or source/genotype.",
+    "attempt_probability": 0.25,
+    "hop_energy_cost": 1,
+    "directions": [
+      "up",
+      "down",
+      "left",
+      "right"
+    ],
+    "lattice": "10x5 closed no periodic wrap",
+    "decisions": "M8.0 key-based RNG for preexisting physical channels is unchanged; new independently keyed hop attempt and cardinal-direction draws use seed/tick/current position/material ID.",
+    "tick_order": "existing H and B break => NEW hop over IDs ascending => existing M8.0 adsorption/H capture => existing M8.0 B-formation => original per-tick ledger assertion",
+    "status_bonded": "Any particle with ≥1 B or H remains immobile. No B/H link may be moved, stretched, cut or cloned by hop.",
+    "event": "Record tick, native material ID, from (x,y), to (x,y), cost=1. Decrease free energy and increase dissipated energy by 1.",
+    "no_other_changes": "Original probabilities P_CAPTURE P_MATCH P_BACKGROUND P_B_BASE P_B_CATALYZED P_H_RELEASE P_B_BREAK remain exactly M8.0; no monomer birth other than existing bath capture; no desorption; no exchange; no global fitness or copy instruction; no extra diffusion of bonded structures."
+  },
+  "frozen_experiment": {
+    "seed_start": 620001,
+    "seed_end_inclusive": 620064,
+    "independent_numeric_seeds": 64,
+    "horizon_ticks": 240,
+    "modes": [
+      "static_templated",
+      "hop_templated",
+      "hop_shuffled",
+      "hop_no_template"
+    ],
+    "total_physical_worlds": 256,
+    "shared_initial_conditions": "Use original M8.1a initial_feedstock(seed) exactly, with 20 unbonded monomers, 10 of each species in 20 of 50 distinct cells, 60 left in bath, initial free energy 500, B=H=0, no seeded template. All four arms same IDs/species/sites at tick 0.",
+    "independent_unit": "One numeric seed is independent; four intervention arms matched by seed. Include every null, no seed tuning or trial replacement."
+  },
+  "first_source_endpoint": "First tick and (y,x) lexicographically earliest native contiguous horizontal B-connected four monomers consisting entirely of original 20 unbonded IDs. All 3 B bonds formed by original native B_form events; observer never manufactures source. Source only scored once per world and cannot be reselected to a later favorable candidate.",
+  "corridor_endpoint": "At each tick after first source birth, inspect two rows directly above/below original source x-span (4 cells). A corridor is free only if all 4 positions are unoccupied simultaneously. Record whether corridor free at source birth and whether any such corridor observed at or after birth, together with first free time and cumulative free-corridor ticks. No posthoc relocation of source.",
+  "offspring_endpoint": "Exactly the M8.1a strict first-source criterion: each of four new material IDs adsorbed AFTER parent birth at respective aligned adjacent cell with native H-capture whose source_material_id equals corresponding original parent ID; three actual adjacent B links; complete resulting B component exactly four IDs; no H tether to any source material; exact stable material IDs/species/topology ≥20 consecutive ticks. Informative offspring additionally exact match of parent 4-bit composition, counted by source-world not child.",
+  "audits": [
+    "All 256 worlds full exact M8 matter/energy ledger each tick; no B or H t0; same original 20 IDs and same material budget; deterministic full replay of fixed seed; every hop physically legal/no linked atom movement and charges energy; other modes have zero hops.",
+    "On static_templated arm, compare first 200 ticks and first-source metadata against unchanged M8.1a physics output for the same fresh seed (not against old seed values).",
+    "Audit complete native events, source identity, local-corridor snapshots, true capture provenance, first persistent product and world-level nulls.",
+    "Report both total adsorptions and first-source captures in all arms; chemistry plus geometry may differ after intervention, so no claim that aggregate reactive opportunities are perfectly rate-matched."
+  ],
+  "frozen_gates": {
+    "integrity": "256/256 exact physical ledger, legal hop event and replay controls pass; otherwise INVALID software experiment.",
+    "corridor_effect": "At least 8/64 hop_templated source worlds have a free 4-site corridor at or AFTER first source birth, and at least 5 MORE worlds than static_templated arm. Both thresholds required; else NO_GO for this fixed hypothesis.",
+    "informative_product": "At least 3/64 hop_templated worlds have a strictly traced informative persistent product AND at least 3 MORE worlds than hop_shuffled. This is distinct from corridor effect; failure is a scientific null and does NOT fail software CI.",
+    "transparent_null": "All 64 seed worlds included in every arm, even when no source exists. Never enlarge horizon, change mobility probability or try more seed numbers after outcomes without separate new preregistration."
+  },
+  "scope_limitations": "Single particle-hop law can move ONLY unbonded material, cannot dislodge bonded obstruction; a geometrical NO_GO would support testing a separately versioned desorption/turnover hypothesis, not automatically adjusting hop rate. Observed parent-to-product copying is NOT three generations, metabolism, selection, or life."
+}
