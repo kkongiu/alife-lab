@@ -1,0 +1,41 @@
+name: 'M9.0 independent chemostat - frozen autocatalysis calibration and 12 unseeded chemistry networks'
+
+on:
+  push:
+    branches:
+      - research/m9-0-chemostat-autocatalysis
+    paths:
+      - 'campaigns/m9_0/**'
+      - 'src/alife_m9/**'
+      - 'tools/m9_0_campaign.py'
+      - 'tests/test_m9_0_chemostat.py'
+      - '.github/workflows/m9_0_chemostat.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-run-frozen-campaign:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install original project and test dependencies
+        run: python -m pip install -e '.[dev]'
+      - name: Run ALL unchanged native M6 suite plus M9.0 ledger/catalyst tests
+        run: python -m pytest -q
+      - name: Execute prospectively frozen 312-world M9.0 experiment
+        run: python -m tools.m9_0_campaign
+      - name: Publish all seeded controls, unseeded networks, complete nulls and native events
+        uses: actions/upload-artifact@v4
+        with:
+          name: m9-0-312-world-chemostat-12-unseeded-chemistries-all-native-events
+          path: |
+            campaigns/m9_0/protocol.json
+            campaigns/m9_0/results.json
+            reports/M9_0_results.md
+          if-no-files-found: error
