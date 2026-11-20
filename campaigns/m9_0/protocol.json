@@ -1,0 +1,52 @@
+{
+  "schema": "alife-m9-0-chemostat-prereg-v1",
+  "status": "frozen_prior_to_M9_implementation_or_results",
+  "date": "2026-11-20",
+  "lineage": "Independent branch from master. M6/M7/M8 experiments and their original laws/PRs untouched.",
+  "research_question": "Can a fixed, small, open-flow nonspatial chemical network generate and maintain catalyst-dependent molecular assemblies from monomer-only feed, and do controlled catalyst removals explain their persistence?",
+  "purpose": "First validate the observer on known deliberately seeded autocatalysis vs disabled control; then assess explicitly exploratory random catalytic reaction networks from unseeded monomer-only feed. Not proof of digital life or unprogrammed chemical laws.",
+  "physical_rules": {
+    "system": "Well-stirred open-flow count-based chemostat, integer molecules, alphabet A,B, four ordered dimers AA AB BA BB. All molecular species represent 1 or 2 atoms, no spatial grid.",
+    "reactions": "For each ordered dimer product XY, XY synthesis is X + Y -> XY, one attempt per tick per product if stoichiometrically available. Reverse spontaneous cleavage XY -> X+Y may occur per existing dimer. These are physical transformations, catalysts are rate modifiers NOT reactants.",
+    "catalysis": "Each ligation product has at most one dimer catalyst C assigned by network; when at least one C exists and mode enables catalysis, probability per available ligation reaction attempt = 0.65, otherwise background 0.004. Presence of C is read from chemical population only and does not consume C or directly insert a daughter.",
+    "energy": "Energy is an explicitly abstract, nonphysical bookkeeping token: reservoir receives +8 per tick from outside; synthesis consumes one available token into exactly one stored dimer-bond token; cleavage recovers one stored token into reservoir; washout of a dimer exports its stored token; reservoir >64 drains excess into cumulative dissipation. No spontaneous creation of tokens. This is NOT a claim of realistic thermochemistry.",
+    "material": "Chemostat feed adds 3 A and 3 B monomers per tick. Each existing molecule independently washes out with probability 0.04 per tick; dimers can hydrolyze with probability 0.03 per existing dimer per tick. No other destruction, matter bookkeeping counts 1 atom per monomer, 2 per dimer. Deterministic per-tick stages are feed, stochastic washout, hydrolysis, candidate ligations, energy bleed/ledger verification.",
+    "random": "blake2b fixed 64-bit keyed draws by seed, tick, stage, species, ordinal; chemistry mapping hashed from network numeric ID and fixed map version. Same micro-draw keys across control modes to reduce RNG drift; different paths can produce different populations.",
+    "freeze": "Use numeric parameters EXACTLY as stated; no tuning probabilities or choosing helpful network maps after observations."
+  },
+  "positive_control": {
+    "network": "AA autocatalyzes A+A->AA; the other three ligations have NO catalyst. Positive fixture artificially starts with one AA dimer (and no other chemicals). This is a *known seeded catalyst* and must never be called spontaneous origin.",
+    "comparison": "Same seeds and initial seeded AA for 3 arms: always-on, always-off, catalysis disabled AFTER tick150; turning off affects only reaction propensity not physically removes molecules.",
+    "expectation": "Catalysis-on should sustain more AA than always-off and switch-off. Passing validates machinery's ability to see causal autocatalysis but cannot evidence life's emergence."
+  },
+  "unseeded_exploration": {
+    "chemistry_maps": "Fixed 12 network IDs 0..11; each of the four product rules independently hashes to one of the four dimer catalyst species AA AB BA BB or no catalyst (five outcomes, no reselection). No species or chemical catalyst is seeded; at tick0 the vessel is entirely empty.",
+    "controls": "For each map×seed three paired arms: always-on, always-off (same reactions but catalysts inert), switch-off AFTER tick150. All same molecule feed, washout, cleavage, energy and numerical seed.",
+    "analytical_graph": "Directed edge C->XY iff C catalyzes the XY ligation. Detect any directed cycle among dimer species from frozen mapping. Cycles are necessary feedback-capability indicators here, not observed reproduction, and may be absent from realized events."
+  },
+  "fixed_campaign": {
+    "seed_start": 730001,
+    "seed_end_inclusive": 730008,
+    "seed_count": 8,
+    "positive_cases": "8 seeds × 3 modes = 24 seeded-fixture worlds",
+    "unseeded_cases": "12 fixed chemistry maps × 8 seeds × 3 modes = 288 resource-only worlds",
+    "total_worlds": 312,
+    "ticks_per_world": 300,
+    "switch_off_after_tick": 150,
+    "late_measurement_ticks": "220..300 inclusive, 81 observations per world",
+    "recording": "All nulls, trajectories of populations and energy/material ledgers, event-type totals, chemistry map & cycle status; world-level paired comparisons. No retry/reselection of seeds or chemistries."
+  },
+  "frozen_success_gates": {
+    "integrity": "All 312 worlds complete 300 ticks, with exact atom and energy accounting each tick; recorded reaction events must obey available reactants, energy and nonconsumption of catalyst. Deterministic replay sanity checks. Failed integrity means invalid experiment.",
+    "positive_validity": "In at least 6/8 paired seed replicates, mean AA count at ticks 220..300 in seeded always-on exceeds seeded always-off by >=3 AND exceeds seeded switch-off by >=3. If not, mark calibration NO_GO even if unseeded candidates are positive.",
+    "unseeded_autocatalysis": "At least 2 of the 12 preselected chemistries must have a catalytic directed cycle and in at least 5/8 seed pairs per chemistry, mean late total dimers (ticks 220..300) in always-on is >=3 higher than always-off AND >=3 higher than switch-off; only then preliminary supported network-level causal maintenance. Else NO_GO. No retroactive chemistry or seed search.",
+    "separate_claims": "The existence of chemically generated dimers or a catalytic cycle in the rule table alone never qualifies as life/replication/inheritance. No claim of M9.1 genetic information or Darwinian evolution.",
+    "stop": "Freeze thresholds, seeds, chemistry map construction and horizon. All negative outcomes remain. Any modified chemistry is M9.0b or later with a NEW preregistration."
+  },
+  "limitations": [
+    "The physical chemistry is intentionally simplified and programmed, including the possible catalyst influence of a dimer on a ligation; observing autocatalysis is not an origin-of-life proof.",
+    "Positive control AA is deliberately seeded. In unseeded cases, reactions can nucleate dimers with nonzero background rate; catalysts may then reinforce networks.",
+    "Open-flow material/energy input drives the reactor. This is not mass conservation of an isolated vessel but exact accounting of inflow/outflow.",
+    "No spatial organization, membrane, genome, reproduction of distinct individuals, or multigeneration evolution."
+  ]
+}
