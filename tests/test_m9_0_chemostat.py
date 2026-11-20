@@ -12,8 +12,8 @@ from tools.m9_0_campaign import protocol, execute_world, summarize, SEEDS, TICKS
 
 def test_m90_protocol_is_preregistered_before_implementation():
     p = protocol()
-    assert p["frozen_campaign"]["total_worlds"] == 312
-    assert p["frozen_campaign"]["switch_off_after_tick"] == 150
+    assert p["fixed_campaign"]["total_worlds"] == 312
+    assert p["fixed_campaign"]["switch_off_after_tick"] == 150
     assert p["positive_control"]["network"].startswith("AA autocatalyzes")
     assert p["unseeded_exploration"]["chemistry_maps"].startswith("Fixed 12")
     assert len(SEEDS) == 8 and TICKS == 300
